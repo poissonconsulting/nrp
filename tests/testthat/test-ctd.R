@@ -7,6 +7,7 @@ test_that("nrp_read_ctd_file works", {
   expect_is(data, "tbl_df")
   expect_identical(attr(data, "path"), path)
   expect_is(attr(data, "flob"), "flob")
+  expect_identical(check_ctd_data(data), data)
 })
 
 test_that("nrp_read_ctds works", {

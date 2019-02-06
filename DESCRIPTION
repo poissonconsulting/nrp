@@ -1,7 +1,7 @@
 Package: nrp
 Type: Package
 Title: Nutrient Restoration Program Data Loading
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     c(
     person("Evan", "Amies-Galonski", role = c("aut", "cre"), email = "evan@poissonconsulting.ca"),

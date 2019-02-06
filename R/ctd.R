@@ -19,11 +19,12 @@ nrp_read_ctd_file <- function(path) {
     })
 
   data <- as_tibble(ctd@data)
-  # we need to get units from metadata
-  # and we need to check data
+  # we will need to get units from metadata
+  # note we may need to update check_ctd_data accordingly
   colnames(data) %<>% str_to_title()
   data$DateTime <- ctd@metadata$startTime
   data %<>% select(.data$DateTime, everything())
+  check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
   attr(data, "path") <- ctd@metadata$filename
   attr(data, "flob") <- flobr::flob(path)
