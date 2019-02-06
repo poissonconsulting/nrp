@@ -2,21 +2,29 @@
 % Please edit documentation in R/ctd.R
 \name{nrp_read_ctd}
 \alias{nrp_read_ctd}
-\title{Read CTD File}
+\title{Read CTD Files}
 \usage{
-nrp_read_ctd(path)
+nrp_read_ctd(path = ".", recursive = FALSE, regexp = "[.]cnv$",
+  fail = TRUE)
 }
 \arguments{
-\item{path}{A string of the path to the file}
+\item{path}{A string of the path to the directory.}
+
+\item{recursive}{Should directories be listed recursively?
+the filenames.}
+
+\item{regexp}{A regular expression (e.g. \code{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
+
+\item{fail}{Should the call fail (the default) or warn if a file cannot be
+accessed.}
 }
 \value{
-A tibble
+A list of tibbles.
 }
 \description{
-Read CTD File
+Read CTD Files
 }
 \examples{
-path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-             package = "nrp")
+path <- system.file("extdata", "ctd/2018", package = "nrp")
 nrp_read_ctd(path)
 }

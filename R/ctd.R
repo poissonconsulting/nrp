@@ -1,21 +1,42 @@
 #' Read CTD File
 #'
-#' @param path A string of the path to the file
+#' @param path A string of the path to the file.
 #' @return A tibble
 #' @export
 #'
 #' @examples
 #' path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
 #'              package = "nrp")
-#' nrp_read_ctd(path)
-nrp_read_ctd <- function(path) {
+#' nrp_read_ctd_file(path)
+nrp_read_ctd_file <- function(path) {
   check_file_exists(path)
   ctd <- read.ctd.sbe(path, type="SBE19plus")
   data <- as_tibble(ctd@data)
   data$DateTime <- ctd@metadata$startTime
   # we need to get units from metadata
   # and we need to check data
+  # also need to deal with weird warning created 'pressure' from 'depth'
   attr(data, "path") <- ctd@metadata$filename
   attr(data, "flob") <- flobr::flob(path)
   data
+}
+
+#' Read CTD Files
+#'
+#' @param path A string of the path to the directory.
+#' @inheritParams fs::dir_ls
+#' @return A list of tibbles.
+#' @export
+#'
+#' @examples
+#' path <- system.file("extdata", "ctd/2018", package = "nrp")
+#' nrp_read_ctd(path)
+nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
+                          fail = TRUE) {
+  check_dir_exists(path)
+  paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
+                  fail = TRUE)
+  if(!length(paths)) return(named_list())
+  datas <- purrr::map(paths, nrp_read_ctd_file)
+  datas
 }

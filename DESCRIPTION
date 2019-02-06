@@ -17,7 +17,8 @@ Imports:
     fs,
     flobr,
     oce,
-    tibble
+    tibble,
+    purrr
 Suggests: 
     testthat
 LazyData: true
