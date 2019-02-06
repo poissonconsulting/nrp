@@ -4,14 +4,16 @@
 \alias{nrp_read_ctd}
 \title{Read CTD Files}
 \usage{
-nrp_read_ctd(path = ".", recursive = FALSE, regexp = "[.]cnv$",
-  fail = TRUE)
+nrp_read_ctd(path = ".", recursive = FALSE, bind = TRUE,
+  regexp = "[.]cnv$", fail = TRUE)
 }
 \arguments{
 \item{path}{A string of the path to the directory.}
 
 \item{recursive}{Should directories be listed recursively?
 the filenames.}
+
+\item{bind}{A logical argument for whether to bind rows into one tibble or return as a list of tibbles}
 
 \item{regexp}{A regular expression (e.g. \code{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
 

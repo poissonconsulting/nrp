@@ -4,7 +4,7 @@ Title: Nutrient Restoration Program Data Loading
 Version: 0.0.0.9001
 Authors@R: 
     c(
-    person("Evan", "Amies-Galonski", role = c("aut", "cre"), email = "evan@poissonconsulting.ca"),
+    person("Evan", "Amies-Galonski", role = c("aut", "cre"), email = "evan@poissonconsulting.ca", comment = c(ORCID = 0000-0003-1096-2089)),
     person("Joe", "Thorley", role = "aut", email = "joe@poissonconsulting.ca", comment = c(ORCID = "0000-0002-7683-4592"))
   )
 Description: More about what it does (maybe more than one line)

@@ -34,6 +34,7 @@ nrp_read_ctd_file <- function(path) {
 #' Read CTD Files
 #'
 #' @param path A string of the path to the directory.
+#' @param bind A logical argument for whether to bind rows into one tibble or return as a list of tibbles
 #' @inheritParams fs::dir_ls
 #' @return A list of tibbles.
 #' @export
@@ -41,12 +42,17 @@ nrp_read_ctd_file <- function(path) {
 #' @examples
 #' path <- system.file("extdata", "ctd/2018", package = "nrp")
 #' nrp_read_ctd(path)
-nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
+nrp_read_ctd <- function(path = ".", recursive = FALSE, bind = TRUE, regexp = "[.]cnv$",
                          fail = TRUE) {
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
                   fail = TRUE)
   if(!length(paths)) return(named_list())
-  datas <- purrr::map(paths, nrp_read_ctd_file)
+  if(bind == FALSE){
+    datas <- purrr::map(paths, nrp_read_ctd_file)
+  } else {
+    datas <- purrr::map_dfr(paths, nrp_read_ctd_file)
+  }
   datas
 }
+

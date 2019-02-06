@@ -11,12 +11,29 @@ test_that("nrp_read_ctd_file works", {
 })
 
 test_that("nrp_read_ctds works", {
+
+  path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd(path)
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 13L)
+
+  expect_identical(check_ctd_data(data), data)
+
+
+  path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd(path, recursive = TRUE)
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 13L)
+
+  expect_identical(check_ctd_data(data), data)
+
+
   path <-  system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path)
   expect_identical(data,  list(x = 1)[-1])
 
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
-  data <- nrp_read_ctd(path)
+  data <- nrp_read_ctd(path, bind = FALSE)
   expect_is(data, "list")
   expect_identical(length(data), 1L)
   expect_match(names(data), path)
@@ -25,7 +42,8 @@ test_that("nrp_read_ctds works", {
   expect_match(attr(data[[1]], "path"), path)
   expect_is(attr(data[[1]], "flob"), "flob")
 
-  data <- nrp_read_ctd(path, recursive = TRUE)
+
+  data <- nrp_read_ctd(path, recursive = TRUE, bind = FALSE)
   expect_is(data, "list")
   expect_identical(length(data), 3L)
   expect_match(names(data), path)
