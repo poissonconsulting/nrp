@@ -18,6 +18,9 @@ Imports:
     flobr,
     oce,
     tibble,
+    magrittr,
+    stringr,
+    dplyr,
     purrr
 Suggests: 
     testthat

@@ -1,3 +1,4 @@
-#' @import err checkr fs tibble purrr
+#' @import err checkr fs tibble purrr stringr dplyr
+#' @importFrom magrittr %<>% %>%
 #' @importFrom oce read.ctd.sbe
 NULL

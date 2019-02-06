@@ -10,12 +10,21 @@
 #' nrp_read_ctd_file(path)
 nrp_read_ctd_file <- function(path) {
   check_file_exists(path)
-  ctd <- read.ctd.sbe(path, type="SBE19plus")
+
+  withCallingHandlers(
+    ctd <- read.ctd.sbe(path, type="SBE19plus"),
+    warning=function(w) {
+      if (str_detect(w$message, "created 'pressure' from 'depth'"))
+        invokeRestart("muffleWarning")
+    })
+
   data <- as_tibble(ctd@data)
-  data$DateTime <- ctd@metadata$startTime
   # we need to get units from metadata
   # and we need to check data
-  # also need to deal with weird warning created 'pressure' from 'depth'
+  colnames(data) %<>% str_to_title()
+  data$DateTime <- ctd@metadata$startTime
+  data %<>% select(.data$DateTime, everything())
+
   attr(data, "path") <- ctd@metadata$filename
   attr(data, "flob") <- flobr::flob(path)
   data
@@ -32,7 +41,7 @@ nrp_read_ctd_file <- function(path) {
 #' path <- system.file("extdata", "ctd/2018", package = "nrp")
 #' nrp_read_ctd(path)
 nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
-                          fail = TRUE) {
+                         fail = TRUE) {
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
                   fail = TRUE)
