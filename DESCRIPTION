@@ -21,9 +21,11 @@ Imports:
     magrittr,
     stringr,
     dplyr,
-    purrr, 
-    readwritesqlite
+    purrr
+Remotes:
+	poissonconsulting/readwritesqlite
 Suggests: 
     testthat
 LazyData: true
 RoxygenNote: 6.1.1
+
