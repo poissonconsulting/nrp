@@ -2,6 +2,7 @@
 
 export(nrp_read_ctd)
 export(nrp_read_ctd_file)
+export(nrp_upload)
 import(checkr)
 import(dplyr)
 import(err)
