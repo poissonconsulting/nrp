@@ -46,7 +46,7 @@ nrp_read_ctd <- function(path = ".", recursive = FALSE, bind = TRUE, regexp = "[
                          fail = TRUE) {
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
-                  fail = TRUE)
+                  fail = fail)
   if(!length(paths)) return(named_list())
   if(bind == FALSE){
     datas <- purrr::map(paths, nrp_read_ctd_file)
