@@ -15,7 +15,7 @@ nrp_upload <- function(data, conn){
 
   if(identical(names(data), ctd_names)){
     check_ctd_data(data, exclusive = TRUE, order = TRUE)
-    rws_write_sqlite(ctds, conn = conn, x_name = "CTD")
+ #   rws_write_sqlite(ctds, conn = conn, x_name = "CTD")
   } else {
     err("Columns names do not match any existing data in database.")
   }
