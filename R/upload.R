@@ -6,17 +6,8 @@
 #'
 #' @export
 #'
+nrp_upload <- function(data, conn, commit = TRUE){
 
+ rws_write_sqlite(data, commit = commit, conn = conn, x_name = assess_data_type(data))
 
-nrp_upload <- function(data, conn){
-
-  ctd_names <- c('DateTime', 'Depth', 'Temperature', 'Oxygen', 'Oxygen2', 'Conductivity', 'Conductivity2',
-                 'Salinity', 'Backscatter', 'Fluorescence', 'Frequency', 'Flag', 'Pressure')
-
-  if(identical(names(data), ctd_names)){
-    check_ctd_data(data, exclusive = TRUE, order = TRUE)
- #   rws_write_sqlite(ctds, conn = conn, x_name = "CTD")
-  } else {
-    err("Columns names do not match any existing data in database.")
-  }
 }
