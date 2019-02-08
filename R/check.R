@@ -1,12 +1,24 @@
-check_file_exists <- function(path) {
+check_path <- function(path) {
   check_string(path)
+  path
+}
+
+check_ext <- function(path, ext = "sqlite") {
+  check_path(path)
+  if(!identical(path_ext(path), ext))
+    err("path '", path, "' extension must be '", ext, "',")
+  path
+}
+
+check_file_exists <- function(path) {
+  check_path(path)
   if(!file_exists(path)) err("path '", path, "' must exist")
   if(!is_file(path)) err("path '", path, "' must be a file")
   path
 }
 
 check_dir_exists <- function(path) {
-  check_string(path)
+  check_path(path)
   if(!file_exists(path)) err("path '", path, "' must exist")
   if(!is_dir(path)) err("path '", path, "' must be a directory")
   path
