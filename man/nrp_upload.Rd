@@ -4,12 +4,20 @@
 \alias{nrp_upload}
 \title{Upload data to nrp database}
 \usage{
-nrp_upload(data, conn)
+nrp_upload(data, db_path, commit = TRUE, strict = TRUE,
+  silent = TRUE)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}
 
-\item{conn}{A formal SQlite connection}
+\item{db_path}{The oath to the database file}
+
+\item{commit}{A flag specifying whether to commit the operations 
+(calling with commit = FALSE can be useful for checking data).}
+
+\item{strict}{A flag specifying whether to error if x has extraneous columns or if exists = TRUE extraneous data frames.}
+
+\item{silent}{A flag specifying whether to suppress messages and warnings.}
 }
 \description{
 Upload data to nrp database
