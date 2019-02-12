@@ -8,9 +8,10 @@
 #'
 nrp_upload_data <- function(data, conn, commit, strict, silent){
 
-  readwritesqlite::rws_write_sqlite(data, commit = commit, strict = strict, silent = silent,
+  readwritesqlite::rws_write_sqlite(x = data, commit = commit, strict = strict, silent = silent,
                                    x_name = assess_data_type(data), conn = conn)
 }
+
 
 #' Upload data to nrp database
 #'
@@ -33,12 +34,8 @@ nrp_upload <- function(data, conn, commit = TRUE, strict = TRUE, silent = TRUE){
       })
     on.exit(readwritesqlite::rws_close_connection(conn = conn))
   }
-
   nrp_upload_data(data = data, conn = conn, commit = commit, strict = strict, silent = silent)
 }
-
-
-
 
 
 

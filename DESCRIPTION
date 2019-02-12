@@ -23,7 +23,8 @@ Imports:
     magrittr,
     stringr,
     dplyr,
-    purrr
+    purrr, 
+    readwritesqlite
 Remotes:
 	  poissonconsulting/readwritesqlite
 Suggests: 
