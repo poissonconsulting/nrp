@@ -1,18 +1,44 @@
 #' Upload data to nrp database
 #'
 #' @param data the object name of the data to be uploaded
-#' @param db_path The oath to the database file
+#' @param conn An Sqlite Database Connection
 #' @inheritParams readwritesqlite::rws_write_sqlite
 #'
-#' @export
 #'
-nrp_upload <- function(data, db_path, commit = TRUE, strict = TRUE, silent = TRUE){
-
-  conn <- readwritesqlite::rws_open_connection(db_path)
-  on.exit(readwritesqlite::rws_close_connection(conn))
+#'
+nrp_upload_data <- function(data, conn, commit, strict, silent){
 
   readwritesqlite::rws_write_sqlite(data, commit = commit, strict = strict, silent = silent,
                                    x_name = assess_data_type(data), conn = conn)
 }
+
+#' Upload data to nrp database
+#'
+#' @param data the object name of the data to be uploaded
+#' @param conn An Sqlite Database Connection, or path to an SQLite Database
+#' @inheritParams readwritesqlite::rws_write_sqlite
+#' @export
+#'
+#'
+nrp_upload <- function(data, conn, commit = TRUE, strict = TRUE, silent = TRUE){
+
+  if(!class(conn) == "SQLiteConnection"){
+    check_file_exists(path = conn)
+
+    withCallingHandlers(
+      conn <- readwritesqlite::rws_open_connection(dbname = conn,  exists = TRUE),
+      warning=function(w) {
+        if (str_detect(w$message, "Couldn't set synchronous mode: file is not a database"))
+          err("File provided is not an SQLite database")
+      })
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
+
+  nrp_upload_data(data = data, conn = conn, commit = commit, strict = strict, silent = silent)
+}
+
+
+
+
 
 

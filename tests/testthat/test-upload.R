@@ -1,15 +1,33 @@
 context("upload")
 
+test_that("nrp_upload_data works", {
+
+  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+                       package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd_file(path = path)
+  conn <- readwritesqlite::rws_open_connection("")
+  readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
+
+  nrp_upload_data(data = data, conn = conn, commit = TRUE, strict = TRUE, silent = TRUE)
+
+  db_data <- readwritesqlite::rws_read_sqlite_table("CTD", conn = conn)
+  readwritesqlite::rws_close_connection(conn = conn)
+
+  expect_equal(data, db_data)
+  expect_identical(length(db_data), 13L)
+  expect_identical(nrow(db_data), 1445L)
+})
+
 test_that("nrp_upload works", {
 
   path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
                        package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd_file(path = path)
-  file.copy("inst/extdata/database_template/test-nrp.sqlite",
-            "inst/extdata/upload")
-  db_path <- "inst/extdata/upload/test-nrp.sqlite"
-  nrp_upload(data = data, db_path = db_path, commit = TRUE)
-  conn <- readwritesqlite::rws_open_connection("inst/extdata/upload/test-nrp.sqlite")
+  conn <- readwritesqlite::rws_open_connection("")
+  readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
+
+  nrp_upload(data = data, conn = conn)
+
   db_data <- readwritesqlite::rws_read_sqlite_table("CTD", conn = conn)
   readwritesqlite::rws_close_connection(conn = conn)
 
@@ -17,27 +35,22 @@ test_that("nrp_upload works", {
   expect_identical(length(db_data), 13L)
   expect_identical(nrow(db_data), 1445L)
 
-  unlink("inst/extdata/upload/test-nrp.sqlite")
 
+  conn <- readwritesqlite::rws_open_connection("")
+  readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
 
-  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-                       package = "nrp", mustWork = TRUE)
-  data <- nrp_read_ctd_file(path = path)
-  file.copy("inst/extdata/database_template/test-nrp.sqlite",
-            "inst/extdata/upload")
-  db_path <- "inst/extdata/upload/test-nrp.sqlite"
-
-  nrp_upload(data = data, db_path = db_path, commit = FALSE)
-
-  conn <- readwritesqlite::rws_open_connection("inst/extdata/upload/test-nrp.sqlite")
-  db_data <- readwritesqlite::rws_read_sqlite_table("CTD", conn = conn)
+  expect_error(nrp_upload(data = data, conn = "wrong_path.sqlite"),
+               "path 'wrong_path.sqlite' must exist")
   readwritesqlite::rws_close_connection(conn = conn)
 
-  expect_identical(length(db_data), 13L)
-  expect_identical(nrow(db_data), 0L)
+  conn <- readwritesqlite::rws_open_connection("")
+  readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
 
-  unlink("inst/extdata/upload/test-nrp.sqlite")
-
+  wrong_file <- path
+  expect_error(nrp_upload(data = data, conn = wrong_file),
+               "File provided is not an SQLite database")
+  readwritesqlite::rws_close_connection(conn = conn)
 })
+
 
 
