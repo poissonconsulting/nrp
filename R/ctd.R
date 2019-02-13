@@ -19,11 +19,23 @@ nrp_read_ctd_file <- function(path) {
     })
 
   data <- as_tibble(ctd@data)
+  site <- nrp_load_ctd_sites()
+
+  siteIDs <- sites$SiteID
+
+  match <- which(sapply(siteIDs, grepl, path))
+  if(length(match) == 0){
+    err("Station name could not be extracted from file name: No matches")
+  } else if(length(match) > 1){
+    err("Station name could not be extracted from file name: More than one match")
+  }
+
   # we will need to get units from metadata
   # note we may need to update check_ctd_data accordingly
   colnames(data) %<>% str_to_title()
   data$DateTime <- ctd@metadata$startTime
-  data %<>% select(.data$DateTime, everything())
+  data$SiteID <- siteIDs[match]
+  data %<>% select(SiteID, .data$DateTime, everything())
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
   attr(data, "path") <- ctd@metadata$filename

@@ -28,6 +28,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
     data,
     values = list(
+      SiteID = "a",
       DateTime = Sys.time(),
       Depth = 1,
       Temperature = 1,
