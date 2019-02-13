@@ -12,6 +12,8 @@ Description: nrp is an R package that is being developed for the
     used by the program; upload data to the NRP SQLite database; and 
     produce key tables and plots based on the data in the NRP SQLite database.
 License: MIT + file LICENSE
+Depends:
+    R (>= 2.10)
 Imports:
     err,
     checkr,

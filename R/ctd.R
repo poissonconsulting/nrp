@@ -53,3 +53,21 @@ nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
   datas
 }
 
+#' Load CTD site table
+#'
+#' @return CTD site table
+#' @export
+#'
+#' @examples
+#' site <- nrp_load_ctd_sites()
+
+nrp_load_ctd_sites <- function() {
+
+  db_path <-  system.file("extdata", "database_template/nrp.sqlite",
+                          package = "nrp", mustWork = TRUE)
+
+  conn <- readwritesqlite::rws_open_connection(dbname = db_path,  exists = TRUE)
+  site <- readwritesqlite::rws_read_sqlite_table("Site", conn = conn)
+  readwritesqlite::rws_close_connection(conn = conn)
+  site
+}

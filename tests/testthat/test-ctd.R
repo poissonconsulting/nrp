@@ -33,3 +33,18 @@ test_that("nrp_read_ctds works", {
   expect_identical(data,  list(x = 1)[-1])
 
 })
+
+
+test_that("nrp_load_ctd_sites", {
+
+  site <- nrp_load_ctd_sites()
+
+  expect_is(site, "tbl_df")
+  expect_identical(length(site), 6L)
+  expect_identical(nrow(site), 17L)
+
+})
+
+
+
+
