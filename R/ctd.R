@@ -34,6 +34,7 @@ nrp_read_ctd_file <- function(path) {
   # note we may need to update check_ctd_data accordingly
   colnames(data) %<>% str_to_title()
   data$DateTime <- ctd@metadata$startTime
+  data$DateTime %<>% dttr::dtt_set_tz("PST8PDT")
   data$SiteID <- siteIDs[match]
   data %<>% select(SiteID, .data$DateTime, everything())
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
