@@ -31,7 +31,7 @@ Imports:
     dbplyr,
     readwritesqlite
 Remotes:
-	  poissonconsulting/readwritesqlite
+	  poissonconsulting/readwritesqlite,
 	  poissonconsulting/dttr
 Suggests: 
     testthat
