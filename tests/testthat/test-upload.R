@@ -16,6 +16,7 @@ test_that("nrp_upload_data works", {
   expect_equal(data, db_data)
   expect_identical(length(db_data), 14L)
   expect_identical(nrow(db_data), 1445L)
+
 })
 
 test_that("nrp_upload works", {
@@ -49,7 +50,9 @@ test_that("nrp_upload works", {
   wrong_file <- path
   expect_error(nrp_upload(data = data, conn = wrong_file),
                "File provided is not an SQLite database")
+
   readwritesqlite::rws_close_connection(conn = conn)
+
 })
 
 
