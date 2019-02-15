@@ -72,7 +72,7 @@ nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
 #' @export
 #'
 #' @examples
-#' site <- nrp_load_ctd_sites()
+#' sites <- nrp_load_ctd_sites()
 
 nrp_load_ctd_sites <- function() {
 
@@ -83,4 +83,53 @@ nrp_load_ctd_sites <- function() {
   site <- readwritesqlite::rws_read_sqlite_table("Site", conn = conn)
   readwritesqlite::rws_close_connection(conn = conn)
   site
+}
+
+#' Load CTD data table from database
+#'
+#' @param start_date The start date
+#' @param end_date The end date
+#' @param sites A character vector of the Site IDs
+#' @param conn The SQLite connection object or path to the SQLite database
+#'
+#' @return CTD data table
+#' @export
+
+nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn){
+
+  if(!class(conn) == "SQLiteConnection"){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
+
+  data <- tbl(conn, "CTD")
+
+  if(is.null(start_date) || is.null(start_date)){
+    span <- DBI::dbGetQuery(conn, "SELECT MIN(DateTime) AS Start, MAX(DateTime) AS End FROM CTD")
+  }
+  if(is.null(start_date)){
+    start_date <- span$Start
+  } else {
+    checkr::check_datetime(as.POSIXct(start_date))
+    start_date %<>% as.POSIXct() %>% as.numeric()
+  }
+  if(is.null(end_date)){
+    end_date <- span$End
+  } else {
+    checkr::check_datetime(as.POSIXct(end_date))
+    end_date %<>% as.POSIXct() %>% as.numeric()
+  }
+  site_table <- nrp_load_ctd_sites()
+  if(is.null(sites)){
+    sites <- site_table$SiteID
+  }
+  if(!all(sites %in% site_table$SiteID)){
+    err(paste("1 or more invalid site names"))
+  }
+
+  query <- data %>%
+    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites)
+  result <- query %>% dplyr::collect() %>%
+    dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "PST8PDT"))
+  result
 }

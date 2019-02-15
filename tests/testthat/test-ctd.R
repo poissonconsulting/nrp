@@ -21,7 +21,7 @@ test_that("nrp_read_ctd_file works", {
                "Station name could not be extracted from file name: More than one match")
 })
 
-test_that("nrp_read_ctds works", {
+test_that("nrp_read_ctd works", {
 
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path)
@@ -46,13 +46,25 @@ test_that("nrp_read_ctds works", {
 })
 
 
-test_that("nrp_load_ctd_sites", {
+test_that("nrp_load_ctd works", {
 
-  site <- nrp_load_ctd_sites()
+  path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd(path = path, recursive = TRUE)
+  data$DateTime %<>% dttr::dtt_set_tz("PST8PDT")
+  conn <- readwritesqlite::rws_open_connection("")
+  readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
+  nrp_upload(data = data, conn = conn, commit = TRUE)
 
-  expect_is(site, "tbl_df")
-  expect_identical(length(site), 6L)
-  expect_identical(nrow(site), 17L)
+  db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, conn = conn)
+
+  expect_is(data, "tbl_df")
+  expect_identical(data, db_data)
+
+  db_data <- nrp_load_ctd(start_date = "2018-08-27 16:07:03", end_date = "2018-08-27 16:53:11",
+                          sites = c("KL2"), conn = conn)
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 14L)
+  expect_identical(nrow(db_data), 2178L)
 
 })
 

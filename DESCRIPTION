@@ -27,6 +27,7 @@ Imports:
     dplyr,
     purrr, 
     dttr,
+    DBI,
     readwritesqlite
 Remotes:
 	  poissonconsulting/readwritesqlite

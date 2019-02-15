@@ -13,5 +13,5 @@ CTD site table
 Load CTD site table
 }
 \examples{
-site <- nrp_load_ctd_sites()
+sites <- nrp_load_ctd_sites()
 }
