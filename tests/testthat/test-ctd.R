@@ -62,11 +62,11 @@ test_that("nrp_load_ctd works", {
   expect_is(data, "tbl_df")
   expect_identical(data, db_data)
 
-  db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL,
-                          sites = c("KL2"), conn = conn)
+  db_data <- nrp_load_ctd(start_date = "2018-08-27 16:07:03", end_date = "2018-08-27 16:53:11",
+                          sites = NULL, conn = conn)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 14L)
-  expect_identical(nrow(db_data), 2178L)
+  expect_identical(nrow(db_data), 4000L)
   readwritesqlite::rws_close_connection(conn = conn)
 
 })
