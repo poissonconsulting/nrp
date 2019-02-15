@@ -36,7 +36,7 @@ nrp_read_ctd_file <- function(path) {
   data$DateTime <- ctd@metadata$startTime
   data$DateTime %<>% dttr::dtt_set_tz("PST8PDT")
   data$SiteID <- siteIDs[match]
-  data %<>% select(SiteID, .data$DateTime, everything())
+  data %<>% select(.data$SiteID, .data$DateTime, everything())
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
   attr(data, "path") <- ctd@metadata$filename

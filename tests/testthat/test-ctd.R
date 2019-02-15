@@ -65,7 +65,7 @@ test_that("nrp_load_ctd works", {
   expect_is(data, "tbl_df")
   expect_identical(length(data), 14L)
   expect_identical(nrow(db_data), 2178L)
-
+  readwritesqlite::rws_close_connection(conn = conn)
 })
 
 
