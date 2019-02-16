@@ -16,4 +16,16 @@ sites %<>% rename(SiteID = `Site ID`, SiteNumber = `EMS Site No.`, SiteName = `S
          X = as.numeric(X), Y = as.numeric(Y), Depth = as.numeric(Depth)) %>%
   ps_coords_to_sfc(crs = 26911)
 
+sites$BasinArm[sites$BasinArm == "Syringa"] <- "Lower"
+
+lakes <- ps_deactivate_sfc(sites) %>%
+select(SiteID, BasinArm)
+
+lakes$Lake[grepl("AR", lakes$SiteID) | grepl("HL", lakes$SiteID)] <- "Arrow"
+lakes$Lake[grepl("KL", lakes$SiteID)] <- "Kootenay"
+
+lakes %<>% select(Lake, BasinArm) %>%
+  unique()
+
+use_data(lakes, overwrite = TRUE)
 use_data(sites, overwrite = TRUE)
