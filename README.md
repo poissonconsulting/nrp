@@ -3,10 +3,10 @@
 
 [![BCDevExchange
 Status](https://assets.bcdevexchange.org/images/badges/exploration.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
-[![Travis build
-status](https://travis-ci.com/poissonconsulting/nrp.svg?branch=master)](https://travis-ci.com/poissonconsulting/nrp)
+[![Travis Build
+Status](https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm1xTQLb&branch=master)](https://www.travis-ci.com/poissonconsulting/nrp)
 [![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/poissonconsulting/nrp?branch=master&svg=true)](https://ci.appveyor.com/project/poissonconsulting/nrp)
+status](https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true)](https://ci.appveyor.com/project/joethorley/nrp)
 
 # nrp
 
