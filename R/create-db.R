@@ -15,5 +15,18 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
     file_delete(path)
   }
 
-  # create database here and initialize units
+conn <- readwritesqlite::rws_open_connection(path)
+
+sites <- nrp::sites
+readwritesqlite::rws_write_sqlite(sites, exists = F, conn = conn, x_name = "sites")
+
+lakes <- nrp::lakes
+readwritesqlite::rws_write_sqlite(lakes, exists = F, conn = conn, x_name = "lakes")
+
+ctd <- initialize_ctd()
+readwritesqlite::rws_write_sqlite(ctd, exists = F, conn = conn, x_name = "CTD")
+
+readwritesqlite::rws_close_connection(conn = conn)
 }
+
+
