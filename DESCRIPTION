@@ -29,7 +29,8 @@ Imports:
     dttr,
     DBI,
     dbplyr,
-    readwritesqlite
+    readwritesqlite, 
+    units
 Remotes:
 	  poissonconsulting/readwritesqlite,
 	  poissonconsulting/dttr
