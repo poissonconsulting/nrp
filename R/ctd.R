@@ -111,13 +111,13 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn)
     start_date <- span$Start
   } else {
     checkr::check_datetime(as.POSIXct(start_date))
-    start_date %<>% as.POSIXct() %>% as.numeric()
+    start_date %<>% as.POSIXct(tz = "PST8PDT") %>% as.numeric()
   }
   if(is.null(end_date)){
     end_date <- span$End
   } else {
     checkr::check_datetime(as.POSIXct(end_date))
-    end_date %<>% as.POSIXct() %>% as.numeric()
+    end_date %<>% as.POSIXct(tz = "PST8PDT") %>% as.numeric()
   }
   site_table <- nrp_load_ctd_sites()
   if(is.null(sites)){
@@ -128,7 +128,8 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn)
   }
 
   query <- data %>%
-    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites)
+    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
+    show_query()
   result <- query %>% dplyr::collect() %>%
     dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "PST8PDT"))
   result

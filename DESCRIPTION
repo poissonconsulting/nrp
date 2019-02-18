@@ -31,7 +31,8 @@ Imports:
     dbplyr,
     readwritesqlite
 Remotes:
-	  poissonconsulting/readwritesqlite
+	  poissonconsulting/readwritesqlite,
+	  poissonconsulting/dttr
 Suggests: 
     testthat
 Encoding: UTF-8
