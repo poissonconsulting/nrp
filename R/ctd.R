@@ -39,8 +39,6 @@ nrp_read_ctd_file <- function(path) {
   data %<>% select(.data$SiteID, .data$DateTime, everything())
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
-  attr(data, "path") <- ctd@metadata$filename
-  attr(data, "flob") <- flobr::flob(path)
   data
 }
 

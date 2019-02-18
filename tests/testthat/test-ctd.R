@@ -6,10 +6,7 @@ test_that("nrp_read_ctd_file works", {
                        package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd_file(path)
   expect_is(data, "tbl_df")
-  expect_identical(attr(data, "path"), path)
-  expect_is(attr(data, "flob"), "flob")
   expect_identical(check_ctd_data(data), data)
-
 
   path <-  system.file("extdata", "bad ctd/2018/KL_Badly_named_file_1.cnv",
                        package = "nrp", mustWork = TRUE)
