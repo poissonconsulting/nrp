@@ -17,7 +17,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
 conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 
 
-DBI::dbGetQuery(conn,
+suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE CTD  (
                 SiteID TEXT NOT NULL,
                 DateTime TEXT NOT NULL,
@@ -31,12 +31,12 @@ DBI::dbGetQuery(conn,
                 Backscatter REAL NOT NULL,
                 Fluorescence REAL NOT NULL,
                 Frequency REAL NOT NULL,
-                Flag BOOLEAN NOT NULL,
+                Flag REAL NOT NULL,
                 Pressure INTEGER NOT NULL,
                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
-                PRIMARY KEY (SiteID, DateTime, Depth))")
+                PRIMARY KEY (SiteID, DateTime, Depth))"))
 
-DBI::dbGetQuery(conn,
+suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE Sites  (
                 SiteID TEXT NOT NULL,
                 SiteNumber REAL NOT NULL,
@@ -45,22 +45,22 @@ DBI::dbGetQuery(conn,
                 Depth REAL NOT NULL,
                 geometry BLOB NOT NULL,
                 FOREIGN KEY (BasinArm) REFERENCES Lakes (BasinArm),
-                PRIMARY KEY (SiteID))")
+                PRIMARY KEY (SiteID))"))
 
-DBI::dbGetQuery(conn,
+suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE Lakes  (
                 Lake TEXT NOT NULL,
                 BasinArm TEXT NOT NULL,
-                PRIMARY KEY (BasinArm))")
+                PRIMARY KEY (BasinArm))"))
 
 lakes <- nrp::lakes
-readwritesqlite::rws_write_sqlite(lakes, exists = T, conn = conn, x_name = "lakes")
+readwritesqlite::rws_write_sqlite(lakes, exists = TRUE, conn = conn, x_name = "lakes")
 
 sites <- nrp::sites
-readwritesqlite::rws_write_sqlite(sites, exists = T, conn = conn, x_name = "sites")
+readwritesqlite::rws_write_sqlite(sites, exists = TRUE, conn = conn, x_name = "sites")
 
 ctd <- initialize_ctd()
-readwritesqlite::rws_write_sqlite(ctd, exists = T, conn = conn, x_name = "CTD")
+readwritesqlite::rws_write_sqlite(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
 conn
 }

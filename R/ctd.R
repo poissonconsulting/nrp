@@ -20,11 +20,11 @@ nrp_read_ctd_file <- function(path) {
 
   data <- as_tibble(ctd@data)
 
-  if(!nrow(distinct(data, depth)) == nrow(data)){
-    n_removed <- nrow(data) - nrow(distinct(data, depth))
+  if(!nrow(distinct(data, .data$depth)) == nrow(data)){
+    n_removed <- nrow(data) - nrow(distinct(data, .data$depth))
     message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
                   path))
-    data %<>% distinct(depth, .keep_all = TRUE)
+    data %<>% distinct(.data$depth, .keep_all = TRUE)
   }
 
   sites <- nrp_load_ctd_sites()
@@ -45,6 +45,18 @@ nrp_read_ctd_file <- function(path) {
   data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
   data$SiteID <- siteIDs[match]
   data %<>% select(.data$SiteID, .data$DateTime, everything())
+  data %<>% mutate(Depth = units::set_units(.data$Depth, "m"),
+                   Temperature = units::set_units(.data$Temperature, "degree * C"),
+                   Oxygen = units::set_units(.data$Oxygen, "mg/l"),
+                   Oxygen2 = units::set_units(.data$Oxygen2, "%"),
+                   Conductivity = units::set_units(.data$Conductivity, "uS/cm"),
+                   Conductivity2 = units::set_units(.data$Conductivity2, "mu * S/cm"),
+                   Salinity = units::set_units(.data$Salinity, "PSU"),
+                   Backscatter = units::set_units(.data$Backscatter, "NTU"),
+                   Fluorescence = units::set_units(.data$Fluorescence, "ug/L"),
+                   Frequency = units::set_units(.data$Frequency, "Hz"),
+                   Pressure = units::set_units(.data$Pressure, "dbar"))
+
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
   data
@@ -67,8 +79,18 @@ nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
                   fail = fail)
   if(!length(paths)) return(named_list())
 
-  datas <- purrr::map_dfr(paths, nrp_read_ctd_file)
-
+  datas <- suppressWarnings(purrr::map_dfr(paths, nrp_read_ctd_file))
+  datas %<>% mutate(Depth = units::set_units(.data$Depth, "m"),
+                    Temperature = units::set_units(.data$Temperature, "degree * C"),
+                    Oxygen = units::set_units(.data$Oxygen, "mg/l"),
+                    Oxygen2 = units::set_units(.data$Oxygen2, "%"),
+                    Conductivity = units::set_units(.data$Conductivity, "uS/cm"),
+                    Conductivity2 = units::set_units(.data$Conductivity2, "mu * S/cm"),
+                    Salinity = units::set_units(.data$Salinity, "PSU"),
+                    Backscatter = units::set_units(.data$Backscatter, "NTU"),
+                    Fluorescence = units::set_units(.data$Fluorescence, "ug/L"),
+                    Frequency = units::set_units(.data$Frequency, "Hz"),
+                    Pressure = units::set_units(.data$Pressure, "dbar"))
   datas
 }
 
@@ -117,13 +139,14 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn)
     start_date <- span$Start
   } else {
     checkr::check_datetime(as.POSIXct(start_date))
-    start_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric()
+    start_date %<>% as.character()
   }
   if(is.null(end_date)){
     end_date <- span$End
   } else {
     checkr::check_datetime(as.POSIXct(end_date))
-    end_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric()
+    end_date %<>% as.character()
+    # end_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric
   }
   site_table <- nrp_load_ctd_sites()
   if(is.null(sites)){
