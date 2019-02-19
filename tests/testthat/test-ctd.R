@@ -49,7 +49,7 @@ test_that("nrp_load_ctd works", {
 
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path = path, recursive = TRUE)
-  data$DateTime %<>% dttr::dtt_set_tz("PST8PDT")
+
   conn <- readwritesqlite::rws_open_connection("")
   readwritesqlite::rws_write_sqlite(data[0, ], exists = F, conn = conn, x_name = "CTD")
   nrp_upload(data = data, conn = conn, commit = TRUE)
@@ -59,11 +59,12 @@ test_that("nrp_load_ctd works", {
   expect_is(data, "tbl_df")
   expect_identical(data, db_data)
 
-  db_data <- nrp_load_ctd(start_date = "2018-08-27 16:07:03", end_date = "2018-08-27 16:53:11",
+  db_data <- nrp_load_ctd(start_date = "2018-08-27 16:07:03",
+                          end_date = "2018-08-27 16:53:11",
                           sites = NULL, conn = conn)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 14L)
-  expect_identical(nrow(db_data), 4000L)
+  expect_identical(nrow(db_data), 3536L)
   readwritesqlite::rws_close_connection(conn = conn)
 
 })

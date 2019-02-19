@@ -19,7 +19,15 @@ nrp_read_ctd_file <- function(path) {
     })
 
   data <- as_tibble(ctd@data)
-  site <- nrp_load_ctd_sites()
+
+  if(!nrow(distinct(data, depth)) == nrow(data)){
+    n_removed <- nrow(data) - nrow(distinct(data, depth))
+    message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
+                  path))
+    data %<>% distinct(depth, .keep_all = TRUE)
+  }
+
+  sites <- nrp_load_ctd_sites()
 
   siteIDs <- sites$SiteID
 
@@ -34,7 +42,7 @@ nrp_read_ctd_file <- function(path) {
   # note we may need to update check_ctd_data accordingly
   colnames(data) %<>% str_to_title()
   data$DateTime <- ctd@metadata$startTime
-  data$DateTime %<>% dttr::dtt_set_tz("PST8PDT")
+  data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
   data$SiteID <- siteIDs[match]
   data %<>% select(.data$SiteID, .data$DateTime, everything())
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
@@ -77,7 +85,7 @@ nrp_load_ctd_sites <- function() {
   db_path <-  system.file("extdata", "database_template/nrp.sqlite",
                           package = "nrp", mustWork = TRUE)
 
-  conn <- readwritesqlite::rws_open_connection(dbname = db_path,  exists = TRUE)
+  conn <- suppressWarnings(readwritesqlite::rws_open_connection(dbname = db_path,  exists = TRUE))
   site <- readwritesqlite::rws_read_sqlite_table("Site", conn = conn)
   readwritesqlite::rws_close_connection(conn = conn)
   site
@@ -109,13 +117,13 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn)
     start_date <- span$Start
   } else {
     checkr::check_datetime(as.POSIXct(start_date))
-    start_date %<>% as.POSIXct(tz = "PST8PDT") %>% as.numeric()
+    start_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric()
   }
   if(is.null(end_date)){
     end_date <- span$End
   } else {
     checkr::check_datetime(as.POSIXct(end_date))
-    end_date %<>% as.POSIXct(tz = "PST8PDT") %>% as.numeric()
+    end_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric()
   }
   site_table <- nrp_load_ctd_sites()
   if(is.null(sites)){
@@ -125,10 +133,12 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn)
     err(paste("1 or more invalid site names"))
   }
 
+  DateTime <- NULL
+  SiteID <- NULL
   query <- data %>%
     filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
     show_query()
   result <- query %>% dplyr::collect() %>%
-    dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "PST8PDT"))
+    dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
   result
 }

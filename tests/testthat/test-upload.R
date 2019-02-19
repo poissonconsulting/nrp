@@ -15,7 +15,7 @@ test_that("nrp_upload_data works", {
 
   expect_equal(data, db_data)
   expect_identical(length(db_data), 14L)
-  expect_identical(nrow(db_data), 1445L)
+  expect_identical(nrow(db_data), 1313L)
 
 })
 
@@ -34,7 +34,7 @@ test_that("nrp_upload works", {
 
   expect_equal(data, db_data)
   expect_identical(length(db_data), 14L)
-  expect_identical(nrow(db_data), 1445L)
+  expect_identical(nrow(db_data), 1313L)
 
 
   conn <- readwritesqlite::rws_open_connection("")

@@ -42,6 +42,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Frequency = 1,
       Flag = 1,
       Pressure = 1),
+      key = c("SiteID", "DateTime", "Depth"),
     exclusive = exclusive, order = order
   )
 }
