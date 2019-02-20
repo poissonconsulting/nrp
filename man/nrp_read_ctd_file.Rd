@@ -4,19 +4,16 @@
 \alias{nrp_read_ctd_file}
 \title{Read CTD File}
 \usage{
-nrp_read_ctd_file(path)
+nrp_read_ctd_file(path, db_path = getOption("nrp.db_path", NULL))
 }
 \arguments{
 \item{path}{A string of the path to the file.}
+
+\item{db_path}{The SQLite connection object or path to the SQLite database}
 }
 \value{
 A tibble
 }
 \description{
 Read CTD File
-}
-\examples{
-path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-             package = "nrp")
-nrp_read_ctd_file(path)
 }

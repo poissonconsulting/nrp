@@ -4,11 +4,13 @@
 \alias{nrp_read_ctd}
 \title{Read CTD Files}
 \usage{
-nrp_read_ctd(path = ".", recursive = FALSE, regexp = "[.]cnv$",
-  fail = TRUE)
+nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path", NULL),
+  recursive = FALSE, regexp = "[.]cnv$", fail = TRUE)
 }
 \arguments{
 \item{path}{A string of the path to the directory.}
+
+\item{db_path}{The SQLite connection object or path to the SQLite database}
 
 \item{recursive}{Should directories be listed recursively?
 the filenames.}
@@ -23,8 +25,4 @@ A list of tibbles.
 }
 \description{
 Read CTD Files
-}
-\examples{
-path <- system.file("extdata", "ctd/2018", package = "nrp")
-nrp_read_ctd(path)
 }

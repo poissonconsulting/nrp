@@ -4,7 +4,8 @@
 \alias{nrp_load_ctd}
 \title{Load CTD data table from database}
 \usage{
-nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, conn)
+nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL,
+  db_path = getOption("nrp.db_path", NULL))
 }
 \arguments{
 \item{start_date}{The start date}
@@ -13,7 +14,7 @@ nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, conn)
 
 \item{sites}{A character vector of the Site IDs}
 
-\item{conn}{The SQLite connection object or path to the SQLite database}
+\item{db_path}{The SQLite connection object or path to the SQLite database}
 }
 \value{
 CTD data table
