@@ -16,18 +16,17 @@ nrp_upload_data <- function(data, conn, commit, strict, silent){
 #' Upload data to nrp database
 #'
 #' @param data the object name of the data to be uploaded
-#' @param conn An Sqlite Database Connection, or path to an SQLite Database
+#' @param db_path An Sqlite Database Connection, or path to an SQLite Database
 #' @inheritParams readwritesqlite::rws_write_sqlite
 #' @export
 #'
-#'
-nrp_upload <- function(data, conn, commit = TRUE, strict = TRUE, silent = TRUE){
 
-  if(!class(conn) == "SQLiteConnection"){
+nrp_upload <- function(data, db_path = getOption(nrp.db_path = NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_close_connection(conn = conn))
   }
   nrp_upload_data(data = data, conn = conn, commit = commit, strict = strict, silent = silent)
 }
-
 

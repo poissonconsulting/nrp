@@ -118,13 +118,13 @@ nrp_load_ctd_sites <- function() {
 #' @param start_date The start date
 #' @param end_date The end date
 #' @param sites A character vector of the Site IDs
-#' @param conn The SQLite connection object or path to the SQLite database
+#' @param db_path The SQLite connection object or path to the SQLite database
 #'
 #' @return CTD data table
 #' @export
 
-nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, conn){
-
+nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_path = getOption(nrp.db_path = NULL)){
+  conn <- db_path
   if(!class(conn) == "SQLiteConnection"){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_close_connection(conn = conn))

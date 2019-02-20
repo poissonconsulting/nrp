@@ -50,18 +50,18 @@ test_that("nrp_load_ctd works", {
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path = path, recursive = TRUE)
 
-  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
-  nrp_upload(data = data, conn = conn, commit = TRUE)
+  nrp_upload(data = data, db_path = conn, commit = TRUE)
 
-  db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, conn = conn)
+  db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, db_path = conn)
 
   expect_is(data, "tbl_df")
   suppressWarnings(expect_equal(data, db_data))
 
   db_data <- nrp_load_ctd(start_date = "2018-08-27 16:07:03",
                           end_date = "2018-08-27 16:53:11",
-                          sites = NULL, conn = conn)
+                          sites = NULL, db_path = conn)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 14L)
   expect_identical(nrow(db_data), 3536L)

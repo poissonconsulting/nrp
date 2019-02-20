@@ -4,12 +4,13 @@
 \alias{nrp_upload}
 \title{Upload data to nrp database}
 \usage{
-nrp_upload(data, conn, commit = TRUE, strict = TRUE, silent = TRUE)
+nrp_upload(data, db_path = getOption(nrp.db_path = NULL),
+  commit = TRUE, strict = TRUE, silent = TRUE)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}
 
-\item{conn}{An Sqlite Database Connection, or path to an SQLite Database}
+\item{db_path}{An Sqlite Database Connection, or path to an SQLite Database}
 
 \item{commit}{A flag specifying whether to commit the operations 
 (calling with commit = FALSE can be useful for checking data).}

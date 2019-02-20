@@ -13,7 +13,7 @@ sites %<>% rename(SiteID = `Site ID`, SiteNumber = `EMS Site No.`, SiteName = `S
   mutate(BasinArm = gsub(" .*", '' , BasinArm), SiteNumber = gsub(" .*", '' , SiteNumber),
          SiteName = gsub("Kootenay Lake at ", '' , SiteName), SiteName = gsub("Arrow Lake at ", '' , SiteName),
          SiteName = gsub("Arrow Lake, ", '' , SiteName), SiteName = gsub("Kootenay Lake – ", '' , SiteName),
-         X = as.numeric(X), Y = as.numeric(Y), Depth = as.numeric(Depth)) %>%
+         X = as.numeric(X), Y = as.numeric(Y), Depth = as.numeric(Depth), Depth = units::set_units(Depth, "m")) %>%
   ps_coords_to_sfc(crs = 26911)
 
 sites$BasinArm[sites$BasinArm == "Syringa"] <- "Lower"
