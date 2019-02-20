@@ -1,10 +1,12 @@
 
 test_that("nrp_upload_ctd works", {
 
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+
   path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
                        package = "nrp", mustWork = TRUE)
-  data <- nrp_read_ctd_file(path = path)
-  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  data <- nrp_read_ctd_file(path = path, db_path = conn)
+
 
   nrp_upload_ctd(data = data, db_path = conn)
 

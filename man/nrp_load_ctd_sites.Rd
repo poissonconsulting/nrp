@@ -4,14 +4,14 @@
 \alias{nrp_load_ctd_sites}
 \title{Load CTD site table}
 \usage{
-nrp_load_ctd_sites()
+nrp_load_ctd_sites(db_path = getOption("nrp.db_path", NULL))
+}
+\arguments{
+\item{db_path}{The SQLite connection object or path to the SQLite database}
 }
 \value{
 CTD site table
 }
 \description{
 Load CTD site table
-}
-\examples{
-sites <- nrp_load_ctd_sites()
 }

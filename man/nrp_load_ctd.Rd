@@ -5,7 +5,7 @@
 \title{Load CTD data table from database}
 \usage{
 nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL,
-  db_path = getOption(nrp.db_path = NULL))
+  db_path = getOption("nrp.db_path", NULL))
 }
 \arguments{
 \item{start_date}{The start date}

@@ -1,15 +1,17 @@
 #' Read CTD File
 #'
 #' @param path A string of the path to the file.
+#' @param db_path The SQLite connection object or path to the SQLite database
 #' @return A tibble
 #' @export
 #'
-#' @examples
-#' path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-#'              package = "nrp")
-#' nrp_read_ctd_file(path)
-nrp_read_ctd_file <- function(path) {
+nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
   check_file_exists(path)
+
+  if(!inherits(db_path, "SQLiteConnection")){
+    db_path <- connect_if_valid_path(path = db_path)
+    on.exit(readwritesqlite::rws_close_connection(conn = db_path))
+  }
 
   withCallingHandlers(
     ctd <- read.ctd.sbe(path, type="SBE19plus"),
@@ -27,7 +29,7 @@ nrp_read_ctd_file <- function(path) {
     data %<>% distinct(.data$depth, .keep_all = TRUE)
   }
 
-  sites <- nrp_load_ctd_sites()
+  sites <- nrp_load_ctd_sites(db_path = db_path)
 
   siteIDs <- sites$SiteID
 
@@ -65,21 +67,21 @@ nrp_read_ctd_file <- function(path) {
 #' Read CTD Files
 #'
 #' @param path A string of the path to the directory.
+#' @param db_path The SQLite connection object or path to the SQLite database
 #' @inheritParams fs::dir_ls
 #' @return A list of tibbles.
 #' @export
 #'
-#' @examples
-#' path <- system.file("extdata", "ctd/2018", package = "nrp")
-#' nrp_read_ctd(path)
-nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
+nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), recursive = FALSE, regexp = "[.]cnv$",
                          fail = TRUE) {
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
                   fail = fail)
   if(!length(paths)) return(named_list())
 
-  datas <- suppressWarnings(purrr::map_dfr(paths, nrp_read_ctd_file))
+
+  datas <- suppressWarnings(purrr::map_dfr(paths, ~ nrp_read_ctd_file(., db_path = db_path)))
+
   datas %<>% mutate(Depth = units::set_units(.data$Depth, "m"),
                     Temperature = units::set_units(.data$Temperature, "degree * C"),
                     Oxygen = units::set_units(.data$Oxygen, "mg/l"),
@@ -95,21 +97,19 @@ nrp_read_ctd <- function(path = ".", recursive = FALSE, regexp = "[.]cnv$",
 }
 
 #' Load CTD site table
-#'
+#' @param db_path The SQLite connection object or path to the SQLite database
 #' @return CTD site table
 #' @export
 #'
-#' @examples
-#' sites <- nrp_load_ctd_sites()
+nrp_load_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
+  conn <- db_path
 
-nrp_load_ctd_sites <- function() {
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
 
-  db_path <-  system.file("extdata", "database_template/nrp.sqlite",
-                          package = "nrp", mustWork = TRUE)
-
-  conn <- suppressWarnings(readwritesqlite::rws_open_connection(dbname = db_path,  exists = TRUE))
-  site <- readwritesqlite::rws_read_sqlite_table("Site", conn = conn)
-  readwritesqlite::rws_close_connection(conn = conn)
+  site <- readwritesqlite::rws_read_sqlite_table("Sites", conn = conn)
   site
 }
 
@@ -122,10 +122,10 @@ nrp_load_ctd_sites <- function() {
 #'
 #' @return CTD data table
 #' @export
-
-nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_path = getOption(nrp.db_path = NULL)){
+#'
+nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
-  if(!class(conn) == "SQLiteConnection"){
+  if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_close_connection(conn = conn))
   }
@@ -146,9 +146,8 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_pa
   } else {
     checkr::check_datetime(as.POSIXct(end_date))
     end_date %<>% as.character()
-    # end_date %<>% as.POSIXct(tz = "Etc/GMT+8") %>% as.numeric
   }
-  site_table <- nrp_load_ctd_sites()
+  site_table <- nrp_load_ctd_sites(db_path = conn)
   if(is.null(sites)){
     sites <- site_table$SiteID
   }
@@ -159,8 +158,7 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_pa
   DateTime <- NULL
   SiteID <- NULL
   query <- data %>%
-    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
-    show_query()
+    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites)
   result <- query %>% dplyr::collect() %>%
     dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
   result

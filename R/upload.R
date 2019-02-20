@@ -6,7 +6,7 @@
 #' @export
 #'
 
-nrp_upload_ctd <- function(data, db_path = getOption(nrp.db_path = NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)

@@ -4,7 +4,7 @@
 \alias{nrp_upload_ctd}
 \title{Upload CTD data to nrp database}
 \usage{
-nrp_upload_ctd(data, db_path = getOption(nrp.db_path = NULL),
+nrp_upload_ctd(data, db_path = getOption("nrp.db_path", NULL),
   commit = TRUE, strict = TRUE, silent = TRUE)
 }
 \arguments{
