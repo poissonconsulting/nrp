@@ -47,17 +47,12 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
   data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
   data$SiteID <- siteIDs[match]
   data %<>% select(.data$SiteID, .data$DateTime, everything())
-  data %<>% mutate(Depth = units::set_units(.data$Depth, "m"),
-                   Temperature = units::set_units(.data$Temperature, "degree * C"),
-                   Oxygen = units::set_units(.data$Oxygen, "mg/l"),
-                   Oxygen2 = units::set_units(.data$Oxygen2, "%"),
-                   Conductivity = units::set_units(.data$Conductivity, "uS/cm"),
-                   Conductivity2 = units::set_units(.data$Conductivity2, "mu * S/cm"),
-                   Salinity = units::set_units(.data$Salinity, "PSU"),
-                   Backscatter = units::set_units(.data$Backscatter, "NTU"),
-                   Fluorescence = units::set_units(.data$Fluorescence, "ug/L"),
-                   Frequency = units::set_units(.data$Frequency, "Hz"),
-                   Pressure = units::set_units(.data$Pressure, "dbar"))
+
+  data %<>% mutate(Flag = as.logical(.data$Flag))
+  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
+  data <- map2_dfc(data, default_units, fill_units)
+  # i will remove this hack once chacks and db are changed to accept logical
+  data %<>% mutate(Flag = as.numeric(.data$Flag))
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
@@ -82,17 +77,12 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), r
 
   datas <- suppressWarnings(purrr::map_dfr(paths, ~ nrp_read_ctd_file(., db_path = db_path)))
 
-  datas %<>% mutate(Depth = units::set_units(.data$Depth, "m"),
-                    Temperature = units::set_units(.data$Temperature, "degree * C"),
-                    Oxygen = units::set_units(.data$Oxygen, "mg/l"),
-                    Oxygen2 = units::set_units(.data$Oxygen2, "%"),
-                    Conductivity = units::set_units(.data$Conductivity, "uS/cm"),
-                    Conductivity2 = units::set_units(.data$Conductivity2, "mu * S/cm"),
-                    Salinity = units::set_units(.data$Salinity, "PSU"),
-                    Backscatter = units::set_units(.data$Backscatter, "NTU"),
-                    Fluorescence = units::set_units(.data$Fluorescence, "ug/L"),
-                    Frequency = units::set_units(.data$Frequency, "Hz"),
-                    Pressure = units::set_units(.data$Pressure, "dbar"))
+  datas %<>% mutate(Flag = as.logical(.data$Flag))
+  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
+  datas <- map2_dfc(datas, default_units, fill_units)
+  # i will remove this hack once chacks and db are changed to accept logical
+  datas %<>% mutate(Flag = as.numeric(.data$Flag))
+
   datas
 }
 
