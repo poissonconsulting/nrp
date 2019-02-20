@@ -52,7 +52,7 @@ test_that("nrp_load_ctd works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
-  nrp_upload(data = data, db_path = conn, commit = TRUE)
+  nrp_upload_ctd(data = data, db_path = conn, commit = TRUE)
 
   db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, db_path = conn)
 
