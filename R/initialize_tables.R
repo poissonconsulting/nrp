@@ -7,7 +7,7 @@ initialize_ctd <- function(){
                 Depth = units::set_units(numeric(), "m"),
                 Temperature = units::set_units(numeric(), "degree * C"),
                 Oxygen = units::set_units(numeric(), "mg/l"),
-                Oxygen2 = units::set_units(numeric(), "%"),
+                Oxygen2 = units::set_units(numeric(), "percent"),
                 Conductivity = units::set_units(numeric(), "uS/cm"),
                 Conductivity2 = units::set_units(numeric(), "mu * S/cm"),
                 Salinity = units::set_units(numeric(), "PSU"),

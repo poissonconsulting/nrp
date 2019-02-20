@@ -29,6 +29,10 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     data %<>% distinct(.data$depth, .keep_all = TRUE)
   }
 
+  units_list <- ctd@metadata$units
+  meta_units <- extract_units(units_list)
+  data %<>% map2_dfc(meta_units, fill_units)
+
   sites <- nrp_load_ctd_sites(db_path = db_path)
 
   siteIDs <- sites$SiteID
@@ -48,11 +52,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
   data$SiteID <- siteIDs[match]
   data %<>% select(.data$SiteID, .data$DateTime, everything())
 
-  data %<>% mutate(Flag = as.logical(.data$Flag))
-  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
-  data <- map2_dfc(data, default_units, fill_units)
-  # i will remove this hack once chacks and db are changed to accept logical
-  data %<>% mutate(Flag = as.numeric(.data$Flag))
+  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
+  data %<>% map2_dfc(default_units, fill_units)
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
@@ -75,13 +76,13 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), r
   if(!length(paths)) return(named_list())
 
 
-  datas <- suppressWarnings(purrr::map_dfr(paths, ~ nrp_read_ctd_file(., db_path = db_path)))
+  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_ctd_file(., db_path = db_path))))
 
-  datas %<>% mutate(Flag = as.logical(.data$Flag))
-  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
-  datas <- map2_dfc(datas, default_units, fill_units)
+  #datas %<>% mutate(Flag = as.logical(.data$Flag))
+  #default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
+  #datas <- map2_dfc(datas, default_units, fill_units)
   # i will remove this hack once chacks and db are changed to accept logical
-  datas %<>% mutate(Flag = as.numeric(.data$Flag))
+  #datas %<>% mutate(Flag = as.numeric(.data$Flag))
 
   datas
 }
