@@ -46,3 +46,21 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
     exclusive = exclusive, order = order
   )
 }
+
+
+check_new_ctd_site_data <- function(data, exclusive = FALSE, order = FALSE){
+  check_data(
+    data,
+    values = list(
+      SiteID = "character",
+      SiteNumber = "character",
+      SiteName = "character",
+      BasinArm = "character",
+      Depth = 1,
+      easting = 1,
+      northing = 1)
+  )
+}
+
+
+
