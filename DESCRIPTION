@@ -34,7 +34,8 @@ Imports:
     units
 Remotes:
 	  poissonconsulting/readwritesqlite,
-	  poissonconsulting/dttr
+	  poissonconsulting/dttr, 
+	  poissonconsulting/poisspatial
 Suggests: 
     testthat,
     covr
