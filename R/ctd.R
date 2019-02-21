@@ -75,14 +75,7 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), r
                   fail = fail)
   if(!length(paths)) return(named_list())
 
-
   datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_ctd_file(., db_path = db_path))))
-
-  #datas %<>% mutate(Flag = as.logical(.data$Flag))
-  #default_units <- c(NA, NA, "m", "degree * C", "mg/l", "%", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
-  #datas <- map2_dfc(datas, default_units, fill_units)
-  # i will remove this hack once chacks and db are changed to accept logical
-  #datas %<>% mutate(Flag = as.numeric(.data$Flag))
 
   datas
 }
@@ -102,6 +95,28 @@ nrp_load_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
 
   site <- readwritesqlite::rws_read_sqlite_table("Sites", conn = conn)
   site
+}
+
+#' Add new ctd sites to database site table
+#' @param data a tibble or data frame of new site data
+#' Must have columns "SiteID", "SiteNumber", "SiteName", "BasinArm", "Depth", as well as columns
+#' "easting" and "northing" with coordinates in projection UTM zone 11N.
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @export
+#'
+nrp_add_ctd_sites <- function(data, db_path){
+
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
+
+  data %<>% poisspatial::ps_coords_to_sfc(coords = c("Easting", "Northing"), crs = 26911) %>%
+    mutate(Depth = units::set_units(.data$Depth, "m"))
+
+  readwritesqlite::rws_write_sqlite(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
+                                    x_name = "Sites", conn = conn)
 }
 
 #' Load CTD data table from database

@@ -30,6 +30,7 @@ Imports:
     DBI,
     dbplyr,
     readwritesqlite, 
+    poisspatial, 
     units
 Remotes:
 	  poissonconsulting/readwritesqlite,
