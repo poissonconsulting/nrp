@@ -27,5 +27,9 @@ lakes$Lake[grepl("KL", lakes$SiteID)] <- "Kootenay"
 lakes %<>% select(Lake, BasinArm) %>%
   unique()
 
+
+site_date_lookup <- read.csv("data-raw/lookup-filename-site-date.csv")
+
 use_data(lakes, overwrite = TRUE)
 use_data(sites, overwrite = TRUE)
+use_data(site_date_lookup, overwrite = TRUE)

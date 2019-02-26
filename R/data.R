@@ -19,3 +19,13 @@
 #'   \item{BasinArm}{What arms or basins are within each lake}
 #' }
 "lakes"
+
+#' A lookup table fr matching historical file names with Site IDs and Dates
+#'
+#' @format A tbl data frame:
+#' \describe{
+#'   \item{File}{File name}
+#'   \item{Date}{Date data was collected}
+#'   \item{SiteID}{Site ID}
+#' }
+"site_date_lookup"

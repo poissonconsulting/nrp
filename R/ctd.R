@@ -12,46 +12,68 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     db_path <- connect_if_valid_path(path = db_path)
     on.exit(readwritesqlite::rws_close_connection(conn = db_path))
   }
-
+################################################################################
   withCallingHandlers(
-    ctd <- read.ctd.sbe(path, type="SBE19plus"),
+    ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE),
     warning=function(w) {
       if (str_detect(w$message, "created 'pressure' from 'depth'"))
         invokeRestart("muffleWarning")
     })
 
-  data <- as_tibble(ctd@data)
+  if(!inherits(ctd, "try-error")){
+    data <- as_tibble(ctd@data)
 
-  if(!nrow(distinct(data, .data$depth)) == nrow(data)){
-    n_removed <- nrow(data) - nrow(distinct(data, .data$depth))
-    message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
-                  path))
-    data %<>% distinct(.data$depth, .keep_all = TRUE)
+    if(!nrow(distinct(data, .data$depth)) == nrow(data)){
+      n_removed <- nrow(data) - nrow(distinct(data, .data$depth))
+      message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
+                    path))
+      data %<>% distinct(.data$depth, .keep_all = TRUE)
+    }
+
+    units_list <- ctd@metadata$units
+    meta_units <- extract_units(units_list)
+    data %<>% map2_dfc(meta_units, fill_units)
+
+    sites <- nrp_load_ctd_sites(db_path = db_path)
+
+    siteIDs <- sites$SiteID
+    match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
+
+    if(length(match) == 0){
+      err("Station name could not be extracted from file name: No matches")
+    } else if(length(match) > 1){
+      err("Station name could not be extracted from file name: More than one match")
+    }
+    data$SiteID <- siteIDs[match]
+
+
+    colnames(data) %<>% str_to_title()
+    data$DateTime <- ctd@metadata$startTime
+    data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
+
+    data %<>% rename(SiteID = .data$Siteid) %>%
+      select(.data$SiteID, .data$DateTime, everything())
+
+  } else {
+
+    col_names <- c("Depth","Temperature","Oxygen","Oxygen2",
+                   "Conductivity","Conductivity2","Salinity","Backscatter","Fluorescence","Flag")
+
+    data <- utils::read.table(file = path, col.names = col_names, skip = 100)
+    data$Pressure <- NA_real_
+    data$Frequency <- NA_real_
+
+    lookup <- nrp::site_date_lookup
+    data$DateTime <- lookup$Date[lookup$File == basename(path)]
+    data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
+
+    data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
+                     .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
+                     .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
   }
 
-  units_list <- ctd@metadata$units
-  meta_units <- extract_units(units_list)
-  data %<>% map2_dfc(meta_units, fill_units)
 
-  sites <- nrp_load_ctd_sites(db_path = db_path)
-
-  siteIDs <- sites$SiteID
-
-  match <- which(sapply(siteIDs, grepl, path))
-  if(length(match) == 0){
-    err("Station name could not be extracted from file name: No matches")
-  } else if(length(match) > 1){
-    err("Station name could not be extracted from file name: More than one match")
-  }
-
-  # we will need to get units from metadata
-  # note we may need to update check_ctd_data accordingly
-  colnames(data) %<>% str_to_title()
-  data$DateTime <- ctd@metadata$startTime
-  data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
-  data$SiteID <- siteIDs[match]
-  data %<>% select(.data$SiteID, .data$DateTime, everything())
-
+############################################################################
   default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
   data %<>% map2_dfc(default_units, fill_units)
 

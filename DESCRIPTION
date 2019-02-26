@@ -31,7 +31,8 @@ Imports:
     dbplyr,
     readwritesqlite, 
     poisspatial, 
-    units
+    units, 
+    utils
 Remotes:
 	  poissonconsulting/readwritesqlite,
 	  poissonconsulting/dttr, 
