@@ -39,11 +39,11 @@ suppressWarnings(DBI::dbGetQuery(conn,
 suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE Sites  (
                 SiteID TEXT NOT NULL,
-                SiteNumber REAL NOT NULL,
-                SiteName TEXT NOT NULL,
-                BasinArm TEXT NOT NULL,
-                Depth REAL NOT NULL,
-                geometry BLOB NOT NULL,
+                SiteNumber REAL,
+                SiteName TEXT,
+                BasinArm TEXT,
+                Depth REAL,
+                geometry BLOB,
                 FOREIGN KEY (BasinArm) REFERENCES Lakes (BasinArm),
                 PRIMARY KEY (SiteID))"))
 

@@ -16,11 +16,6 @@ test_that("nrp_read_ctd_file works", {
   expect_error(data <- nrp_read_ctd_file(path, db_path = conn),
                "Station name could not be extracted from file name: No matches")
 
-  path <-  system.file("extdata", "bad ctd/2018/KL1_AR1_Badly_named_file_2.cnv",
-                       package = "nrp", mustWork = TRUE)
-  expect_error(data <- nrp_read_ctd_file(path, db_path = conn),
-               "Station name could not be extracted from file name: More than one match")
-
 })
 
 test_that("nrp_read_ctd_file w/ read.table alternative works", {
@@ -93,7 +88,7 @@ test_that("nrp_add_ctd_sites works", {
     poisspatial::ps_deactivate_sfc() %>%
     select(-geometry)
 
-  new_data_db <- updated_sites[18, 1:4]
+  new_data_db <- updated_sites[22, 1:4]
 
   new_data %<>% select(-Easting, -Northing, -Depth)
 

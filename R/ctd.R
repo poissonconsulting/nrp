@@ -32,12 +32,15 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     siteIDs <- sites$SiteID
     match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
 
-    if(length(match) == 0){
+    lookup <- nrp::site_date_lookup
+    if(length(match) == 1){
+      data$SiteID <- siteIDs[match]
+    } else if(basename(path) %in% lookup$File) {
+      data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
+    } else {
       err("Station name could not be extracted from file name: No matches")
-    } else if(length(match) > 1){
-      err("Station name could not be extracted from file name: More than one match")
     }
-    data$SiteID <- siteIDs[match]
+
 
 
     colnames(data) %<>% str_to_title()
