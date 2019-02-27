@@ -6,6 +6,7 @@
 #' @export
 #'
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
+  print(path)
   check_file_exists(path)
 
   if(!inherits(db_path, "SQLiteConnection")){
