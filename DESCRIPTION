@@ -16,7 +16,7 @@ Depends:
     R (>= 2.10)
 Imports:
     err,
-    checkr,
+    checkr (>= 0.4.0.9010),
     yesno,
     fs,
     flobr,
@@ -36,7 +36,8 @@ Imports:
 Remotes:
 	  poissonconsulting/readwritesqlite,
 	  poissonconsulting/dttr, 
-	  poissonconsulting/poisspatial
+	  poissonconsulting/poisspatial, 
+	  poissonconsulting/checkr
 Suggests: 
     testthat,
     covr

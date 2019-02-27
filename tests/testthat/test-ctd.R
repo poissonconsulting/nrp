@@ -68,8 +68,6 @@ teardown(DBI::dbDisconnect(conn))
 sites_db <- nrp_load_ctd_sites(db_path = conn)
 sites_raw_data <- nrp::sites
 
-
-
 expect_identical(nrow(sites_db), nrow(sites_raw_data))
 expect_identical(names(sites_db), names(sites_raw_data))
 })
@@ -82,17 +80,15 @@ test_that("nrp_add_ctd_sites works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
+  old_sites <- nrp_load_ctd_sites(db_path = conn)
+
   nrp_add_ctd_sites(data = new_data, db_path = conn)
 
   updated_sites <- nrp_load_ctd_sites(db_path = conn) %>%
     poisspatial::ps_deactivate_sfc() %>%
     select(-geometry)
 
-  new_data_db <- updated_sites[22, 1:4]
-
-  new_data %<>% select(-Easting, -Northing, -Depth)
-
-  expect_equal(new_data, new_data_db)
+  expect_equal(nrow(old_sites) + 1, nrow(updated_sites))
 
 })
 
@@ -135,8 +131,3 @@ test_that("getOption nrp.dp_path works", {
   expect_identical(option_data, no_option_data)
 
 })
-
-
-
-
-

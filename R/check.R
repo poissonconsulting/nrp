@@ -33,7 +33,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Depth = units::as_units("m"),
       Temperature = units::as_units("degree * C"),
       Oxygen = units::as_units("mg/l"),
-      Oxygen2 = units::as_units("%"),
+      Oxygen2 = units::as_units("percent"),
       Conductivity = units::as_units("uS/cm"),
       Conductivity2 = units::as_units("mu * S/cm"),
       Salinity = units::as_units("PSU"),

@@ -13,20 +13,20 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     db_path <- connect_if_valid_path(path = db_path)
     on.exit(readwritesqlite::rws_close_connection(conn = db_path))
   }
-################################################################################
+
   suppressWarnings(
     ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE))
 
   if(!inherits(ctd, "try-error")){
     data <- as_tibble(ctd@data)
 
-    if(!"frequency" %in% names(data)){
-      data$frequency <- NA_real_
-    }
-
     units_list <- ctd@metadata$units
     meta_units <- extract_units(units_list)
     data %<>% map2_dfc(meta_units, fill_units)
+
+    if(!"frequency" %in% names(data)){
+      data$frequency <- NA_real_
+    }
 
     sites <- nrp_load_ctd_sites(db_path = db_path)
 
@@ -41,8 +41,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     } else {
       err("Station name could not be extracted from file name: No matches")
     }
-
-
 
     colnames(data) %<>% str_to_title()
     data$DateTime <- ctd@metadata$startTime
@@ -64,14 +62,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     data$DateTime <- lookup$Date[lookup$File == basename(path)]
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
 
-    data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
-                     .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
-                     .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
-    data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
   }
-
-
-############################################################################
 
   if(!nrow(distinct(data, .data$Depth)) == nrow(data)){
     n_removed <- nrow(data) - nrow(distinct(data, .data$Depth))
@@ -79,6 +70,11 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
                   path))
     data %<>% distinct(.data$Depth, .keep_all = TRUE)
   }
+
+  data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
+                   .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
+                   .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
+  data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
 
   default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
   data %<>% map2_dfc(default_units, fill_units)
@@ -104,6 +100,7 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), r
   if(!length(paths)) return(named_list())
 
   datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_ctd_file(., db_path = db_path))))
+  rownames(datas) <- NULL
 
   datas
 }
