@@ -23,6 +23,21 @@ test_that("nrp_read_ctd_file works", {
 
 })
 
+test_that("nrp_read_ctd_file w/ read.table alternative works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+  path <-  system.file("extdata", "bad ctd/2018/AR6_Apr_26_2011.cnv",
+                       package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_ctd_file(path, db_path = conn)
+  expect_is(data, "tbl_df")
+  expect_identical(check_ctd_data(data), data)
+  expect_identical(length(data), 14L)
+
+})
+
+
 test_that("nrp_read_ctd works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)

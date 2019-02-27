@@ -39,9 +39,9 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Salinity = units::as_units("PSU"),
       Backscatter = units::as_units("NTU"),
       Fluorescence = units::as_units("ug/L"),
-      Frequency = units::as_units("Hz"),
+      Frequency = units::as_units(c(NA, 1), "Hz"),
       Flag = 1,
-      Pressure = units::as_units("dbar")),
+      Pressure = units::as_units(c(NA, 1), "dbar")),
       key = c("SiteID", "DateTime", "Depth"),
     exclusive = exclusive, order = order
   )

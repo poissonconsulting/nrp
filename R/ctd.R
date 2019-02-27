@@ -13,22 +13,12 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     on.exit(readwritesqlite::rws_close_connection(conn = db_path))
   }
 ################################################################################
-  withCallingHandlers(
-    ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE),
-    warning=function(w) {
-      if (str_detect(w$message, "created 'pressure' from 'depth'"))
-        invokeRestart("muffleWarning")
-    })
+  suppressWarnings(
+    ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE))
 
   if(!inherits(ctd, "try-error")){
     data <- as_tibble(ctd@data)
 
-    if(!nrow(distinct(data, .data$depth)) == nrow(data)){
-      n_removed <- nrow(data) - nrow(distinct(data, .data$depth))
-      message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
-                    path))
-      data %<>% distinct(.data$depth, .keep_all = TRUE)
-    }
 
     units_list <- ctd@metadata$units
     meta_units <- extract_units(units_list)
@@ -70,10 +60,19 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
                      .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
                      .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
+    data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
   }
 
 
 ############################################################################
+
+  if(!nrow(distinct(data, .data$Depth)) == nrow(data)){
+    n_removed <- nrow(data) - nrow(distinct(data, .data$Depth))
+    message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
+                  path))
+    data %<>% distinct(.data$Depth, .keep_all = TRUE)
+  }
+
   default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
   data %<>% map2_dfc(default_units, fill_units)
 
