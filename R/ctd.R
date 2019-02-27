@@ -19,6 +19,9 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
   if(!inherits(ctd, "try-error")){
     data <- as_tibble(ctd@data)
 
+    if(!"frequency" %in% names(data)){
+      data$frequency <- NA_real_
+    }
 
     units_list <- ctd@metadata$units
     meta_units <- extract_units(units_list)
