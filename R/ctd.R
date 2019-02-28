@@ -27,7 +27,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
       data$frequency <- NA_real_
     }
 
-    sites <- nrp_load_ctd_sites(db_path = db_path)
+    sites <- nrp_download_ctd_sites(db_path = db_path)
 
     siteIDs <- sites$SiteID
     match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
@@ -104,12 +104,12 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), r
   datas
 }
 
-#' Load CTD site table
+#' Download CTD site table
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @return CTD site table
 #' @export
 #'
-nrp_load_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
@@ -156,7 +156,7 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @return CTD data table
 #' @export
 #'
-nrp_load_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, Parameters = "all",
+nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, parameters = "all",
                          db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
@@ -180,16 +180,16 @@ nrp_load_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sit
   checkr::check_datetime(as.POSIXct(end_date))
   end_date %<>% as.character()
 
-  site_table <- nrp_load_ctd_sites(db_path = conn)
+  site_table <- nrp_download_ctd_sites(db_path = conn)
   if(is.null(sites)){
     sites <- site_table$SiteID
   }
   if(!all(sites %in% site_table$SiteID)){
     err(paste("1 or more invalid site names"))
   }
-  if(Parameters == "all"){
-    Parameters <- default_parameters
-  } else if(!all(Parameters %in% default_parameters)){
+  if(parameters == "all"){
+    parameters <- default_parameters
+  } else if(!all(parameters %in% default_parameters)){
     err(paste("1 or more invalid parameter names"))
   }
 
@@ -197,7 +197,7 @@ nrp_load_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sit
   SiteID <- NULL
   query <- data %>%
     filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
-    select(Parameters) %>%
+    select(parameters) %>%
     show_query()
   result <- query %>% dplyr::collect() %>%
     dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
