@@ -92,7 +92,7 @@ test_that("nrp_add_ctd_sites works", {
 
 })
 
-test_that("nrp_load_ctd works", {
+test_that("nrp_download_ctd works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
@@ -102,7 +102,7 @@ test_that("nrp_load_ctd works", {
 
   nrp_upload_ctd(data = data, db_path = conn)
 
-  db_data <- nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL, db_path = conn)
+  db_data <- nrp_load_ctd(db_path = conn)
 
   expect_is(data, "tbl_df")
   suppressWarnings(expect_equal(data, db_data))

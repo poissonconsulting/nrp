@@ -5,7 +5,7 @@
 \title{Load CTD data table from database}
 \usage{
 nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL,
-  db_path = getOption("nrp.db_path", NULL))
+  Parameters = "all", db_path = getOption("nrp.db_path", NULL))
 }
 \arguments{
 \item{start_date}{The start date}
@@ -15,6 +15,10 @@ nrp_load_ctd(start_date = NULL, end_date = NULL, sites = NULL,
 \item{sites}{A character vector of the Site IDs}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
+
+\item{parameters}{A character vector of the desired parameters (columns)
+Permissable values: "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
+"Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure"}
 }
 \value{
 CTD data table

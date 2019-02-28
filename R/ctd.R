@@ -6,7 +6,6 @@
 #' @export
 #'
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
-  print(path)
   check_file_exists(path)
 
   if(!inherits(db_path, "SQLiteConnection")){
@@ -149,12 +148,16 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @param start_date The start date
 #' @param end_date The end date
 #' @param sites A character vector of the Site IDs
+#' @param parameters A character vector of the desired parameters (columns)
+#' Permissable values: "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
+#' "Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure"
 #' @param db_path The SQLite connection object or path to the SQLite database
 #'
 #' @return CTD data table
 #' @export
 #'
-nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_path = getOption("nrp.db_path", NULL)){
+nrp_load_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, Parameters = "all",
+                         db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -163,21 +166,20 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_pa
 
   data <- tbl(conn, "CTD")
 
-  if(is.null(start_date) || is.null(start_date)){
-    span <- DBI::dbGetQuery(conn, "SELECT MIN(DateTime) AS Start, MAX(DateTime) AS End FROM CTD")
+  default_parameters <- c("SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
+                          "Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
+  if(start_date > end_date){
+    err("start date is later than end date")
   }
-  if(is.null(start_date)){
-    start_date <- span$Start
-  } else {
-    checkr::check_datetime(as.POSIXct(start_date))
-    start_date %<>% as.character()
+  if(end_date > Sys.Date()){
+    err("end date is later than present day")
   }
-  if(is.null(end_date)){
-    end_date <- span$End
-  } else {
-    checkr::check_datetime(as.POSIXct(end_date))
-    end_date %<>% as.character()
-  }
+
+  checkr::check_datetime(as.POSIXct(start_date))
+  start_date %<>% as.character()
+  checkr::check_datetime(as.POSIXct(end_date))
+  end_date %<>% as.character()
+
   site_table <- nrp_load_ctd_sites(db_path = conn)
   if(is.null(sites)){
     sites <- site_table$SiteID
@@ -185,11 +187,18 @@ nrp_load_ctd <- function(start_date = NULL, end_date = NULL, sites = NULL, db_pa
   if(!all(sites %in% site_table$SiteID)){
     err(paste("1 or more invalid site names"))
   }
+  if(Parameters == "all"){
+    Parameters <- default_parameters
+  } else if(!all(Parameters %in% default_parameters)){
+    err(paste("1 or more invalid parameter names"))
+  }
 
   DateTime <- NULL
   SiteID <- NULL
   query <- data %>%
-    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites)
+    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
+    select(Parameters) %>%
+    show_query()
   result <- query %>% dplyr::collect() %>%
     dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
   result
