@@ -11,12 +11,22 @@
 #' }
 "sites"
 
-#' A lake table for Sea-bird CTD data
+#' A Basin-Arm table for Sea-bird CTD data
 #'
 #' @format A tbl data frame:
 #' \describe{
 #'   \item{Lake}{The name of the lake}
 #'   \item{BasinArm}{What arms or basins are within each lake}
+#' }
+"basinArm"
+
+#' A lakes table for Sea-bird CTD data
+#'
+#' @format A tbl data frame:
+#' \describe{
+#'   \item{Lake}{The name of the lake}
+#'   \item{Area}{the area of te lake in meters squared}
+#'   \item{geometry}{Spatial polygon data}
 #' }
 "lakes"
 

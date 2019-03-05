@@ -44,17 +44,27 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 BasinArm TEXT,
                 Depth REAL,
                 geometry BLOB,
-                FOREIGN KEY (BasinArm) REFERENCES Lakes (BasinArm),
+                FOREIGN KEY (BasinArm) REFERENCES BasinArm (BasinArm),
                 PRIMARY KEY (SiteID))"))
 
 suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE Lakes  (
+                "CREATE TABLE BasinArm  (
                 Lake TEXT NOT NULL,
                 BasinArm TEXT NOT NULL,
+                FOREIGN KEY (Lake) REFERENCES Lake (Lake)
                 PRIMARY KEY (BasinArm))"))
 
+suppressWarnings(DBI::dbGetQuery(conn,
+                                 "CREATE TABLE Lake  (
+                                 Lake TEXT NOT NULL,
+                                 Area REAL NOT NULL,
+                                 geometry BLOB NOT NULL,
+                                 PRIMARY KEY (Lake))"))
 lakes <- nrp::lakes
-readwritesqlite::rws_write_sqlite(lakes, exists = TRUE, conn = conn, x_name = "lakes")
+readwritesqlite::rws_write_sqlite(lakes, exists = TRUE, conn = conn, x_name = "Lake")
+
+basinArm <- nrp::basinArm
+readwritesqlite::rws_write_sqlite(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
 
 sites <- nrp::sites
 readwritesqlite::rws_write_sqlite(sites, exists = TRUE, conn = conn, x_name = "sites")

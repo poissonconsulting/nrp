@@ -1,8 +1,4 @@
-library(devtools)
-library(readxl)
-library(dplyr)
-library(magrittr)
-library(poisspatial)
+library(poispkgs)
 
 sites <- read_excel("data-raw/Sites.xlsx", skip = 1)
 
@@ -18,21 +14,27 @@ sites %<>% rename(SiteID = `Site ID`, SiteNumber = `EMS Site No.`, SiteName = `S
 
 sites$BasinArm[sites$BasinArm == "Syringa"] <- "Lower"
 
-lakes <- ps_deactivate_sfc(sites) %>%
+basinArm <- ps_deactivate_sfc(sites) %>%
 select(SiteID, BasinArm)
 
-lakes$Lake[grepl("AR", lakes$SiteID) | grepl("HL", lakes$SiteID)] <- "Arrow"
-lakes$Lake[grepl("KL", lakes$SiteID)] <- "Kootenay"
+basinArm$Lake[grepl("AR", basinArm$SiteID) | grepl("HL", basinArm$SiteID)] <- "Arrow"
+basinArm$Lake[grepl("KL", basinArm$SiteID)] <- "Kootenay"
 
-lakes %<>% select(Lake, BasinArm) %>%
+basinArm %<>% select(Lake, BasinArm) %>%
   filter(!is.na(Lake)) %>%
   unique()
 
+lakes <- st_read("data-raw/lakes.gpkg")
+lakes$Area <- st_area(lakes)
+lakes %<>% ps_deactivate_sfc() %>%
+  select(Lake, Area, geometry = geom) %>%
+  ps_activate_sfc()
 
 kl_lookup <- read.csv("data-raw/KL-site-lookup.csv", stringsAsFactors = FALSE)
 ar_lookup <- read.csv("data-raw/AR-site-lookup.csv", stringsAsFactors = FALSE)
 site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
-use_data(lakes, overwrite = TRUE)
+use_data(basinArm, overwrite = TRUE)
 use_data(sites, overwrite = TRUE)
+use_data(lakes, overwrite = TRUE)
 use_data(site_date_lookup, overwrite = TRUE, internal = TRUE)
