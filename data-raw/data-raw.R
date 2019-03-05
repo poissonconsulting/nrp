@@ -35,4 +35,4 @@ site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
 use_data(lakes, overwrite = TRUE)
 use_data(sites, overwrite = TRUE)
-use_data(site_date_lookup, overwrite = TRUE)
+use_data(site_date_lookup, overwrite = TRUE, internal = TRUE)

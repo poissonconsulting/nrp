@@ -32,7 +32,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     siteIDs <- sites$SiteID
     match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
 
-    lookup <- nrp::site_date_lookup
+    lookup <- nrp:::site_date_lookup
     if(length(match) == 1){
       data$SiteID <- siteIDs[match]
     } else if(basename(path) %in% lookup$File) {
@@ -57,7 +57,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     data$Pressure <- NA_real_
     data$Frequency <- NA_real_
 
-    lookup <- nrp::site_date_lookup
+    lookup <- nrp:::site_date_lookup
     data$DateTime <- lookup$Date[lookup$File == basename(path)]
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
 
@@ -197,8 +197,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   SiteID <- NULL
   query <- data %>%
     filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
-    select(parameters) %>%
-    show_query()
+    select(parameters)
   result <- query %>% dplyr::collect() %>%
     dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
   result
