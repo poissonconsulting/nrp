@@ -2,11 +2,14 @@
 #'
 #' @param path A string of the path to the file.
 #' @param db_path The SQLite connection object or path to the SQLite database
+#' @param lookup The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
+#' this defaults to a dataset provided with the package that is used for reading historical data
 #' @return A tibble
 #' @export
 #'
-nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
+nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
+  check_site_date_lookup(data = lookup)
 
   if(!inherits(db_path, "SQLiteConnection")){
     db_path <- connect_if_valid_path(path = db_path)
@@ -32,7 +35,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     siteIDs <- sites$SiteID
     match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
 
-    lookup <- nrp:::site_date_lookup
     if(length(match) == 1){
       data$SiteID <- siteIDs[match]
     } else if(basename(path) %in% lookup$File) {
@@ -57,7 +59,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
     data$Pressure <- NA_real_
     data$Frequency <- NA_real_
 
-    lookup <- nrp:::site_date_lookup
+    lookup <- site_date_lookup
     data$DateTime <- lookup$Date[lookup$File == basename(path)]
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
 
@@ -87,12 +89,14 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL)) {
 #'
 #' @param path A string of the path to the directory.
 #' @param db_path The SQLite connection object or path to the SQLite database
+#' @param lookup The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
+#' this defaults to a dataset provided with the package that is used for reading historical data
 #' @inheritParams fs::dir_ls
 #' @return A list of tibbles.
 #' @export
 #'
 nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL), recursive = FALSE, regexp = "[.]cnv$",
-                         fail = TRUE) {
+                         fail = TRUE, lookup = nrp::site_date_lookup) {
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
                   fail = fail)

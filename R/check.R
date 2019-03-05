@@ -46,3 +46,15 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
     exclusive = exclusive, order = order
   )
 }
+
+check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
+  check_data(
+    data,
+    values = list(
+      File = "character",
+      Date = "character",
+      SiteID = "character"),
+    key = c("File"),
+    exclusive = exclusive, order = order
+  )
+}

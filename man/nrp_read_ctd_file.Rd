@@ -4,12 +4,16 @@
 \alias{nrp_read_ctd_file}
 \title{Read CTD File}
 \usage{
-nrp_read_ctd_file(path, db_path = getOption("nrp.db_path", NULL))
+nrp_read_ctd_file(path, db_path = getOption("nrp.db_path", NULL),
+  lookup = nrp::site_date_lookup)
 }
 \arguments{
 \item{path}{A string of the path to the file.}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
+
+\item{lookup}{The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
+this defaults to a dataset provided with the package that is used for reading historical data}
 }
 \value{
 A tibble
