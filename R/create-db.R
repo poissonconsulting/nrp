@@ -20,7 +20,8 @@ conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE CTD  (
                 SiteID TEXT NOT NULL,
-                DateTime TEXT NOT NULL,
+                Date TEXT NOT NULL,
+                Time TEXT NOT NULL,
                 Depth REAL NOT NULL,
                 Temperature REAL,
                 Oxygen REAL,
@@ -34,7 +35,7 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 Flag REAL,
                 Pressure INTEGER,
                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
-                PRIMARY KEY (SiteID, DateTime, Depth))"))
+                PRIMARY KEY (SiteID, Date, Time, Depth))"))
 
 suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE Sites  (

@@ -7,6 +7,8 @@
 #' @return A tibble
 #' @export
 #'
+#'
+
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
@@ -75,12 +77,19 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
   data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
                    .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
                    .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
-  data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
 
   default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
   data %<>% map2_dfc(default_units, fill_units)
 
+  data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
+
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
+
+  data$Time <- dttr::dtt_time(data$DateTime, tz = "Etc/GMT+8")
+  data$Time[data$Time == 00:00:00] <- NA
+  data$Date <- dttr::dtt_date(data$DateTime)
+
+  data %<>% select(.data$SiteID, .data$Date, .data$Time, everything(), -.data$DateTime)
 
   data
 }
@@ -180,9 +189,9 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   }
 
   checkr::check_datetime(as.POSIXct(start_date))
-  start_date %<>% as.character()
+  start_date %<>% as.character(dttr::dtt_date())
   checkr::check_datetime(as.POSIXct(end_date))
-  end_date %<>% as.character()
+  end_date %<>% as.character(dttr::dtt_date())
 
   site_table <- nrp_download_ctd_sites(db_path = conn)
   if(is.null(sites)){
@@ -200,9 +209,9 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   DateTime <- NULL
   SiteID <- NULL
   query <- data %>%
-    filter(DateTime >= start_date, DateTime <= end_date, SiteID %in% sites) %>%
+    filter(Date >= start_date, Date <= end_date, SiteID %in% sites) %>%
     select(parameters)
   result <- query %>% dplyr::collect() %>%
-    dplyr::mutate(DateTime = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
+    dplyr::mutate(Date = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
   result
 }

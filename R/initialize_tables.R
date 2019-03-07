@@ -3,7 +3,8 @@
 #' @return initialized table with units
 initialize_ctd <- function(){
   ctd <- tibble(SiteID = character(),
-                DateTime = as.POSIXct(character(), tz = "Etc/GMT+8"),
+                Date = as.Date(character()),
+                Time = dttr::dtt_time(character()),
                 Depth = units::set_units(numeric(), "m"),
                 Temperature = units::set_units(numeric(), "degree * C"),
                 Oxygen = units::set_units(numeric(), "mg/l"),
