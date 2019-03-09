@@ -15,8 +15,8 @@ nrp_download_ctd(start_date = "2018-01-01", end_date = "2018-12-31",
 
 \item{sites}{A character vector of the Site IDs}
 
-\item{parameters}{A character vector of the desired parameters (columns)
-Permissable values: "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
+\item{parameters}{A character vector of the parameters to include.
+Permissable values: "Temperature", "Oxygen", "Oxygen2", "Conductivity",
 "Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure"}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}

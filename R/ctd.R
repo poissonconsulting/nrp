@@ -161,8 +161,8 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @param start_date The start date
 #' @param end_date The end date
 #' @param sites A character vector of the Site IDs
-#' @param parameters A character vector of the desired parameters (columns)
-#' Permissable values: "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
+#' @param parameters A character vector of the parameters to include.
+#' Permissable values: "Temperature", "Oxygen", "Oxygen2", "Conductivity",
 #' "Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure"
 #' @param db_path The SQLite connection object or path to the SQLite database
 #'
@@ -179,8 +179,8 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
 
   data <- tbl(conn, "CTD")
 
-  default_parameters <- c("SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity",
-                          "Conductivity2", "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
+  default_parameters <- c("Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity","Conductivity2",
+                          "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
   if(start_date > end_date){
     err("start date is later than end date")
   }
@@ -189,9 +189,9 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   }
 
   checkr::check_datetime(as.POSIXct(start_date))
-  start_date %<>% as.character(dttr::dtt_date())
+  start_date <- as.character(dttr::dtt_date(start_date))
   checkr::check_datetime(as.POSIXct(end_date))
-  end_date %<>% as.character(dttr::dtt_date())
+  end_date <- as.character(dttr::dtt_date(end_date))
 
   site_table <- nrp_download_ctd_sites(db_path = conn)
   if(is.null(sites)){
@@ -206,12 +206,21 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     err(paste("1 or more invalid parameter names"))
   }
 
-  DateTime <- NULL
+  parameters <-c("SiteID", "Date", "Time", parameters)
+
+  Date <- NULL
   SiteID <- NULL
-  query <- data %>%
-    filter(Date >= start_date, Date <= end_date, SiteID %in% sites) %>%
-    select(parameters)
-  result <- query %>% dplyr::collect() %>%
-    dplyr::mutate(Date = as.POSIXct(DateTime, origin = "1970-01-01", tz = "Etc/GMT+8"))
+
+  paramsSql <- cc(parameters, ellipsis = length(parameters) + 1, bracket = "`")
+  sitesSql <- cc(sites, ellipsis = length(sites) + 1)
+  start_dateSql <- paste0("'", start_date, "'")
+  end_dateSql <- paste0("'", end_date, "'")
+
+  query <- paste0("SELECT ", paramsSql, " FROM `CTD` WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
+        end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
+
+  result <- readwritesqlite::rws_query_sqlite(query = query, conn = conn) %>%
+    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
+
   result
 }

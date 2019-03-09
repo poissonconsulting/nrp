@@ -1,5 +1,8 @@
 context("ctd")
 
+ctd_names <- c("SiteID", "Date", "Time", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity","Conductivity2",
+                  "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
+
 test_that("nrp_read_ctd_file works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -9,7 +12,8 @@ test_that("nrp_read_ctd_file works", {
                        package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd_file(path, db_path = conn)
   expect_is(data, "tbl_df")
-  #expect_identical(check_ctd_data(data), data)
+  expect_identical(names(data), ctd_names)
+  expect_identical(nrow(data), 1313L)
 
   path <-  system.file("extdata", "bad ctd/2018/KL_Badly_named_file_1.cnv",
                        package = "nrp", mustWork = TRUE)
@@ -27,8 +31,9 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
 
   data <- nrp_read_ctd_file(path, db_path = conn)
   expect_is(data, "tbl_df")
-  #expect_identical(check_ctd_data(data), data)
+  expect_identical(names(data), ctd_names)
   expect_identical(length(data), 15L)
+  expect_identical(nrow(data), 1745L)
 
 })
 
@@ -42,17 +47,16 @@ test_that("nrp_read_ctd works", {
   data <- nrp_read_ctd(path, db_path = conn)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 15L)
-
-  #expect_identical(check_ctd_data(data), data)
+  expect_identical(names(data), ctd_names)
+  expect_identical(nrow(data), 1313L)
 
 
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn,  recursive = TRUE)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 15L)
-
-  #expect_identical(check_ctd_data(data), data)
-
+  expect_identical(names(data), ctd_names)
+  expect_identical(nrow(data), 4849L)
 
   path <-  system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn)
@@ -112,7 +116,7 @@ test_that("nrp_download_ctd works", {
                           sites = NULL, db_path = conn)
   expect_is(data, "tbl_df")
   expect_identical(length(data), 15L)
-  expect_identical(nrow(db_data), 3536L)
+  expect_identical(nrow(db_data), 4849L)
 
 })
 
@@ -131,3 +135,5 @@ test_that("getOption nrp.dp_path works", {
   expect_identical(option_data, no_option_data)
 
 })
+
+rm(ctd_names)
