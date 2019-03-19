@@ -3,7 +3,7 @@
 \docType{data}
 \name{site_date_lookup}
 \alias{site_date_lookup}
-\title{A lookup table fr matching historical file names with Site IDs and Dates}
+\title{A lookup table for matching historical file names with Site IDs and Dates}
 \format{A tbl data frame:
 \describe{
   \item{File}{File name}
@@ -14,6 +14,6 @@
 site_date_lookup
 }
 \description{
-A lookup table fr matching historical file names with Site IDs and Dates
+A lookup table for matching historical file names with Site IDs and Dates
 }
 \keyword{datasets}

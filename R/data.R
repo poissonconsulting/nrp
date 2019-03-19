@@ -30,7 +30,7 @@
 #' }
 "lakes"
 
-#' A lookup table fr matching historical file names with Site IDs and Dates
+#' A lookup table for matching historical file names with Site IDs and Dates
 #'
 #' @format A tbl data frame:
 #' \describe{
@@ -39,3 +39,26 @@
 #'   \item{SiteID}{Site ID}
 #' }
 "site_date_lookup"
+
+#' A lookup table for for selecting the desired columns from EMS
+#'
+#' @format A tbl data frame:
+#' \describe{
+#'   \item{PARAMETER_CODE}{PARAMETER_CODE}
+#'   \item{PARAMETER}{PARAMETER}
+#'   \item{ANALYTICAL_METHOD}{ANALYTICAL_METHOD}
+#'   \item{chem.make.names}{chem.make.names}
+#'   \item{chem.names}{chem.names}
+#'   \item{Comment}{Comment}
+#' }
+"ems_param_lookup"
+
+#' A site table for EMS data
+#'
+#' @format A tbl data frame:
+#' \describe{
+#'   \item{SiteID}{Site ID}
+#'   \item{EmsSite}{EMS database site name}
+#'   \item{SiteName}{Site name}
+#' }
+"emsSites"

@@ -1,5 +1,4 @@
 fill_units <- function(x, value){
-
   if(inherits(x, "units") || !inherits(x, "numeric") || is.na(value)){
     result <- x
   } else {
@@ -19,4 +18,16 @@ extract_units <- function(units_list){
     }
   }
   meta_units
+}
+
+
+pull_ems_units <- function(x){
+  columns <- names(x)
+  units <- c()
+  for(i in 1:length(columns)){
+    unit <- str_extract(columns[i], 'unit:.*')
+    units %<>% append(unit)
+  }
+  units %<>% gsub(pattern = "unit:", replacement = "")
+  units
 }

@@ -24,13 +24,15 @@ Imports:
     magrittr,
     stringr,
     dplyr,
+    tidyr,
     purrr, 
     dttr,
     DBI,
     dbplyr,
     readwritesqlite, 
     poisspatial, 
-    units, 
+    units,
+    lubridate,
     utils
 Remotes:
 	  poissonconsulting/readwritesqlite,
