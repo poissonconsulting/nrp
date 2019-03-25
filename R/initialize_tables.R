@@ -2,7 +2,8 @@
 #'
 #' @return initialized table with units
 initialize_ctd <- function(){
-  ctd <- tibble(SiteID = character(),
+  ctd <- tibble(FileID = integer(),
+                SiteID = character(),
                 Date = as.Date(character()),
                 Time = dttr::dtt_time(character()),
                 Depth = units::set_units(numeric(), "m"),
@@ -16,6 +17,7 @@ initialize_ctd <- function(){
                 Fluorescence = units::set_units(numeric(), "ug/L"),
                 Frequency = units::set_units(numeric(), "Hz"),
                 Flag = numeric(),
-                Pressure = units::set_units(numeric(), "dbar"))
+                Pressure = units::set_units(numeric(), "dbar"),
+                Retain = logical())
   ctd
 }

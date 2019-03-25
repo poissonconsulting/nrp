@@ -2,20 +2,16 @@
 test_that("nrp_upload_ctd works", {
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
-
   path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
                        package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd_file(path = path, db_path = conn)
 
-
   nrp_upload_ctd(data = data, db_path = conn)
-
   db_data <- readwritesqlite::rws_read_sqlite_table("CTD", conn = conn)
   readwritesqlite::rws_close_connection(conn = conn)
 
-  expect_equal(data, db_data)
-  expect_identical(length(db_data), 15L)
-  expect_identical(nrow(db_data), 1313L)
+  expect_identical(length(db_data), 17L)
+  expect_identical(nrow(db_data), 1282L)
 
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)

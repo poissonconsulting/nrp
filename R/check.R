@@ -28,6 +28,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
     data,
     values = list(
+      FileID = as.integer(),
       SiteID = "character",
       DateTime = Sys.time(),
       Depth = units::as_units("m"),
@@ -41,8 +42,10 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Fluorescence = units::as_units("ug/L"),
       Frequency = units::as_units(c(NA, 1), "Hz"),
       Flag = 1,
-      Pressure = units::as_units(c(NA, 1), "dbar")),
-      key = c("SiteID", "DateTime", "Depth"),
+      Pressure = units::as_units(c(NA, 1), "dbar"),
+      Retain = TRUE,
+      File = as.character()),
+      key = c("FileID"),
     exclusive = exclusive, order = order
   )
 }
@@ -58,3 +61,4 @@ check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
     exclusive = exclusive, order = order
   )
 }
+

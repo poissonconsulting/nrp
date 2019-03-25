@@ -1,19 +1,18 @@
 context("ctd")
 
-ctd_names <- c("SiteID", "Date", "Time", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity","Conductivity2",
-                  "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
+ctd_names <- c("FileID", "SiteID", "Date", "Time", "Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity","Conductivity2",
+                  "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure", "Retain", "File")
 
 test_that("nrp_read_ctd_file works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-                       package = "nrp", mustWork = TRUE)
+  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd_file(path, db_path = conn)
   expect_is(data, "tbl_df")
   expect_identical(names(data), ctd_names)
-  expect_identical(nrow(data), 1313L)
+  expect_identical(nrow(data), 1413L)
 
   path <-  system.file("extdata", "bad ctd/2018/KL_Badly_named_file_1.cnv",
                        package = "nrp", mustWork = TRUE)
@@ -26,14 +25,13 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
-  path <-  system.file("extdata", "bad ctd/2018/AR6_Apr_26_2011.cnv",
-                       package = "nrp", mustWork = TRUE)
+  path <-  system.file("extdata", "bad ctd/2018/AR6_Apr_26_2011.cnv", package = "nrp", mustWork = TRUE)
 
   data <- nrp_read_ctd_file(path, db_path = conn)
   expect_is(data, "tbl_df")
   expect_identical(names(data), ctd_names)
-  expect_identical(length(data), 15L)
-  expect_identical(nrow(data), 1745L)
+  expect_identical(length(data), 18L)
+  expect_identical(nrow(data), 1943L)
 
 })
 
@@ -46,17 +44,17 @@ test_that("nrp_read_ctd works", {
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn)
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 15L)
+  expect_identical(length(data), 18L)
   expect_identical(names(data), ctd_names)
-  expect_identical(nrow(data), 1313L)
+  expect_identical(nrow(data), 1413L)
 
 
   path <-  system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn,  recursive = TRUE)
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 15L)
+  expect_identical(length(data), 18L)
   expect_identical(names(data), ctd_names)
-  expect_identical(nrow(data), 4849L)
+  expect_identical(nrow(data), 5329L)
 
   path <-  system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn)
@@ -75,6 +73,31 @@ test_that("nrp_download_ctd_sites works", {
   expect_identical(nrow(sites_db), nrow(sites_raw_data))
   expect_identical(names(sites_db), names(sites_raw_data))
 })
+
+test_that("nrp_download_ctd_basin_arm works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  basin_arm_db <- nrp_download_ctd_basin_arm(db_path = conn)
+  basin_arm_raw_data <- nrp::basinArm
+
+  expect_identical(nrow(basin_arm_db), nrow(basin_arm_raw_data))
+  expect_identical(names(basin_arm_db), names(basin_arm_raw_data))
+})
+
+test_that("nrp_download_ctd_basin_arm works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  basin_arm_db <- nrp_download_ctd_basin_arm(db_path = conn)
+  basin_arm_raw_data <- nrp::basinArm
+
+  expect_identical(nrow(basin_arm_db), nrow(basin_arm_raw_data))
+  expect_identical(names(basin_arm_db), names(basin_arm_raw_data))
+})
+
 
 test_that("nrp_add_ctd_sites works", {
 
@@ -109,14 +132,13 @@ test_that("nrp_download_ctd works", {
   db_data <- nrp_download_ctd(db_path = conn)
 
   expect_is(data, "tbl_df")
-  suppressWarnings(expect_equal(data, db_data))
 
   db_data <- nrp_download_ctd(start_date = "2018-08-26",
                           end_date = "2018-08-28",
                           sites = NULL, db_path = conn)
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 15L)
-  expect_identical(nrow(db_data), 4849L)
+  expect_identical(length(data), 18L)
+  expect_identical(nrow(db_data), 4749L)
 
 })
 

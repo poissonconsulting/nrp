@@ -16,9 +16,9 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
 
 conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 
-
 suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE CTD  (
+                FileID INTEGER NULL,
                 SiteID TEXT NOT NULL,
                 Date TEXT NOT NULL,
                 Time TEXT NOT NULL,
@@ -34,8 +34,21 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 Frequency REAL,
                 Flag REAL,
                 Pressure INTEGER,
+                Retain TEXT,
+                FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
                 PRIMARY KEY (SiteID, Date, Time, Depth))"))
+
+
+suppressWarnings(DBI::dbGetQuery(conn,
+                "CREATE TABLE VisitCTD  (
+                 SiteID TEXT NOT NULL,
+                 Date TEXT NOT NULL,
+                 Time TEXT NOT NULL,
+                 DepthDuplicates INTEGER NOT NULL,
+                 File TEXT NOT NULL,
+                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
+                 PRIMARY KEY (SiteID, Date, Time))"))
 
 suppressWarnings(DBI::dbGetQuery(conn,
                 "CREATE TABLE Sites  (

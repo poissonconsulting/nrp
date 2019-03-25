@@ -9,6 +9,11 @@
 #'
 #'
 
+# db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
+# path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv", package = "nrp", mustWork = TRUE)
+# lookup <- nrp::site_date_lookup
+# data <- nrp_read_ctd_file(db_path = db_path, path = path)
+
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
@@ -67,18 +72,22 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
 
   }
 
-  if(!nrow(distinct(data, .data$Depth)) == nrow(data)){
-    n_removed <- nrow(data) - nrow(distinct(data, .data$Depth))
-    message(paste(n_removed, "out of", nrow(data),  "duplicate depth readings removed from file",
-                  path))
-    data %<>% distinct(.data$Depth, .keep_all = TRUE)
-  }
+  n_pre_filt <- nrow(data)
+  data %<>% filter(as.numeric(.data$Depth) >= 0)
+  n_dups <- n_pre_filt - nrow(data)
+  message(paste(n_dups, "negative depths removed from data"))
 
-  data %<>% select(.data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
+  # data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE))
+  data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE),
+                   FileID = 1:nrow(data), File = basename(path))
+
+
+  data %<>% select(.data$FileID, .data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
                    .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
-                   .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure)
+                   .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure,
+                   .data$Retain, .data$File)
 
-  default_units <- c(NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar")
+  default_units <- c(NA, NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar", NA, NA)
   data %<>% map2_dfc(default_units, fill_units)
 
   data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
@@ -89,10 +98,11 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
   data$Time[data$Time == 00:00:00] <- NA
   data$Date <- dttr::dtt_date(data$DateTime)
 
-  data %<>% select(.data$SiteID, .data$Date, .data$Time, everything(), -.data$DateTime)
+  data %<>% select(.data$FileID, .data$SiteID, .data$Date, .data$Time, everything(), -.data$DateTime)
 
   data
 }
+
 
 #' Read CTD Files
 #'
@@ -134,6 +144,43 @@ nrp_download_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
   site
 }
 
+
+#' Download CTD visit table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return CTD visit table
+#' @export
+#'
+nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
+
+  visit <- readwritesqlite::rws_read_sqlite_table("VisitCTD", conn = conn) %>%
+    mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
+  visit
+}
+
+
+#' Download CTD BasinArm table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return CTD BasinArm table
+#' @export
+#'
+nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL)) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+  }
+
+  BasinArm <- readwritesqlite::rws_read_sqlite_table("BasinArm", conn = conn)
+  BasinArm
+}
+
 #' Add new ctd sites to database site table
 #' @param data a tibble or data frame of new site data
 #' Must have columns "SiteID", "SiteNumber", "SiteName", "BasinArm", "Depth", as well as columns
@@ -169,6 +216,7 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @return CTD data table
 #' @export
 #'
+
 nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, parameters = "all",
                          db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
@@ -206,7 +254,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     err(paste("1 or more invalid parameter names"))
   }
 
-  parameters <-c("SiteID", "Date", "Time", parameters)
+  parameters <-c("FileID", "SiteID", "Date", "Time", parameters, "Retain")
 
   Date <- NULL
   SiteID <- NULL
@@ -220,7 +268,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
         end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
   result <- readwritesqlite::rws_query_sqlite(query = query, conn = conn) %>%
-    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
+    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time), Retain = as.logical(.data$Retain))
 
   result
 }
