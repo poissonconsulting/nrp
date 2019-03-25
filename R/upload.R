@@ -6,13 +6,6 @@
 #' @export
 #'
 
-# conn <- nrp_create_db(path  = "test", ask = FALSE)
-# path <-  system.file("extdata", "ctd/2018",
-#                      package = "nrp", mustWork = TRUE)
-# data <- nrp_read_ctd(path = path, db_path = conn, recursive = TRUE)
-# db_path = conn
-# nrp_upload_ctd(data = data, db_path = db_path)
-
 nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){

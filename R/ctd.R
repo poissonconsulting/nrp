@@ -9,11 +9,6 @@
 #'
 #'
 
-# db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
-# path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv", package = "nrp", mustWork = TRUE)
-# lookup <- nrp::site_date_lookup
-# data <- nrp_read_ctd_file(db_path = db_path, path = path)
-
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
@@ -75,7 +70,10 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
   n_pre_filt <- nrow(data)
   data %<>% filter(as.numeric(.data$Depth) >= 0)
   n_dups <- n_pre_filt - nrow(data)
-  message(paste(n_dups, "negative depths removed from data"))
+
+  if(n_dups > 0){
+    message(paste(n_dups, "negative depths removed from data"))
+  }
 
   # data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE))
   data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE),
