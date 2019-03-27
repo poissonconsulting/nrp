@@ -5,24 +5,18 @@
 #' @return A a data frame
 #' @export
 
-# emsOld <- get_ems_data()
-# data <- emsOld
-# analysis_type = "standard"
+# data <- nrp_extract_ems(data = ems, analysis_type = "standard")
+
 nrp_extract_ems <- function(data, analysis_type = "standard"){
   sites <- nrp::emsSites
   params <- nrp::ems_param_lookup
 
-  if(!"COLLECTION_END" %in% names(data)){
-    data$COLLECTION_END <- as.POSIXct(NA)
-  }
-  if(!"REQUISITION_ID" %in% names(data)){
-    data$REQUISITION_ID <-NA_character_
-  }
-
   data %<>% filter(.data$EMS_ID %in% sites$EmsSite) %>%
-    mutate(COLLECTION_START = lubridate::ymd_hms(.data$COLLECTION_START, tz = "Etc/GMT+8")) %>%
-    select(.data$EMS_ID, .data$MONITORING_LOCATION, .data$COLLECTION_START, .data$REQUISITION_ID,
-           .data$PARAMETER, .data$RESULT, .data$RESULT_LETTER, .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ANALYTICAL_METHOD, .data$UNIT) %>%
+    mutate(COLLECTION_START = lubridate::ymd_hms(.data$COLLECTION_START, tz = "Etc/GMT+8"),
+           COLLECTION_END = lubridate::ymd_hms(.data$COLLECTION_END, tz = "Etc/GMT+8")) %>%
+    select(.data$EMS_ID, .data$MONITORING_LOCATION, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+           .data$PARAMETER, .data$RESULT, .data$ANALYZING_AGENCY, .data$RESULT_LETTER, .data$UPPER_DEPTH,
+           .data$LOWER_DEPTH, .data$ANALYTICAL_METHOD, .data$UNIT) %>%
     mutate(PARAMETER = ifelse(.data$PARAMETER %in% c("Phosphorus Total Dissolved") &
                                 .data$ANALYTICAL_METHOD == "ICP",
                               "Phosphorus Total Dissolved metals", .data$PARAMETER)) %>%
@@ -32,19 +26,22 @@ nrp_extract_ems <- function(data, analysis_type = "standard"){
     mutate(RESULT_LETTER = gsub("M", NA, .data$RESULT_LETTER),
            RESULT = paste0(.data$RESULT, "/", .data$RESULT_LETTER),
            RESULT = gsub(c("NA"), "", .data$RESULT)) %>%
-    select(-.data$ANALYTICAL_METHOD, -.data$RESULT_LETTER) %>%
-    full_join(select(sites, .data$SiteID, .data$SiteName), by = c("MONITORING_LOCATION" = "SiteName"))
+    select(-.data$ANALYTICAL_METHOD, -.data$RESULT_LETTER, -.data$EMS_ID) %>%
+    full_join(select(sites, .data$SiteID, .data$SiteName), by = c("MONITORING_LOCATION" = "SiteName")) %>%
+    select(-.data$MONITORING_LOCATION)
 
   if(analysis_type == "standard"){
     params_standard <- params$PARAMETER[params$Comment == "standard analysis"]
+
     data %<>% filter(.data$PARAMETER %in% params_standard) %>%
       mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT)) %>%
       distinct() %>%
+      select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
       mutate(row_id = 1:n()) %>% ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START) %>%
-      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id, -.data$UNIT)
+      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id)
     data %<>% add_ems_detection_limit_cols(params = params_standard)
     standard_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
@@ -56,15 +53,17 @@ nrp_extract_ems <- function(data, analysis_type = "standard"){
     data %<>% filter(.data$PARAMETER %in% params_metals) %>%
       mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT)) %>%
       distinct() %>%
+      select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
       mutate(row_id = 1:n()) %>% ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START) %>%
-      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id, -.data$UNIT)
+      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id)
     data %<>% add_ems_detection_limit_cols(params = params_metals)
     metals_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(metals_units, fill_units)
+
   } else {
     err("analysis_type must be either 'standard' or 'metals'")
   }

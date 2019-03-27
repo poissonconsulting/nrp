@@ -7,8 +7,8 @@ test_that("nrp_upload_ctd works", {
   data <- nrp_read_ctd_file(path = path, db_path = conn)
 
   nrp_upload_ctd(data = data, db_path = conn)
-  db_data <- readwritesqlite::rws_read_sqlite_table("CTD", conn = conn)
-  readwritesqlite::rws_close_connection(conn = conn)
+  db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
+  readwritesqlite::rws_disconnect(conn = conn)
 
   expect_identical(length(db_data), 17L)
   expect_identical(nrow(db_data), 1282L)
@@ -18,7 +18,7 @@ test_that("nrp_upload_ctd works", {
 
   expect_error(nrp_upload_ctd(data = data, db_path = "wrong_path.sqlite"),
                "path 'wrong_path.sqlite' must exist")
-  readwritesqlite::rws_close_connection(conn = conn)
+  readwritesqlite::rws_disconnect(conn = conn)
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))

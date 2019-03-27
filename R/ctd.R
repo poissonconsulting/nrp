@@ -7,7 +7,6 @@
 #' @return A tibble
 #' @export
 #'
-#'
 
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
@@ -15,7 +14,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
 
   if(!inherits(db_path, "SQLiteConnection")){
     db_path <- connect_if_valid_path(path = db_path)
-    on.exit(readwritesqlite::rws_close_connection(conn = db_path))
+    on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
   suppressWarnings(
@@ -135,10 +134,10 @@ nrp_download_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
 
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  site <- readwritesqlite::rws_read_sqlite_table("Sites", conn = conn)
+  site <- readwritesqlite::rws_read_table("Sites", conn = conn)
   site
 }
 
@@ -153,10 +152,10 @@ nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
 
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  visit <- readwritesqlite::rws_read_sqlite_table("VisitCTD", conn = conn) %>%
+  visit <- readwritesqlite::rws_read_table("VisitCTD", conn = conn) %>%
     mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
   visit
 }
@@ -172,10 +171,10 @@ nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL))
 
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  BasinArm <- readwritesqlite::rws_read_sqlite_table("BasinArm", conn = conn)
+  BasinArm <- readwritesqlite::rws_read_table("BasinArm", conn = conn)
   BasinArm
 }
 
@@ -191,13 +190,13 @@ nrp_add_ctd_sites <- function(data, db_path){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
   data %<>% poisspatial::ps_coords_to_sfc(coords = c("Easting", "Northing"), crs = 26911) %>%
     mutate(Depth = units::set_units(.data$Depth, "m"))
 
-  readwritesqlite::rws_write_sqlite(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
+  readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
                                     x_name = "Sites", conn = conn)
 }
 
@@ -220,7 +219,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
   data <- tbl(conn, "CTD")
@@ -265,7 +264,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   query <- paste0("SELECT ", paramsSql, " FROM `CTD` WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
         end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
-  result <- readwritesqlite::rws_query_sqlite(query = query, conn = conn) %>%
+  result <- readwritesqlite::rws_query(query = query, conn = conn) %>%
     dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time), Retain = as.logical(.data$Retain))
 
   result

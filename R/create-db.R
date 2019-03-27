@@ -75,16 +75,16 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  geometry BLOB NOT NULL,
                                  PRIMARY KEY (Lake))"))
 lakes <- nrp::lakes
-readwritesqlite::rws_write_sqlite(lakes, exists = TRUE, conn = conn, x_name = "Lake")
+readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 
 basinArm <- nrp::basinArm
-readwritesqlite::rws_write_sqlite(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
+readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
 
 sites <- nrp::sites
-readwritesqlite::rws_write_sqlite(sites, exists = TRUE, conn = conn, x_name = "sites")
+readwritesqlite::rws_write(sites, exists = TRUE, conn = conn, x_name = "sites")
 
 ctd <- initialize_ctd()
-readwritesqlite::rws_write_sqlite(ctd, exists = TRUE, conn = conn, x_name = "CTD")
+readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
 conn
 }

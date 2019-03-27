@@ -2,7 +2,7 @@
 #'
 #' @param data the object name of the data to be uploaded
 #' @param db_path An Sqlite Database Connection, or path to an SQLite Database
-#' @inheritParams readwritesqlite::rws_write_sqlite
+#' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
 
@@ -10,7 +10,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_close_connection(conn = conn))
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
   visit <- group_by(data, .data$SiteID, .data$Date, .data$Time) %>%
@@ -21,7 +21,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
   visit_db <- nrp_download_ctd_visit(db_path = conn)
   visit_upload <- setdiff(visit, visit_db)
 
-  readwritesqlite::rws_write_sqlite(x = visit_upload, commit = commit, strict = strict, silent = silent,
+  readwritesqlite::rws_write(x = visit_upload, commit = commit, strict = strict, silent = silent,
                                     x_name = "visitCTD", conn = conn)
 
   n_pre_filt <- nrow(data)
@@ -31,7 +31,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
 
   data %<>% select(-.data$File)
 
-  readwritesqlite::rws_write_sqlite(x = data, commit = commit, strict = strict, silent = silent,
+  readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                                     x_name = "CTD", conn = conn)
 }
 
