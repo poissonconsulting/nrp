@@ -34,4 +34,3 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                                     x_name = "CTD", conn = conn)
 }
-

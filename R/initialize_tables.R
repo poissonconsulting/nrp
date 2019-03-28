@@ -21,3 +21,12 @@ initialize_ctd <- function(){
                 Retain = logical())
   ctd
 }
+
+initialize_ctd_visit <- function(){
+  visit <- tibble(SiteID = character(),
+           Date = as.Date(character()),
+           Time = dttr::dtt_time(character()),
+           DepthDuplicates = integer(),
+           File = character())
+}
+

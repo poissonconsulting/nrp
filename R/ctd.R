@@ -155,8 +155,7 @@ nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  visit <- readwritesqlite::rws_read_table("VisitCTD", conn = conn) %>%
-    mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
+  visit <- readwritesqlite::rws_read_table("VisitCTD", conn = conn)
   visit
 }
 

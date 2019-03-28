@@ -74,6 +74,14 @@ test_that("nrp_download_ctd_sites works", {
   expect_identical(names(sites_db), names(sites_raw_data))
 })
 
+test_that("nrp_download_ctd_visit works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  sites_db <- nrp_download_ctd_visit(db_path = conn)
+})
+
 test_that("nrp_download_ctd_basin_arm works", {
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)

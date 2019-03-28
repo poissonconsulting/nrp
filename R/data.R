@@ -62,3 +62,13 @@
 #'   \item{SiteName}{Site name}
 #' }
 "emsSites"
+
+#' An initialized table for EMS standard data
+#'
+#' @format A tbl data frame:
+"ems_standard_init"
+
+#' An initialized table for EMS metals data
+#'
+#' @format A tbl data frame:
+"ems_metals_init"
