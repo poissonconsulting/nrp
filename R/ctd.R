@@ -207,7 +207,8 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @export
 #'
 
-nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE,
+                           replace = TRUE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -233,7 +234,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
   data %<>% select(-.data$File, -.data$Retain)
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
-                             x_name = "CTD", conn = conn)
+                             x_name = "CTD", conn = conn, replace = replace)
 }
 
 #' Dowload CTD data table from database

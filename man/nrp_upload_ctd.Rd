@@ -5,7 +5,7 @@
 \title{Upload CTD data to nrp database}
 \usage{
 nrp_upload_ctd(data, db_path = getOption("nrp.db_path", NULL),
-  commit = TRUE, strict = TRUE, silent = TRUE)
+  commit = TRUE, strict = TRUE, silent = TRUE, replace = TRUE)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}
@@ -18,6 +18,8 @@ nrp_upload_ctd(data, db_path = getOption("nrp.db_path", NULL),
 \item{strict}{A flag specifying whether to error if x has extraneous columns or if exists = TRUE extraneous data frames.}
 
 \item{silent}{A flag specifying whether to suppress messages and warnings.}
+
+\item{replace}{A flag specifying whether to replace any existing rows whose inclusion would violate unique or primary key constraints.}
 }
 \description{
 Upload CTD data to nrp database

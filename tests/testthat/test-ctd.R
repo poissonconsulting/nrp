@@ -169,12 +169,6 @@ test_that("nrp_upload_ctd works", {
 #   data <- nrp_read_ctd_file(path = path, db_path = conn)
 #   nrp_upload_ctd(data = data, db_path = conn, replace = TRUE)
 #
-#   db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
-#   readwritesqlite::rws_disconnect(conn = conn)
-#
-#   expect_identical(length(db_data), 16L)
-#   expect_identical(nrow(db_data), 1282L)
-#
 # })
 
 test_that("nrp_download_ctd works", {
