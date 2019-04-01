@@ -199,7 +199,44 @@ nrp_add_ctd_sites <- function(data, db_path){
                                     x_name = "Sites", conn = conn)
 }
 
-#' Load CTD data table from database
+#' Upload CTD data to nrp database
+#'
+#' @param data the object name of the data to be uploaded
+#' @param db_path An Sqlite Database Connection, or path to an SQLite Database
+#' @inheritParams readwritesqlite::rws_write
+#' @export
+#'
+
+nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  visit <- group_by(data, .data$SiteID, .data$Date, .data$Time) %>%
+    summarise(DepthDuplicates = length(which(.data$Retain == FALSE)), File = first(.data$File)) %>%
+    ungroup()
+
+
+  visit_db <- nrp_download_ctd_visit(db_path = conn)
+  visit_upload <- setdiff(visit, visit_db)
+
+  readwritesqlite::rws_write(x = visit_upload, commit = commit, strict = strict, silent = silent,
+                             x_name = "visitCTD", conn = conn)
+
+  n_pre_filt <- nrow(data)
+  data %<>% filter(.data$Retain == TRUE)
+  n_dups <- n_pre_filt - nrow(data)
+  message(paste(n_dups, "duplicate depths removed from data"))
+
+  data %<>% select(-.data$File, -.data$Retain)
+
+  readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
+                             x_name = "CTD", conn = conn)
+}
+
+#' Dowload CTD data table from database
 #'
 #' @param start_date The start date
 #' @param end_date The end date
@@ -212,6 +249,11 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @return CTD data table
 #' @export
 #'
+# start_date = "2018-01-01"
+# end_date = "2018-12-31"
+# sites = NULL
+# parameters = "all"
+# db_path <- conn
 
 nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, parameters = "all",
                          db_path = getOption("nrp.db_path", NULL)){
@@ -220,8 +262,6 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
-  data <- tbl(conn, "CTD")
 
   default_parameters <- c("Depth", "Temperature", "Oxygen", "Oxygen2", "Conductivity","Conductivity2",
                           "Salinity", "Backscatter", "Fluorescence", "Frequency", "Flag", "Pressure")
@@ -250,7 +290,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     err(paste("1 or more invalid parameter names"))
   }
 
-  parameters <-c("FileID", "SiteID", "Date", "Time", parameters, "Retain")
+  parameters <-c("FileID", "SiteID", "Date", "Time", parameters)
 
   Date <- NULL
   SiteID <- NULL
@@ -263,8 +303,8 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   query <- paste0("SELECT ", paramsSql, " FROM `CTD` WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
         end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
-  result <- readwritesqlite::rws_query(query = query, conn = conn) %>%
-    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time), Retain = as.logical(.data$Retain))
+  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
 
   result
 }

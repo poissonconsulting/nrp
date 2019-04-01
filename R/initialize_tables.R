@@ -17,8 +17,7 @@ initialize_ctd <- function(){
                 Fluorescence = units::set_units(numeric(), "ug/L"),
                 Frequency = units::set_units(numeric(), "Hz"),
                 Flag = numeric(),
-                Pressure = units::set_units(numeric(), "dbar"),
-                Retain = logical())
+                Pressure = units::set_units(numeric(), "dbar"))
   ctd
 }
 

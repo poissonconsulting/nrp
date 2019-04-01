@@ -127,6 +127,56 @@ test_that("nrp_add_ctd_sites works", {
 
 })
 
+test_that("nrp_upload_ctd works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+                       package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd_file(path = path, db_path = conn)
+
+  nrp_upload_ctd(data = data, db_path = conn)
+  db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
+  readwritesqlite::rws_disconnect(conn = conn)
+
+  expect_identical(length(db_data), 16L)
+  expect_identical(nrow(db_data), 1282L)
+
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+
+  expect_error(nrp_upload_ctd(data = data, db_path = "wrong_path.sqlite"),
+               "path 'wrong_path.sqlite' must exist")
+  readwritesqlite::rws_disconnect(conn = conn)
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  wrong_file <- path
+  expect_error(nrp_upload_ctd(data = data, db_path = wrong_file),
+               "File provided is not an SQLite database")
+})
+
+
+# test_that("nrp_upload_ctd(replace = TRUE) works", {
+#
+#   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+#   path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+#                        package = "nrp", mustWork = TRUE)
+#   data <- nrp_read_ctd_file(path = path, db_path = conn)
+#   data %<>% mutate(Flag = 1)
+#   nrp_upload_ctd(data = data, db_path = conn)
+#
+#   data <- nrp_read_ctd_file(path = path, db_path = conn)
+#   nrp_upload_ctd(data = data, db_path = conn, replace = TRUE)
+#
+#   db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
+#   readwritesqlite::rws_disconnect(conn = conn)
+#
+#   expect_identical(length(db_data), 16L)
+#   expect_identical(nrow(db_data), 1282L)
+#
+# })
+
 test_that("nrp_download_ctd works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -145,7 +195,7 @@ test_that("nrp_download_ctd works", {
                           end_date = "2018-08-28",
                           sites = NULL, db_path = conn)
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 18L)
+  expect_identical(length(db_data), 16L)
   expect_identical(nrow(db_data), 4749L)
 
 })

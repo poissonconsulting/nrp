@@ -38,7 +38,15 @@ emsSites$SiteName <- c("ARROW LAKE AT ALBERT POINT (AR1)",
                     "KOOTENAY LAKE AT REDMAN PT; KLF7",
                     "KOOTENAY LAKE WEST ARM (KLF8)")
 
-emsSites %<>% select(SiteID, EmsSite, SiteName)
+path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+ems <- readRDS(path)
+
+emsSites %<>% select(SiteID, EmsSite, SiteName) %>%
+  left_join(select(ems, LATITUDE, LONGITUDE, MONITORING_LOCATION), by = c("SiteName" = "MONITORING_LOCATION")) %>%
+  distinct() %>%
+  ps_coords_to_sfc(coords = c("LONGITUDE", "LATITUDE")) %>%
+  st_transform(26911)
+
 
 
 ems_param_lookup <- read_excel("~/Poisson/Data/nrp-database-19/Chem Data/Reference files/Chem_parameter_lookup.xlsx")
@@ -70,13 +78,12 @@ kl_lookup <- read.csv("data-raw/KL-site-lookup.csv", stringsAsFactors = FALSE)
 ar_lookup <- read.csv("data-raw/AR-site-lookup.csv", stringsAsFactors = FALSE)
 site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
-path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
 
-ems <- readRDS(path)
-ems_standard <- nrp_extract_ems(data = ems, analysis_type = "standard") %>%
+conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+ems_standard <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard") %>%
   mutate(REQUISITION_ID = as.numeric(REQUISITION_ID))
 ems_standard_init <- ems_standard[0, ]
-ems_metals <- nrp_extract_ems(data = ems, analysis_type = "metals") %>%
+ems_metals <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals") %>%
   mutate(REQUISITION_ID = as.numeric(REQUISITION_ID))
 ems_metals_init <- ems_metals[0, ]
 

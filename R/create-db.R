@@ -34,7 +34,6 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 Frequency REAL,
                 Flag REAL,
                 Pressure INTEGER,
-                Retain TEXT,
                 FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
                 PRIMARY KEY (SiteID, Date, Time, Depth))"))
@@ -74,6 +73,14 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  Area REAL NOT NULL,
                                  geometry BLOB NOT NULL,
                                  PRIMARY KEY (Lake))"))
+
+suppressWarnings(DBI::dbGetQuery(conn,
+                                 "CREATE TABLE SitesEMS  (
+                                 SiteID TEXT NOT NULL,
+                                 EmsSite TEXT NOT NULL,
+                                 SiteName TEXT NOT NULL,
+                                 geometry BLOB,
+                                 PRIMARY KEY (SiteID))"))
 
 suppressWarnings(DBI::dbGetQuery(conn,
                                  "CREATE TABLE standardEMS  (
@@ -286,14 +293,13 @@ readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visit
 ctd <- initialize_ctd()
 readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
-ems_metals <- nrp::ems_metals_init %>%
-  mutate(RowID = as.integer()) %>%
-  select(.data$RowID, everything())
+ems_sites <- nrp::emsSites
+readwritesqlite::rws_write(ems_sites, exists = TRUE, conn = conn, x_name = "sitesEMS")
+
+ems_metals <- nrp::ems_metals_init
 readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
 
-ems_standard <- nrp::ems_standard_init %>%
-  mutate(RowID = as.integer()) %>%
-  select(.data$RowID, everything())
+ems_standard <- nrp::ems_standard_init
 readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
 
 conn

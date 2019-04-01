@@ -22,7 +22,8 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  sites <- nrp::emsSites
+  sites <- nrp::emsSites %>%
+    poisspatial::ps_deactivate_sfc()
   params <- nrp::ems_param_lookup
 
   data %<>% filter(.data$EMS_ID %in% sites$EmsSite) %>%
@@ -61,14 +62,6 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(standard_units, fill_units)
 
-    query <- "SELECT RowID FROM metalsEMS WHERE RowID = (SELECT MAX(RowID) FROM metalsEMS);"
-    result <- readwritesqlite::rws_query(query = query, conn = conn)
-    last_id <- result$RowID[1]
-    if(is.na(last_id)) last_id <- 0
-
-    data %<>% mutate(RowID = (last_id + 1):nrow(data)) %>%
-      select(.data$RowID, everything())
-
   } else if(analysis_type == "metals"){
     params_metals <- params$PARAMETER[params$Comment == "metals"]
 
@@ -86,20 +79,10 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(metals_units, fill_units)
 
-    query <- "SELECT RowID FROM metalsEMS WHERE RowID = (SELECT MAX(RowID) FROM metalsEMS);"
-    result <- readwritesqlite::rws_query(query = query, conn = conn)
-    last_id <- result$RowID[1]
-    if(is.na(last_id)) last_id <- 0
-
-    data %<>% mutate(RowID = (last_id + 1):nrow(data)) %>%
-      select(.data$RowID, everything())
-
   } else {
     err("analysis_type must be either 'standard' or 'metals'")
   }
-  # if(show_detection_limits = FALSE){
-  #   data %<>% select_if(vars(contains("Limit")))
-  # }
+
   data
 }
 
@@ -138,19 +121,14 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  # visit <- group_by(data, .data$SiteID, .data$Date, .data$Time) %>%
-  #   summarise(DepthDuplicates = length(which(.data$Retain == FALSE)), File = first(.data$File)) %>%
-  #   ungroup()
-  #
-  # visit_db <- nrp_download_ctd_visit(db_path = conn)
-  # visit_upload <- setdiff(visit, visit_db)
-  #
-  # readwritesqlite::rws_write(x = visit_upload, commit = commit, strict = strict, silent = silent,
-  #                            x_name = "visitCTD", conn = conn)
-  # n_pre_filt <- nrow(data)
-  # data %<>% filter(.data$Retain == TRUE)
-  # n_dups <- n_pre_filt - nrow(data)
-  # message(paste(n_dups, "duplicate depths removed from data"))
+  query <- "SELECT RowID FROM standardEMS WHERE RowID = (SELECT MAX(RowID) FROM standardEMS);"
+  result <- readwritesqlite::rws_query(query = query, conn = conn)
+  last_id <- result$RowID[1]
+
+  if(is.na(last_id)) last_id <- 0
+
+  data %<>% mutate(RowID = (last_id + 1):(nrow(data) + last_id)) %>%
+    select(.data$RowID, everything())
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "standardEMS", conn = conn)
@@ -170,20 +148,81 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  # visit <- group_by(data, .data$SiteID, .data$Date, .data$Time) %>%
-  #   summarise(DepthDuplicates = length(which(.data$Retain == FALSE)), File = first(.data$File)) %>%
-  #   ungroup()
-  #
-  # visit_db <- nrp_download_ctd_visit(db_path = conn)
-  # visit_upload <- setdiff(visit, visit_db)
-  #
-  # readwritesqlite::rws_write(x = visit_upload, commit = commit, strict = strict, silent = silent,
-  #                            x_name = "visitCTD", conn = conn)
-  # n_pre_filt <- nrow(data)
-  # data %<>% filter(.data$Retain == TRUE)
-  # n_dups <- n_pre_filt - nrow(data)
-  # message(paste(n_dups, "duplicate depths removed from data"))
+  query <- "SELECT RowID FROM metalsEMS WHERE RowID = (SELECT MAX(RowID) FROM metalsEMS);"
+  result <- readwritesqlite::rws_query(query = query, conn = conn)
+  last_id <- result$RowID[1]
+
+  if(is.na(last_id)) last_id <- 0
+
+  data %<>% mutate(RowID = (last_id + 1):(nrow(data) + last_id)) %>%
+    select(.data$RowID, everything())
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "metalsEMS", conn = conn)
+}
+
+#' Dowload EMS data table from database
+#'
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @param start_date_time The start date
+#' @param end_date_time The end date
+#' @param sites A character vector of the Site IDs
+#' @param analysis_type EMS data of interest. Must be either "standard" or "metals"
+#' @param show_detection_limits Whether to include detection limit columns for each parameter
+#' @return EMS data table
+#' @export
+#'
+nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_date_time = "2018-01-01 00:00:00",
+                             end_date_time = "2018-12-31 00:00:00", sites = NULL, analysis_type = "standard",
+                             show_detection_limits = FALSE){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  if(start_date_time > end_date_time){
+    err("start date is later than end date")
+  }
+  if(end_date_time > Sys.Date()){
+    err("end date is later than present day")
+  }
+
+  checkr::check_datetime(as.POSIXct(start_date_time))
+  checkr::check_datetime(as.POSIXct(end_date_time))
+
+  site_table <- nrp::emsSites
+
+  if(is.null(sites)){
+    sites <- site_table$SiteID
+  }
+  if(!all(sites %in% site_table$SiteID)){
+    err(paste("1 or more invalid site names"))
+  }
+
+  Date <- NULL
+  SiteID <- NULL
+
+  sitesSql <- cc(sites, ellipsis = length(sites) + 1)
+  start_dateSql <- paste0("'", start_date_time, "'")
+  end_dateSql <- paste0("'", end_date_time, "'")
+
+  if(analysis_type == "standard"){
+    table <- "`standardEMS`"
+  } else if(analysis_type == "metals"){
+    table <- "`metalsEMS`"
+  }
+
+  query <- paste0("SELECT * FROM ", table, " WHERE ((`COLLECTION_START` >= ", start_dateSql, ") AND (`COLLECTION_START` <= ",
+                  end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
+
+  result <- readwritesqlite::rws_query(query = query, conn = conn) %>%
+    dplyr::mutate(COLLECTION_START = dttr::dtt_date_time(.data$COLLECTION_START),
+                  COLLECTION_END = dttr::dtt_date_time(.data$COLLECTION_END))
+
+  if(show_detection_limits == FALSE){
+    result %<>% select(-c(grep("Limit", names(result))))
+  }
+
+  result
 }

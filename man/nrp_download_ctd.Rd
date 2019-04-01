@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{nrp_download_ctd}
 \alias{nrp_download_ctd}
-\title{Load CTD data table from database}
+\title{Dowload CTD data table from database}
 \usage{
 nrp_download_ctd(start_date = "2018-01-01", end_date = "2018-12-31",
   sites = NULL, parameters = "all",
@@ -25,5 +25,5 @@ Permissable values: "Temperature", "Oxygen", "Oxygen2", "Conductivity",
 CTD data table
 }
 \description{
-Load CTD data table from database
+Dowload CTD data table from database
 }
