@@ -6,14 +6,6 @@
 #' @return A a data frame
 #' @export
 
-# # data <- nrp_extract_ems(data = ems, analysis_type = "standard")
-# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-# # ems <- readRDS(path)
-# conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
-# db_path <- conn
-# data <- ems
-# analysis_type <- "metals"
-
 nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
 
   conn <- db_path
@@ -22,8 +14,9 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  sites <- nrp::emsSites %>%
-    poisspatial::ps_deactivate_sfc()
+  sites <- nrp::emsSites
+  sf::st_geometry(sites) <- NULL
+
   params <- nrp::ems_param_lookup
 
   data %<>% filter(.data$EMS_ID %in% sites$EmsSite) %>%
@@ -49,14 +42,23 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     params_standard <- params$PARAMETER[params$Comment == "standard analysis"]
 
     data %<>% filter(.data$PARAMETER %in% params_standard) %>%
-      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT)) %>%
-      distinct() %>%
+      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT),
+             REQUISITION_ID = as.numeric(.data$REQUISITION_ID)) %>%
       select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
       mutate(row_id = 1:n()) %>% ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
-      arrange(.data$COLLECTION_START) %>%
-      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id)
+      arrange(.data$COLLECTION_START)
+
+    key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
+                  "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
+
+    data %<>% clean_key_cols(key_cols) %>%
+      group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+               .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
+      mutate(ReplicateID = 1:n()) %>%
+      ungroup()
+
     data %<>% add_ems_detection_limit_cols(params = params_standard)
     standard_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
@@ -66,14 +68,23 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     params_metals <- params$PARAMETER[params$Comment == "metals"]
 
     data %<>% filter(.data$PARAMETER %in% params_metals) %>%
-      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT)) %>%
-      distinct() %>%
+      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT),
+             REQUISITION_ID = as.numeric(.data$REQUISITION_ID)) %>%
       select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
       mutate(row_id = 1:n()) %>% ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
-      arrange(.data$COLLECTION_START) %>%
-      select(.data$SiteID, .data$COLLECTION_START, everything(), -.data$row_id)
+      arrange(.data$COLLECTION_START)
+
+    key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
+                  "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
+
+    data %<>% clean_key_cols(key_cols) %>%
+      group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+               .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
+      mutate(ReplicateID = 1:n()) %>%
+      ungroup()
+
     data %<>% add_ems_detection_limit_cols(params = params_metals)
     metals_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
@@ -83,6 +94,9 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     err("analysis_type must be either 'standard' or 'metals'")
   }
 
+  data %<>% select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+                   .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID,
+                   everything(), -.data$row_id)
   data
 }
 
@@ -114,21 +128,17 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
+# conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+# ems <- readRDS(path)
+# data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
+
 nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
-  query <- "SELECT RowID FROM standardEMS WHERE RowID = (SELECT MAX(RowID) FROM standardEMS);"
-  result <- readwritesqlite::rws_query(query = query, conn = conn)
-  last_id <- result$RowID[1]
-
-  if(is.na(last_id)) last_id <- 0
-
-  data %<>% mutate(RowID = (last_id + 1):(nrow(data) + last_id)) %>%
-    select(.data$RowID, everything())
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "standardEMS", conn = conn)
@@ -147,15 +157,6 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
-  query <- "SELECT RowID FROM metalsEMS WHERE RowID = (SELECT MAX(RowID) FROM metalsEMS);"
-  result <- readwritesqlite::rws_query(query = query, conn = conn)
-  last_id <- result$RowID[1]
-
-  if(is.na(last_id)) last_id <- 0
-
-  data %<>% mutate(RowID = (last_id + 1):(nrow(data) + last_id)) %>%
-    select(.data$RowID, everything())
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "metalsEMS", conn = conn)
@@ -225,4 +226,9 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_dat
   }
 
   result
+}
+
+clean_key_cols <- function(data, cols) {
+  cleaned_cols <- stats::complete.cases(data[, cols])
+  return(data[cleaned_cols, ])
 }

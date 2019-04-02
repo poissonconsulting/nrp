@@ -9,7 +9,7 @@
 #'   \item{Depth}{The depth of the Seabird}
 #'   \item{geometry}{Coordinates for the location of the site}
 #' }
-"sites"
+"ctdSites"
 
 #' A Basin-Arm table for Sea-bird CTD data
 #'

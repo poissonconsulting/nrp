@@ -30,7 +30,8 @@ Imports:
     DBI,
     dbplyr,
     readwritesqlite, 
-    poisspatial, 
+    stats,
+    sf,
     units,
     lubridate,
     utils

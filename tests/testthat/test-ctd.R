@@ -68,7 +68,7 @@ test_that("nrp_download_ctd_sites works", {
   teardown(DBI::dbDisconnect(conn))
 
   sites_db <- nrp_download_ctd_sites(db_path = conn)
-  sites_raw_data <- nrp::sites
+  sites_raw_data <- nrp::ctdSites
 
   expect_identical(nrow(sites_db), nrow(sites_raw_data))
   expect_identical(names(sites_db), names(sites_raw_data))
@@ -110,7 +110,7 @@ test_that("nrp_download_ctd_basin_arm works", {
 test_that("nrp_add_ctd_sites works", {
 
   new_data <- tibble(SiteID = "NewID", SiteNumber = "NewNumber", SiteName = "New Site Name",
-                 BasinArm = "Upper", Depth = 100, Easting = 434792, Northing = 5605351)
+                 BasinArm = "Upper", MaxDepth = 100, Easting = 434792, Northing = 5605351)
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
@@ -119,9 +119,8 @@ test_that("nrp_add_ctd_sites works", {
 
   nrp_add_ctd_sites(data = new_data, db_path = conn)
 
-  updated_sites <- nrp_download_ctd_sites(db_path = conn) %>%
-    poisspatial::ps_deactivate_sfc() %>%
-    select(-geometry)
+  updated_sites <- nrp_download_ctd_sites(db_path = conn)
+  sf::st_geometry(updated_sites) <- NULL
 
   expect_equal(nrow(old_sites) + 1, nrow(updated_sites))
 
@@ -157,19 +156,22 @@ test_that("nrp_upload_ctd works", {
 })
 
 
-# test_that("nrp_upload_ctd(replace = TRUE) works", {
-#
-#   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
-#   path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-#                        package = "nrp", mustWork = TRUE)
-#   data <- nrp_read_ctd_file(path = path, db_path = conn)
-#   data %<>% mutate(Flag = 1)
-#   nrp_upload_ctd(data = data, db_path = conn)
-#
-#   data <- nrp_read_ctd_file(path = path, db_path = conn)
-#   nrp_upload_ctd(data = data, db_path = conn, replace = TRUE)
-#
-# })
+test_that("nrp_upload_ctd(replace = TRUE) works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+                       package = "nrp", mustWork = TRUE)
+  data <- nrp_read_ctd_file(path = path, db_path = conn)
+  data %<>% mutate(Flag = 1)
+  nrp_upload_ctd(data = data, db_path = conn)
+
+  data <- nrp_read_ctd_file(path = path, db_path = conn)
+  nrp_upload_ctd(data = data, db_path = conn, replace = TRUE)
+
+  db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
+  expect_true(all(db_data$Flag == 0))
+
+})
 
 test_that("nrp_download_ctd works", {
 
@@ -182,6 +184,7 @@ test_that("nrp_download_ctd works", {
   nrp_upload_ctd(data = data, db_path = conn)
 
   db_data <- nrp_download_ctd(db_path = conn)
+
 
   expect_is(data, "tbl_df")
 

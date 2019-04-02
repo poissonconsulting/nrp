@@ -35,7 +35,7 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 Flag REAL,
                 Pressure INTEGER,
                 FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
-                FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
+                FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
                 PRIMARY KEY (SiteID, Date, Time, Depth))"))
 
 
@@ -46,16 +46,16 @@ suppressWarnings(DBI::dbGetQuery(conn,
                  Time TEXT NOT NULL,
                  DepthDuplicates INTEGER NOT NULL,
                  File TEXT NOT NULL,
-                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
+                 FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
                  PRIMARY KEY (SiteID, Date, Time))"))
 
 suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE Sites  (
+                "CREATE TABLE sitesCTD  (
                 SiteID TEXT NOT NULL,
                 SiteNumber REAL,
                 SiteName TEXT,
                 BasinArm TEXT,
-                Depth REAL,
+                MaxDepth REAL,
                 geometry BLOB,
                 FOREIGN KEY (BasinArm) REFERENCES BasinArm (BasinArm),
                 PRIMARY KEY (SiteID))"))
@@ -84,7 +84,6 @@ suppressWarnings(DBI::dbGetQuery(conn,
 
 suppressWarnings(DBI::dbGetQuery(conn,
                                  "CREATE TABLE standardEMS  (
-                                 RowID INTEGER NOT NULL,
                                  SiteID TEXT NOT NULL,
                                  COLLECTION_START TEXT NOT NULL,
                                  COLLECTION_END TEXT NOT NULL,
@@ -92,6 +91,7 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  ANALYZING_AGENCY TEXT NOT NULL,
                                  UPPER_DEPTH REAL,
                                  LOWER_DEPTH REAL,
+                                 ReplicateID INTEGER,
                                  [Alkalinity Total 4.5] REAL,
                                  [Limit Alkalinity Total 4.5] REAL,
                                  [Carbon Total Inorganic] REAL,
@@ -122,12 +122,12 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  [Limit Silica Reactive Diss] REAL,
                                  [Turbidity] REAL,
                                  [Limit Turbidity] REAL,
-                                 PRIMARY KEY (RowID))"))
+                                 PRIMARY KEY (SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+                                 ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
 
 
 suppressWarnings(DBI::dbGetQuery(conn,
                                  "CREATE TABLE metalsEMS  (
-                                 RowID INTEGER NOT NULL,
                                  SiteID TEXT NOT NULL,
                                  COLLECTION_START TEXT NOT NULL,
                                  COLLECTION_END TEXT NOT NULL,
@@ -135,6 +135,7 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  ANALYZING_AGENCY TEXT NOT NULL,
                                  UPPER_DEPTH REAL,
                                  LOWER_DEPTH REAL,
+                                 ReplicateID INTEGER,
                                  [Alkalinity Phen. 8.3] REAL,
                                  [Limit Alkalinity Phen. 8.3] REAL,
                                  [Aluminum Dissolved] REAL,
@@ -275,7 +276,8 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  [Limit Zinc Dissolved] REAL,
                                  [Zinc Total] REAL,
                                  [Limit Zinc Total] REAL,
-                                 PRIMARY KEY (RowID))"))
+                                 PRIMARY KEY (SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+                                 ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
 
 
 lakes <- nrp::lakes
@@ -284,8 +286,8 @@ readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 basinArm <- nrp::basinArm
 readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
 
-sites <- nrp::sites
-readwritesqlite::rws_write(sites, exists = TRUE, conn = conn, x_name = "sites")
+ctdSites <- nrp::ctdSites
+readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "sitesCTD")
 
 visitCTD <- initialize_ctd_visit()
 readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visitCTD")
@@ -293,8 +295,8 @@ readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visit
 ctd <- initialize_ctd()
 readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
-ems_sites <- nrp::emsSites
-readwritesqlite::rws_write(ems_sites, exists = TRUE, conn = conn, x_name = "sitesEMS")
+emsSites <- nrp::emsSites
+readwritesqlite::rws_write(emsSites, exists = TRUE, conn = conn, x_name = "sitesEMS")
 
 ems_metals <- nrp::ems_metals_init
 readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")

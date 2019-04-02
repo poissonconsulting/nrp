@@ -1,0 +1,23 @@
+SiteID,SiteNumber,SiteName,BasinArm,MaxDepth,X,Y
+AR1,E225768,Albert Point,Upper,220,434792,5605351
+AR2,E225769,Ann Point,Upper,285,433968,5589259
+AR3,E225770,Turner Creek,Upper,155,437519,5573774
+AR4,E225771,Slewiskin Creek,Narrows,75,441756,5561516
+AR5,E225779,downstream Mosquito Creek,Narrows,50,437835,5551246
+AR6,E225781,Johnson Creek,Lower,145,417681,5502555
+AR7,E225782,Bowman Creek,Lower,155,417923,5487806
+AR8,E225783,Cayuse Creek,Lower,85,427481,5471663
+HL1,E305210,Beaton Arm,Beaton,175,443488,5619750
+HL2,NA,NA,Upper,NA,NA,NA
+HL3,NA,NA,Lower,NA,NA,NA
+HL4,E231909,Syringa Creek at Broadwater Road (TBC),Lower,25,436744,5465541
+AR9,E236385,City of Castlegar Water Intake Site,Castlegar,35,442953,5465277
+TR3,NA,NA,Beaton,NA,NA,NA
+KL1,E216949,Johnson’s Landing,North,100,507185,5545282
+KL2,E216950,Kembell Creek (Shutty  Bench),North,120,507641,5536157
+KL3,E216951,Bjerkeness Creek (Mirror Lake),North,120,508278,5524429
+KL4,E216952,Hendryx Creek (Woodbury),North,135,507820,5512528
+KL5,E216953,Crawford Bay (Cape Horne),South,140,511773,5492123
+KL6,E216954,Rhinoceros Point,South,150,514101,5480843
+KL7,E218832,Redman Point,South,125,519001,5464171
+KL8,E252949,West Arm (Sunshine Bay),West,35,499072,5495866

@@ -7,7 +7,6 @@
 #' @return A tibble
 #' @export
 #'
-
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lookup = nrp::site_date_lookup) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
@@ -137,7 +136,7 @@ nrp_download_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  site <- readwritesqlite::rws_read_table("Sites", conn = conn)
+  site <- readwritesqlite::rws_read_table("sitesCTD", conn = conn)
   site
 }
 
@@ -192,11 +191,11 @@ nrp_add_ctd_sites <- function(data, db_path){
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  data %<>% poisspatial::ps_coords_to_sfc(coords = c("Easting", "Northing"), crs = 26911) %>%
-    mutate(Depth = units::set_units(.data$Depth, "m"))
+  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 26911) %>%
+    mutate(MaxDepth = units::set_units(.data$MaxDepth, "m"))
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
-                                    x_name = "Sites", conn = conn)
+                                    x_name = "sitesCTD", conn = conn)
 }
 
 #' Upload CTD data to nrp database
@@ -208,7 +207,7 @@ nrp_add_ctd_sites <- function(data, db_path){
 #'
 
 nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE,
-                           replace = TRUE){
+                           replace = FALSE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -301,11 +300,11 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   start_dateSql <- paste0("'", start_date, "'")
   end_dateSql <- paste0("'", end_date, "'")
 
-  query <- paste0("SELECT ", paramsSql, " FROM `CTD` WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
+  query <- paste0("SELECT ", paramsSql, " FROM CTD WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
         end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
   result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr::dtt_date(.data$Date), Time = dttr::dtt_time(.data$Time))
+    dplyr::mutate(Date = dttr::dtt_date(.data$Date))
 
   result
 }

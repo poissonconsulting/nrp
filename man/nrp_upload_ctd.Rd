@@ -5,7 +5,7 @@
 \title{Upload CTD data to nrp database}
 \usage{
 nrp_upload_ctd(data, db_path = getOption("nrp.db_path", NULL),
-  commit = TRUE, strict = TRUE, silent = TRUE, replace = TRUE)
+  commit = TRUE, strict = TRUE, silent = TRUE, replace = FALSE)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}
