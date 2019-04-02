@@ -7,7 +7,7 @@ initialize_ctd <- function(){
                 Date = as.Date(character()),
                 Time = dttr::dtt_time(character()),
                 Depth = units::set_units(numeric(), "m"),
-                Temperature = units::set_units(numeric(), "degree * C"),
+                Temperature = units::set_units(numeric(), "degC"),
                 Oxygen = units::set_units(numeric(), "mg/l"),
                 Oxygen2 = units::set_units(numeric(), "percent"),
                 Conductivity = units::set_units(numeric(), "uS/cm"),

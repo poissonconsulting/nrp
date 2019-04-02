@@ -41,13 +41,18 @@ site_date_lookup <- rbind(kl_lookup, ar_lookup)
 path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
 ems <- readRDS(path)
 conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+
 ems_standard <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard") %>%
-  mutate(ReplicateID = as.numeric(1)) %>%
+  mutate(ReplicateID = as.numeric(1), LOWER_DEPTH = units::set_units(.data$LOWER_DEPTH, "m"),
+         UPPER_DEPTH = units::set_units(.data$UPPER_DEPTH, "m")) %>%
   select(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
          ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID, everything())
 ems_standard_init <- ems_standard[0, ]
+
 ems_metals <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals") %>%
-  mutate(ReplicateID = as.numeric(1)) %>%
+  mutate(ReplicateID = as.numeric(1),
+         LOWER_DEPTH = units::set_units(.data$LOWER_DEPTH, "m"),
+         UPPER_DEPTH = units::set_units(.data$UPPER_DEPTH, "m")) %>%
   select(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
          ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID, everything())
 ems_metals_init <- ems_metals[0, ]

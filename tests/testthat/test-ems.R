@@ -79,6 +79,5 @@ test_that("nrp_download_ems works", {
   expect_is(db_data_standard, "tbl_df")
   expect_identical(length(db_data_standard), 38L)
   expect_identical(nrow(db_data_standard), 48L)
-
 })
 

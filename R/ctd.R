@@ -62,7 +62,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
     lookup <- site_date_lookup
     data$DateTime <- lookup$Date[lookup$File == basename(path)]
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
-
   }
 
   n_pre_filt <- nrow(data)
@@ -73,18 +72,18 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
     message(paste(n_dups, "negative depths removed from data"))
   }
 
-  # data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE))
   data %<>% mutate(Retain = if_else(duplicated(.data$Depth, fromLast = TRUE), FALSE, TRUE),
                    FileID = 1:nrow(data), File = basename(path))
-
 
   data %<>% select(.data$FileID, .data$SiteID, .data$DateTime, .data$Depth, .data$Temperature, .data$Oxygen,
                    .data$Oxygen2, .data$Conductivity, .data$Conductivity2, .data$Salinity,
                    .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure,
                    .data$Retain, .data$File)
 
-  default_units <- c(NA, NA, NA, "m", "degree * C", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar", NA, NA)
+  default_units <- c(NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar", NA, NA)
   data %<>% map2_dfc(default_units, fill_units)
+  units(data$Temperature) <- NULL
+  units(data$Temperature) <- "degC"
 
   data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
 

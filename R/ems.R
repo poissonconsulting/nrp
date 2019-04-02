@@ -94,7 +94,9 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     err("analysis_type must be either 'standard' or 'metals'")
   }
 
-  data %<>% select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+  data %<>% mutate(LOWER_DEPTH = units::set_units(.data$LOWER_DEPTH, "m"),
+                   UPPER_DEPTH = units::set_units(.data$UPPER_DEPTH, "m")) %>%
+    select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
                    .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID,
                    everything(), -.data$row_id)
   data

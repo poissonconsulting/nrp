@@ -80,6 +80,8 @@ test_that("nrp_download_ctd_visit works", {
   teardown(DBI::dbDisconnect(conn))
 
   sites_db <- nrp_download_ctd_visit(db_path = conn)
+  expect_is(sites_db, "tbl_df")
+
 })
 
 test_that("nrp_download_ctd_basin_arm works", {

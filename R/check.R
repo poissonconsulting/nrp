@@ -32,7 +32,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       SiteID = "character",
       DateTime = Sys.time(),
       Depth = units::as_units("m"),
-      Temperature = units::as_units("degree * C"),
+      Temperature = units::as_units("degC"),
       Oxygen = units::as_units("mg/l"),
       Oxygen2 = units::as_units("percent"),
       Conductivity = units::as_units("uS/cm"),
@@ -49,6 +49,8 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
     exclusive = exclusive, order = order
   )
 }
+
+
 
 check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
