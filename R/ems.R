@@ -142,6 +142,8 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
+  check_ems_standard_data(data, exclusive = TRUE, order = TRUE)
+
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "standardEMS", conn = conn)
 }
@@ -159,6 +161,8 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
+
+  check_ems_metals_data(data, exclusive = TRUE, order = TRUE)
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              x_name = "metalsEMS", conn = conn)
@@ -211,9 +215,9 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_dat
   end_dateSql <- paste0("'", end_date_time, "'")
 
   if(analysis_type == "standard"){
-    table <- "`standardEMS`"
+    table <- "standardEMS"
   } else if(analysis_type == "metals"){
-    table <- "`metalsEMS`"
+    table <- "metalsEMS"
   }
 
   query <- paste0("SELECT * FROM ", table, " WHERE ((`COLLECTION_START` >= ", start_dateSql, ") AND (`COLLECTION_START` <= ",

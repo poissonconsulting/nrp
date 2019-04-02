@@ -3,5 +3,3 @@
   suppressWarnings(units::install_symbolic_unit("PSU"))
   suppressWarnings(units::install_symbolic_unit("degC"))
 }
-
-

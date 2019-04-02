@@ -80,7 +80,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
                    .data$Backscatter, .data$Fluorescence, .data$Frequency, .data$Flag, .data$Pressure,
                    .data$Retain, .data$File)
 
-  default_units <- c(NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU", "NTU", "ug/L", "Hz", NA, "dbar", NA, NA)
+  default_units <- c(NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm", "mu * S/cm", "PSU",
+                     "NTU", "ug/L", "Hz", NA, "dbar", NA, NA)
   data %<>% map2_dfc(default_units, fill_units)
   units(data$Temperature) <- NULL
   units(data$Temperature) <- "degC"
