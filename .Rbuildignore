@@ -6,6 +6,6 @@
 ^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-
+^build\.R$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING\.md$
