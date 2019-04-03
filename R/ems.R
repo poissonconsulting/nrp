@@ -5,14 +5,20 @@
 #' @param analysis_type EMS data of interest. Must be either "standard" or "metals"
 #' @return A a data frame
 #' @export
-
+#'
 nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
+
+  if(!analysis_type %in% c("standard", "metals")){
+    err("analysis_type must be either 'standard' or 'metals'")
+  }
 
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
+
+  check_ems_raw_data(data, exclusive = TRUE, order = TRUE)
 
   sites <- nrp::emsSites
   sf::st_geometry(sites) <- NULL
@@ -50,6 +56,7 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START)
 
+
     key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
                   "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
 
@@ -62,7 +69,20 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     data %<>% add_ems_detection_limit_cols(params = params_standard)
     standard_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
-    data %<>% map2_dfc(standard_units, fill_units)
+    data %<>% map2_dfc(standard_units, fill_units) %>%
+      select(.data$`SiteID`, .data$`COLLECTION_START`, .data$`COLLECTION_END`, .data$`REQUISITION_ID`, .data$`ANALYZING_AGENCY`,
+             .data$`UPPER_DEPTH`, .data$`LOWER_DEPTH`, .data$`ReplicateID`, .data$`Alkalinity Total 4.5`,
+             .data$`Limit Alkalinity Total 4.5`, .data$`Carbon Total Inorganic`, .data$`Limit Carbon Total Inorganic`,
+             .data$`Carbon Total Organic`, .data$`Limit Carbon Total Organic`, .data$`Carbon Total`,
+             .data$`Limit Carbon Total`,.data$`Nitrate (NO3) Dissolved`, .data$`Limit Nitrate (NO3) Dissolved`,
+             .data$`Nitrate(NO3) + Nitrite(NO2) Dissolved`, .data$`Limit Nitrate(NO3) + Nitrite(NO2) Dissolved`,
+             .data$`Nitrogen - Nitrite Dissolved (NO2)`,.data$`Limit Nitrogen - Nitrite Dissolved (NO2)`,
+             .data$`Nitrogen Ammonia Total`, .data$`Limit Nitrogen Ammonia Total`, .data$`Nitrogen Total`,
+             .data$`Limit Nitrogen Total`, .data$`Phosphorus Ort.Dis-P`, .data$`Limit Phosphorus Ort.Dis-P`,
+             .data$`Phosphorus Total Dissolved`, .data$`Limit Phosphorus Total Dissolved`, .data$`Phosphorus Total`,
+             .data$`Limit Phosphorus Total`, .data$`pH`, .data$`Limit pH`, .data$`Silica Reactive Diss`,
+             .data$`Limit Silica Reactive Diss`, .data$`Turbidity`, .data$`Limit Turbidity`, .data$row_id)
+
 
   } else if(analysis_type == "metals"){
     params_metals <- params$PARAMETER[params$Comment == "metals"]
@@ -90,6 +110,7 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(metals_units, fill_units)
 
+
   } else {
     err("analysis_type must be either 'standard' or 'metals'")
   }
@@ -101,7 +122,6 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
                    everything(), -.data$row_id)
   data
 }
-
 
 add_ems_detection_limit_cols <- function(data, params, sep = "/"){
   for(name in names(data)){
@@ -130,12 +150,8 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-# conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-# ems <- readRDS(path)
-# data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
-
-nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE,
+                                   strict = TRUE, silent = TRUE, replace = FALSE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -145,7 +161,7 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
   check_ems_standard_data(data, exclusive = TRUE, order = TRUE)
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
-                             x_name = "standardEMS", conn = conn)
+                             replace = replace, x_name = "standardEMS", conn = conn)
 }
 
 #' Upload EMS metals data to nrp database
@@ -155,7 +171,8 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE){
+nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE,
+                                  strict = TRUE, silent = TRUE, replace = FALSE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -165,7 +182,7 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
   check_ems_metals_data(data, exclusive = TRUE, order = TRUE)
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
-                             x_name = "metalsEMS", conn = conn)
+                             replace = replace, x_name = "metalsEMS", conn = conn)
 }
 
 #' Dowload EMS data table from database

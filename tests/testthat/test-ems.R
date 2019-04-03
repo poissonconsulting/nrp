@@ -7,7 +7,6 @@ test_that("nrp_extract_ems works", {
   ems <- readRDS(path)
   data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals")
 
-
   expect_is(data, "tbl_df")
   check_ems_metals_data(data, exclusive = TRUE, order = TRUE)
   expect_identical(nrow(data), 24L)
@@ -47,6 +46,25 @@ test_that("nrp_upload_ems works", {
 
   expect_identical(nrow(db_data), 172L)
   expect_identical(length(db_data), 38L)
+
+})
+
+test_that("nrp_upload_ems(replace = TRUE) works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+  ems <- readRDS(path)
+  data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
+  nrp_upload_ems_standard(data = data, db_path = conn)
+
+  data %<>% mutate(`Limit Turbidity` = units::as_units(1, "NTU"))
+
+  nrp_upload_ems_standard(data = data, db_path = conn, replace = TRUE)
+
+  db_data <- readwritesqlite::rws_read_table("standardEMS", conn = conn)
+
+  expect_true(all(db_data$`Limit Turbidity` == units::as_units(1, "NTU")))
+  readwritesqlite::rws_disconnect(conn)
 
 })
 

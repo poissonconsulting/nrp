@@ -87,9 +87,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL), lo
   units(data$Temperature) <- "degC"
 
   data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
-
-  check_ctd_data(data, exclusive = TRUE, order = TRUE)
-
   data$Time <- dttr::dtt_time(data$DateTime, tz = "Etc/GMT+8")
   data$Time[data$Time == 00:00:00] <- NA
   data$Date <- dttr::dtt_date(data$DateTime)
@@ -205,7 +202,6 @@ nrp_add_ctd_sites <- function(data, db_path){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-
 nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE, strict = TRUE, silent = TRUE,
                            replace = FALSE){
   conn <- db_path
@@ -213,6 +209,8 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
+
+  check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
   visit <- group_by(data, .data$SiteID, .data$Date, .data$Time) %>%
     summarise(DepthDuplicates = length(which(.data$Retain == FALSE)), File = first(.data$File)) %>%
@@ -249,12 +247,6 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL), commi
 #' @return CTD data table
 #' @export
 #'
-# start_date = "2018-01-01"
-# end_date = "2018-12-31"
-# sites = NULL
-# parameters = "all"
-# db_path <- conn
-
 nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31", sites = NULL, parameters = "all",
                          db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
