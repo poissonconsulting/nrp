@@ -1,10 +1,7 @@
-fill_units <- function(x, value){
-  if(inherits(x, "units") || !inherits(x, "numeric") || is.na(value)){
-    result <- x
-  } else {
-    result <- units::set_units(x, value, mode = "standard")
-  }
-  result
+fill_units <- function(x, value) {
+  if(inherits(x, "units") || !inherits(x, "numeric") || is.na(value))
+    return(x)
+  units::set_units(x, value, mode = "standard")
 }
 
 

@@ -1,19 +1,17 @@
 Package: nrp
 Type: Package
-Title: Nutrient Restoration Program Data Loading
+Title: Kootenay Lake Nutrient Restoration Program Data Loading
 Version: 0.0.1.0
 Authors@R: 
     c(
     person("Evan", "Amies-Galonski", role = c("aut", "cre"), email = "evan@poissonconsulting.ca", comment = c(ORCID = 0000-0003-1096-2089)),
     person("Joe", "Thorley", role = "aut", email = "joe@poissonconsulting.ca", comment = c(ORCID = "0000-0002-7683-4592"))
   )
-Description: nrp is an R package that is being developed for the 
-    Nutrient Restoration Program (NRP) to read the various data files 
-    used by the program; upload data to the NRP SQLite database; and 
-    produce key tables and plots based on the data in the NRP SQLite database.
+Description: Imports CTD and EMS data for 
+    the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.
 License: MIT + file LICENSE
 Depends:
-    R (>= 2.10)
+    R (>= 3.4)
 Imports:
     err,
     checkr (>= 0.4.0.9010),

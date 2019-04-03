@@ -324,7 +324,6 @@ check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE){
   )
 }
 
-
 check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
     data,
@@ -336,4 +335,3 @@ check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
     exclusive = exclusive, order = order
   )
 }
-

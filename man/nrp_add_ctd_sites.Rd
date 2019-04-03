@@ -8,8 +8,9 @@ nrp_add_ctd_sites(data, db_path)
 }
 \arguments{
 \item{data}{a tibble or data frame of new site data
-Must have columns "SiteID", "SiteNumber", "SiteName", "BasinArm", "Depth", as well as columns
-"easting" and "northing" with coordinates in projection UTM zone 11N.}
+Must have columns "SiteID", "SiteNumber", "SiteName", "BasinArm",
+"Depth", as well as columns
+"Easting" and "Northing" with coordinates in projection UTM zone 11N.}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
 }

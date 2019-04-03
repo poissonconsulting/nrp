@@ -21,8 +21,10 @@ the filenames.}
 \item{fail}{Should the call fail (the default) or warn if a file cannot be
 accessed.}
 
-\item{lookup}{The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
-this defaults to a dataset provided with the package that is used for reading historical data}
+\item{lookup}{The lookup table for assigning site names/dates
+(used when reading files that cannot be read by oce package).
+this defaults to a dataset provided with the package that is used for
+reading historical data}
 }
 \value{
 A list of tibbles.

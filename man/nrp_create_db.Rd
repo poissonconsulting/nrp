@@ -13,8 +13,13 @@ It must end with extension '.sqlite'.}
 \item{ask}{A flag specifying whether to ask before deleting an existing file.}
 }
 \value{
-The path to the database.
+The path to the newly created database.
 }
 \description{
 Create NRP SQLite Database
+}
+\examples{
+\dontrun{
+nrp_create_db("new_database.sqlite", TRUE)
+}
 }

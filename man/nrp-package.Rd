@@ -4,12 +4,10 @@
 \name{nrp-package}
 \alias{nrp}
 \alias{nrp-package}
-\title{nrp: Nutrient Restoration Program Data Loading}
+\title{nrp: Kootenay Lake Nutrient Restoration Program Data Loading}
 \description{
-nrp is an R package that is being developed for the 
-    Nutrient Restoration Program (NRP) to read the various data files 
-    used by the program; upload data to the NRP SQLite database; and 
-    produce key tables and plots based on the data in the NRP SQLite database.
+Imports CTD and EMS data for 
+    the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.
 }
 \author{
 \strong{Maintainer}: Evan Amies-Galonski \email{evan@poissonconsulting.ca} (-3188)

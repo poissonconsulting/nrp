@@ -298,5 +298,5 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_dat
 
 clean_key_cols <- function(data, cols) {
   cleaned_cols <- stats::complete.cases(data[, cols])
-  return(data[cleaned_cols, ])
+  data[cleaned_cols, ]
 }

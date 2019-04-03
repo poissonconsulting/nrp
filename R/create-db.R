@@ -3,8 +3,12 @@
 #' @param path A string of the path to the database to create.
 #' It must end with extension '.sqlite'.
 #' @param ask A flag specifying whether to ask before deleting an existing file.
-#' @return The path to the database.
+#' @return The path to the newly created database.
 #' @export
+#' @examples
+#' \dontrun{
+#' nrp_create_db("new_database.sqlite", TRUE)
+#' }
 nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   check_string(path)
   check_flag(ask)
@@ -14,10 +18,10 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
     file_delete(path)
   }
 
-conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
+  conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE CTD  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE CTD  (
                 FileID INTEGER NOT NULL,
                 SiteID TEXT NOT NULL,
                 Date TEXT NOT NULL,
@@ -38,9 +42,8 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
                 PRIMARY KEY (SiteID, Date, Time, Depth))"))
 
-
-suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE VisitCTD  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE VisitCTD  (
                  SiteID TEXT NOT NULL,
                  Date TEXT NOT NULL,
                  Time TEXT NOT NULL,
@@ -49,8 +52,8 @@ suppressWarnings(DBI::dbGetQuery(conn,
                  FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
                  PRIMARY KEY (SiteID, Date, Time))"))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE sitesCTD  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE sitesCTD  (
                 SiteID TEXT NOT NULL,
                 SiteNumber REAL,
                 SiteName TEXT,
@@ -60,30 +63,30 @@ suppressWarnings(DBI::dbGetQuery(conn,
                 FOREIGN KEY (BasinArm) REFERENCES BasinArm (BasinArm),
                 PRIMARY KEY (SiteID))"))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                "CREATE TABLE BasinArm  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE BasinArm  (
                 Lake TEXT NOT NULL,
                 BasinArm TEXT NOT NULL,
                 FOREIGN KEY (Lake) REFERENCES Lake (Lake)
                 PRIMARY KEY (BasinArm))"))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                                 "CREATE TABLE Lake  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE Lake  (
                                  Lake TEXT NOT NULL,
                                  Area REAL NOT NULL,
                                  geometry BLOB NOT NULL,
                                  PRIMARY KEY (Lake))"))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                                 "CREATE TABLE SitesEMS  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE SitesEMS  (
                                  SiteID TEXT NOT NULL,
                                  EmsSite TEXT NOT NULL,
                                  SiteName TEXT NOT NULL,
                                  geometry BLOB,
                                  PRIMARY KEY (SiteID))"))
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                                 "CREATE TABLE standardEMS  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE standardEMS  (
                                  SiteID TEXT NOT NULL,
                                  COLLECTION_START TEXT NOT NULL,
                                  COLLECTION_END TEXT NOT NULL,
@@ -126,8 +129,8 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
 
 
-suppressWarnings(DBI::dbGetQuery(conn,
-                                 "CREATE TABLE metalsEMS  (
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE metalsEMS  (
                                  SiteID TEXT NOT NULL,
                                  COLLECTION_START TEXT NOT NULL,
                                  COLLECTION_END TEXT NOT NULL,
@@ -280,29 +283,29 @@ suppressWarnings(DBI::dbGetQuery(conn,
                                  ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
 
 
-lakes <- nrp::lakes
-readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
+  lakes <- nrp::lakes
+  readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 
-basinArm <- nrp::basinArm
-readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
+  basinArm <- nrp::basinArm
+  readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
 
-ctdSites <- nrp::ctdSites
-readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "sitesCTD")
+  ctdSites <- nrp::ctdSites
+  readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "sitesCTD")
 
-visitCTD <- initialize_ctd_visit()
-readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visitCTD")
+  visitCTD <- initialize_ctd_visit()
+  readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visitCTD")
 
-ctd <- initialize_ctd()
-readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
+  ctd <- initialize_ctd()
+  readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
-emsSites <- nrp::emsSites
-readwritesqlite::rws_write(emsSites, exists = TRUE, conn = conn, x_name = "sitesEMS")
+  emsSites <- nrp::emsSites
+  readwritesqlite::rws_write(emsSites, exists = TRUE, conn = conn, x_name = "sitesEMS")
 
-ems_metals <- nrp::ems_metals_init
-readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
+  ems_metals <- nrp::ems_metals_init
+  readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
 
-ems_standard <- nrp::ems_standard_init
-readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
+  ems_standard <- nrp::ems_standard_init
+  readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
 
-conn
+  conn
 }
