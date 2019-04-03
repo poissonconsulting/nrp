@@ -47,6 +47,31 @@ test_that("nrp_upload_ems works", {
   expect_identical(nrow(db_data), 172L)
   expect_identical(length(db_data), 38L)
 
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+  ems <- readRDS(path)
+  data_old <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard") %>%
+    filter(COLLECTION_START <= "2018-11-05 12:00:00")
+  nrp_upload_ems_standard(data = data_old, db_path = conn)
+
+  data_new <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
+  nrp_upload_ems_standard(data = data_new, db_path = conn)
+  db_data <- readwritesqlite::rws_read_table("standardEMS", conn = conn)
+
+  expect_identical(nrow(db_data), 172L)
+  expect_identical(length(db_data), 38L)
+
+  data_old <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals") %>%
+    filter(COLLECTION_START <= "2018-09-05 18:35:00")
+  nrp_upload_ems_metals(data = data_old, db_path = conn)
+
+  data_new <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals")
+  nrp_upload_ems_metals(data = data_new, db_path = conn)
+  db_data <- readwritesqlite::rws_read_table("metalsEMS", conn = conn)
+
+  expect_identical(nrow(db_data), 24L)
+  expect_identical(length(db_data), 148L)
 })
 
 test_that("nrp_upload_ems(replace = TRUE) works", {

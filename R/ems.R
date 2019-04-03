@@ -115,8 +115,8 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     err("analysis_type must be either 'standard' or 'metals'")
   }
 
-  data %<>% mutate(LOWER_DEPTH = units::set_units(.data$LOWER_DEPTH, "m"),
-                   UPPER_DEPTH = units::set_units(.data$UPPER_DEPTH, "m")) %>%
+  data %<>% mutate(LOWER_DEPTH = units::set_units(as.numeric(.data$LOWER_DEPTH), "m"),
+                   UPPER_DEPTH = units::set_units(as.numeric(.data$UPPER_DEPTH), "m")) %>%
     select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
                    .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID,
                    everything(), -.data$row_id)
@@ -160,6 +160,29 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
 
   check_ems_standard_data(data, exclusive = TRUE, order = TRUE)
 
+  if(replace == FALSE){
+
+    query <- "SELECT COLLECTION_START FROM standardEMS WHERE COLLECTION_START = (SELECT MAX(COLLECTION_START) FROM standardEMS);"
+    result <- readwritesqlite::rws_query(query = query, conn = conn)
+
+    if(!nrow(result) == 0){
+      last_date <- result[[1, 1]]
+      date_4yr <- dttr::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
+      query <- paste0("SELECT * FROM standardEMS WHERE ((`COLLECTION_START` >= '", date_4yr, "') AND (`COLLECTION_START` <= '",
+                      last_date, "'))")
+      ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
+
+      data %<>% setdiff(ems_4year)
+
+        if(nrow(data) == 0){
+          err("The data you are attempting to upload is already in the database")
+        } else {
+          message(paste("Trimmed new data.", nrow(data), "new rows to be included in upload for date range",
+                        first(data$COLLECTION_START), "-", last(data$COLLECTION_START)))
+      }
+    }
+  }
+
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              replace = replace, x_name = "standardEMS", conn = conn)
 }
@@ -181,6 +204,28 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
 
   check_ems_metals_data(data, exclusive = TRUE, order = TRUE)
 
+  if(replace == FALSE){
+
+    query <- "SELECT COLLECTION_START FROM metalsEMS WHERE COLLECTION_START = (SELECT MAX(COLLECTION_START) FROM metalsEMS);"
+    result <- readwritesqlite::rws_query(query = query, conn = conn)
+
+    if(!nrow(result) == 0){
+      last_date <- result[[1, 1]]
+      date_4yr <- dttr::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
+      query <- paste0("SELECT * FROM metalsEMS WHERE ((`COLLECTION_START` >= '", date_4yr, "') AND (`COLLECTION_START` <= '",
+                      last_date, "'))")
+      ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
+
+      data %<>% setdiff(ems_4year)
+
+      if(nrow(data) == 0){
+        err("The data you are attempting to upload is already in the database")
+      } else {
+        message(paste("Trimmed new data.", nrow(data), "new rows to be included in upload for date range",
+                      first(data$COLLECTION_START), "-", last(data$COLLECTION_START)))
+      }
+    }
+  }
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              replace = replace, x_name = "metalsEMS", conn = conn)
 }
