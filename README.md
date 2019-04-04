@@ -11,24 +11,34 @@ status](https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true)](
 
 # nrp
 
-`nrp` is an R package that is being developed for the Nutrient
-Restoration Program (NRP). It currently provides the following
-functionality for CTD data:
+`nrp` is an R package developed for the Nutrient Restoration Program
+(NRP). It currently provides the following functionality for CTD and EMS
+data:
 
 **Read in raw data files**<br /> The package checks the validity of
-input data, and references the the CTD site table in the database to
-ensure the correct SiteID is assigned for each file. the date and units
-are extracted from the file metadata, and any missing units are filled
-in.
+input data and does some cleaning and manipulation to make the data more
+informative and useful to the user.
+
+For CTD data, the date and parameter units are extracted from the file
+meta data. The SiteID is pulled from the raw data filename, and
+validated by cross referencing it to known sites in the database.
+
+For EMS data, the data is filtered to only include the parameters and
+sites of interest for the Nutrient Restoration Program. The data is then
+restructured in a ‘wide’ format that lends itself to easy
+analysis/plotting. During the process, parameters are assigned the
+correct units, and values that were measured as the detection limit are
+set to 0. Detection limit columns for each parameter are created to
+inform the user of the detection limit each time a 0 value is
+encountered.
 
 **Upload data to the NRP SQLite database**<br /> When uploading new data
 to the database, the package checks to ensure that no duplicate data is
-present, that values fall within acceptable ranges, and that units are
-correct.
+present, and numerous checks are performed to ensure that the data’s
+structure is correct and compatible with the database.
 
-**Download CTD data**<br /> CTD data can be downloaded from the database
-with optional filtering by SiteID, date range, and parameter name. The
-CTD site table can also be downloaded from the database.
+**Download CTD data**<br /> Data can then be downloaded from the
+database with optional filtering by SiteID, date range, etc.
 
 ## Installation
 
@@ -47,51 +57,57 @@ write to, and uses some test data that travels with the package.
 ``` r
 library(nrp)
 
-# create empty database with automatically populated Site and Lake tables
+# CTD data
+
+# create empty database with automatically populated Site and BasinArm (Lake) tables
 # path = ":memory:" creates a temporory, in memory database
-conn <- nrp_create_db(path = ":memory:", ask = FALSE) 
+conn <- nrp_create_db(path = ":memory:") 
 
 # provide a path to a .cnv file
 path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
                        package = "nrp", mustWork = TRUE)
 
 # read in file
-# function looks at the database site table to assign SiteID for each file
-data <- nrp_read_ctd_file(path, db_path = conn)
-#> 132 out of 1445 duplicate depth readings removed from file /Library/Frameworks/R.framework/Versions/3.5/Resources/library/nrp/extdata/ctd/2018/KL1_27Aug2018008downcast.cnv
-
-data
-#> # A tibble: 1,313 x 14
-#>    SiteID DateTime            Depth Temperature Oxygen Oxygen2 Conductivity
-#>    <chr>  <dttm>              <S3:> <S3: units> <S3: > <S3: u> <S3: units> 
-#>  1 KL1    2018-08-27 18:05:39 -0.6… 15.6633 [°… 9.573… 96.299… 2.698 [uS/c…
-#>  2 KL1    2018-08-27 18:05:39 -0.6… 15.6636 [°… 9.573… 96.303… 2.733 [uS/c…
-#>  3 KL1    2018-08-27 18:05:39 -0.6… 15.6642 [°… 9.575… 96.324… 2.733 [uS/c…
-#>  4 KL1    2018-08-27 18:05:39 -0.6… 15.6658 [°… 9.574… 96.316… 2.733 [uS/c…
-#>  5 KL1    2018-08-27 18:05:39 -0.6… 15.6669 [°… 9.575… 96.325… 2.663 [uS/c…
-#>  6 KL1    2018-08-27 18:05:39 -0.6… 15.6668 [°… 9.575… 96.334… 2.838 [uS/c…
-#>  7 KL1    2018-08-27 18:05:39 -0.6… 15.6670 [°… 9.572… 96.295… 3.260 [uS/c…
-#>  8 KL1    2018-08-27 18:05:39 -0.6… 15.6700 [°… 9.574… 96.324… 5.015 [uS/c…
-#>  9 KL1    2018-08-27 18:05:39 -0.6… 15.6798 [°… 9.571… 96.320… 4.909 [uS/c…
-#> 10 KL1    2018-08-27 18:05:39 -0.6… 15.6880 [°… 9.569… 96.313… 5.013 [uS/c…
-#> # … with 1,303 more rows, and 7 more variables: Conductivity2 <S3: units>,
-#> #   Salinity <S3: units>, Backscatter <S3: units>, Fluorescence <S3:
-#> #   units>, Frequency <S3: units>, Flag <dbl>, Pressure <S3: units>
+ctd_data <- nrp_read_ctd_file(path, db_path = conn)
+#> 32 negative depths removed from data
 
 # upload data to the database
-nrp_upload_ctd(data = data, db_path = conn)
+nrp_upload_ctd(data = ctd_data, db_path = conn)
+#> 131 duplicate depths removed from data
 
-# download data from database, filtering by Date and SiteID
-db_data <- nrp_download_ctd(start_date = "2018-08-27",
+# download data from database, filtering by Date and SiteID and parameter
+db_ctd_data <- nrp_download_ctd(start_date = "2018-08-27",
                             end_date = "2018-08-27",
                             sites = "KL1",
+                            parameters = "all",
                             db_path = conn)
-db_data
-#> # A tibble: 0 x 14
-#> # … with 14 variables: SiteID <chr>, DateTime <dttm>, Depth <dbl>,
-#> #   Temperature <dbl>, Oxygen <dbl>, Oxygen2 <dbl>, Conductivity <dbl>,
-#> #   Conductivity2 <dbl>, Salinity <dbl>, Backscatter <dbl>,
-#> #   Fluorescence <dbl>, Frequency <dbl>, Flag <dbl>, Pressure <int>
+
+
+# EMS data
+
+# read in raw ems data
+path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+ems_raw <- readRDS(path)
+
+# extract into wide fromat that fits the nrp database, chooing either the 'metals' or 'standard' analysis_type
+ems_data <- nrp_extract_ems(data = ems_raw, db_path = conn, analysis_type = "standard")
+
+# upload data to database
+nrp_upload_ems_standard(data = ems_data, db_path = conn)
+
+# download data from database, filtering by Date, SiteID, and analysis_type. 
+# You can also choose to exlude detection limit columns
+db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00",
+                                     end_date_time = "2018-07-31 13:28:00",
+                                     sites = NULL,
+                                     db_path = conn,
+                                     analysis_type = "standard",
+                                     show_detection_limits = TRUE)
+
+
+
+# close connection
+readwritesqlite::rws_disconnect(conn)
 ```
 
 ## Getting Help or Reporting an Issue

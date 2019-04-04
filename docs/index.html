@@ -67,10 +67,12 @@
 <div id="nrp" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#nrp" class="anchor"></a>nrp</h1></div>
-<p><code>nrp</code> is an R package that is being developed for the Nutrient Restoration Program (NRP). It currently provides the following functionality for CTD data:</p>
-<p><strong>Read in raw data files</strong><br> The package checks the validity of input data, and references the the CTD site table in the database to ensure the correct SiteID is assigned for each file. the date and units are extracted from the file metadata, and any missing units are filled in.</p>
-<p><strong>Upload data to the NRP SQLite database</strong><br> When uploading new data to the database, the package checks to ensure that no duplicate data is present, that values fall within acceptable ranges, and that units are correct.</p>
-<p><strong>Download CTD data</strong><br> CTD data can be downloaded from the database with optional filtering by SiteID, date range, and parameter name. The CTD site table can also be downloaded from the database.</p>
+<p><code>nrp</code> is an R package developed for the Nutrient Restoration Program (NRP). It currently provides the following functionality for CTD and EMS data:</p>
+<p><strong>Read in raw data files</strong><br> The package checks the validity of input data and does some cleaning and manipulation to make the data more informative and useful to the user.</p>
+<p>For CTD data, the date and parameter units are extracted from the file meta data. The SiteID is pulled from the raw data filename, and validated by cross referencing it to known sites in the database.</p>
+<p>For EMS data, the data is filtered to only include the parameters and sites of interest for the Nutrient Restoration Program. The data is then restructured in a ‘wide’ format that lends itself to easy analysis/plotting. During the process, parameters are assigned the correct units, and values that were measured as the detection limit are set to 0. Detection limit columns for each parameter are created to inform the user of the detection limit each time a 0 value is encountered.</p>
+<p><strong>Upload data to the NRP SQLite database</strong><br> When uploading new data to the database, the package checks to ensure that no duplicate data is present, and numerous checks are performed to ensure that the data’s structure is correct and compatible with the database.</p>
+<p><strong>Download CTD data</strong><br> Data can then be downloaded from the database with optional filtering by SiteID, date range, etc.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -85,65 +87,57 @@ devtools::install_github("poissonconsulting/nrp")</a></code></pre>
 <p>For simplicity, this demo uses an empty, temporary database to read and write to, and uses some test data that travels with the package.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(nrp)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># create empty database with automatically populated Site and Lake tables</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># path = ":memory:" creates a temporory, in memory database</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>, <span class="dt">ask =</span> <span class="ot">FALSE</span>) </a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># provide a path to a .cnv file</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># read in file</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co"># function looks at the database site table to assign SiteID for each file</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co">#&gt; 32 negative depths removed from data</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">data</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt; # A tibble: 1,413 x 18</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="co">#&gt;    FileID SiteID Date       Time  Depth Temperature Oxygen Oxygen2</span></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt;     &lt;int&gt; &lt;chr&gt;  &lt;date&gt;     &lt;tim&gt; &lt;S3:&gt; &lt;S3: units&gt; &lt;S3: &gt; &lt;S3: u&gt;</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20"><span class="co">#&gt;  1      1 KL1    2018-08-27 18:05 0.09… 17.4318 [d… 9.391… 98.081…</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co">#&gt;  2      2 KL1    2018-08-27 18:05 0.19… 17.4351 [d… 9.289… 97.025…</span></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co">#&gt;  3      3 KL1    2018-08-27 18:05 0.27… 17.4376 [d… 9.121… 95.273…</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt;  4      4 KL1    2018-08-27 18:05 0.32… 17.4393 [d… 8.911… 93.077…</span></a>
-<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="co">#&gt;  5      5 KL1    2018-08-27 18:05 0.33… 17.4379 [d… 8.677… 90.631…</span></a>
-<a class="sourceLine" id="cb2-25" data-line-number="25"><span class="co">#&gt;  6      6 KL1    2018-08-27 18:05 0.29… 17.4121 [d… 8.443… 88.146…</span></a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"><span class="co">#&gt;  7      7 KL1    2018-08-27 18:05 0.27… 17.3812 [d… 8.226… 85.822…</span></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co">#&gt;  8      8 KL1    2018-08-27 18:05 0.26… 17.3667 [d… 8.042… 83.875…</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="co">#&gt;  9      9 KL1    2018-08-27 18:05 0.28… 17.3781 [d… 7.905… 82.469…</span></a>
-<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="co">#&gt; 10     10 KL1    2018-08-27 18:05 0.31… 17.3954 [d… 7.818… 81.588…</span></a>
-<a class="sourceLine" id="cb2-30" data-line-number="30"><span class="co">#&gt; # … with 1,403 more rows, and 10 more variables: Conductivity &lt;S3: units&gt;,</span></a>
-<a class="sourceLine" id="cb2-31" data-line-number="31"><span class="co">#&gt; #   Conductivity2 &lt;S3: units&gt;, Salinity &lt;S3: units&gt;, Backscatter &lt;S3:</span></a>
-<a class="sourceLine" id="cb2-32" data-line-number="32"><span class="co">#&gt; #   units&gt;, Fluorescence &lt;S3: units&gt;, Frequency &lt;S3: units&gt;, Flag &lt;dbl&gt;,</span></a>
-<a class="sourceLine" id="cb2-33" data-line-number="33"><span class="co">#&gt; #   Pressure &lt;S3: units&gt;, Retain &lt;lgl&gt;, File &lt;chr&gt;</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># CTD data</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co"># create empty database with automatically populated Site and BasinArm (Lake) tables</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># path = ":memory:" creates a temporory, in memory database</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>) </a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># provide a path to a .cnv file</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># read in file</span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; 32 negative depths removed from data</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co"># upload data to the database</span></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> ctd_data, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#&gt; 131 duplicate depths removed from data</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">db_ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25">                            <span class="dt">parameters =</span> <span class="st">"all"</span>,</a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">                            <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="co"># EMS data</span></a>
+<a class="sourceLine" id="cb2-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb2-31" data-line-number="31"><span class="co"># read in raw ems data</span></a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">ems_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS</a></span>(path)</a>
 <a class="sourceLine" id="cb2-34" data-line-number="34"></a>
-<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co"># upload data to the database</span></a>
-<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> data, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-37" data-line-number="37"><span class="co">#&gt; 131 duplicate depths removed from data</span></a>
+<a class="sourceLine" id="cb2-35" data-line-number="35"><span class="co"># extract into wide fromat that fits the nrp database, chooing either the</span></a>
+<a class="sourceLine" id="cb2-36" data-line-number="36"><span class="co"># 'metals' or 'standard' analysis_type</span></a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">ems_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_extract_ems.html">nrp_extract_ems</a></span>(<span class="dt">data =</span> ems_raw, <span class="dt">db_path =</span> conn, <span class="dt">analysis_type =</span> <span class="st">"standard"</span>)</a>
 <a class="sourceLine" id="cb2-38" data-line-number="38"></a>
-<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co"># download data from database, filtering by Date and SiteID</span></a>
-<a class="sourceLine" id="cb2-40" data-line-number="40">db_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-41" data-line-number="41">                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-42" data-line-number="42">                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</a>
-<a class="sourceLine" id="cb2-43" data-line-number="43">                            <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-44" data-line-number="44">db_data</a>
-<a class="sourceLine" id="cb2-45" data-line-number="45"><span class="co">#&gt; # A tibble: 1,282 x 16</span></a>
-<a class="sourceLine" id="cb2-46" data-line-number="46"><span class="co">#&gt;    FileID SiteID Date       Time  Depth Temperature Oxygen Oxygen2</span></a>
-<a class="sourceLine" id="cb2-47" data-line-number="47"><span class="co">#&gt;     &lt;int&gt; &lt;chr&gt;  &lt;date&gt;     &lt;tim&gt; &lt;S3:&gt; &lt;S3: units&gt; &lt;S3: &gt; &lt;S3: u&gt;</span></a>
-<a class="sourceLine" id="cb2-48" data-line-number="48"><span class="co">#&gt;  1      1 KL1    2018-08-27 18:05 0.09… 17.4318 [d… 9.391… 98.081…</span></a>
-<a class="sourceLine" id="cb2-49" data-line-number="49"><span class="co">#&gt;  2    194 KL1    2018-08-27 18:05 0.14… 17.4961 [d… 9.408… 98.392…</span></a>
-<a class="sourceLine" id="cb2-50" data-line-number="50"><span class="co">#&gt;  3    193 KL1    2018-08-27 18:05 0.14… 17.4950 [d… 9.413… 98.439…</span></a>
-<a class="sourceLine" id="cb2-51" data-line-number="51"><span class="co">#&gt;  4    183 KL1    2018-08-27 18:05 0.16… 17.4941 [d… 9.412… 98.427…</span></a>
-<a class="sourceLine" id="cb2-52" data-line-number="52"><span class="co">#&gt;  5    273 KL1    2018-08-27 18:05 0.16… 17.4992 [d… 9.446… 98.792…</span></a>
-<a class="sourceLine" id="cb2-53" data-line-number="53"><span class="co">#&gt;  6    217 KL1    2018-08-27 18:05 0.17… 17.4952 [d… 9.459… 98.917…</span></a>
-<a class="sourceLine" id="cb2-54" data-line-number="54"><span class="co">#&gt;  7    218 KL1    2018-08-27 18:05 0.17… 17.4959 [d… 9.445… 98.773…</span></a>
-<a class="sourceLine" id="cb2-55" data-line-number="55"><span class="co">#&gt;  8    205 KL1    2018-08-27 18:05 0.17… 17.4987 [d… 9.373… 98.032…</span></a>
-<a class="sourceLine" id="cb2-56" data-line-number="56"><span class="co">#&gt;  9    206 KL1    2018-08-27 18:05 0.17… 17.4985 [d… 9.355… 97.837…</span></a>
-<a class="sourceLine" id="cb2-57" data-line-number="57"><span class="co">#&gt; 10    272 KL1    2018-08-27 18:05 0.18… 17.4999 [d… 9.440… 98.734…</span></a>
-<a class="sourceLine" id="cb2-58" data-line-number="58"><span class="co">#&gt; # … with 1,272 more rows, and 8 more variables: Conductivity &lt;S3: units&gt;,</span></a>
-<a class="sourceLine" id="cb2-59" data-line-number="59"><span class="co">#&gt; #   Conductivity2 &lt;S3: units&gt;, Salinity &lt;S3: units&gt;, Backscatter &lt;S3:</span></a>
-<a class="sourceLine" id="cb2-60" data-line-number="60"><span class="co">#&gt; #   units&gt;, Fluorescence &lt;S3: units&gt;, Frequency &lt;S3: units&gt;, Flag &lt;dbl&gt;,</span></a>
-<a class="sourceLine" id="cb2-61" data-line-number="61"><span class="co">#&gt; #   Pressure &lt;S3: units&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-39" data-line-number="39"><span class="co"># upload data to database</span></a>
+<a class="sourceLine" id="cb2-40" data-line-number="40"><span class="kw"><a href="reference/nrp_upload_ems_standard.html">nrp_upload_ems_standard</a></span>(<span class="dt">data =</span> ems_data, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42"><span class="co"># download data from database, filtering by Date, SiteID, and analysis_type. </span></a>
+<a class="sourceLine" id="cb2-43" data-line-number="43"><span class="co"># You can also choose to exlude detection limit columns</span></a>
+<a class="sourceLine" id="cb2-44" data-line-number="44">db_ems_data_standard &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems.html">nrp_download_ems</a></span>(<span class="dt">start_date_time =</span> <span class="st">"2018-07-03 13:48:00"</span>,</a>
+<a class="sourceLine" id="cb2-45" data-line-number="45">                                     <span class="dt">end_date_time =</span> <span class="st">"2018-07-31 13:28:00"</span>,</a>
+<a class="sourceLine" id="cb2-46" data-line-number="46">                                     <span class="dt">sites =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb2-47" data-line-number="47">                                     <span class="dt">db_path =</span> conn,</a>
+<a class="sourceLine" id="cb2-48" data-line-number="48">                                     <span class="dt">analysis_type =</span> <span class="st">"standard"</span>,</a>
+<a class="sourceLine" id="cb2-49" data-line-number="49">                                     <span class="dt">show_detection_limits =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-50" data-line-number="50"></a>
+<a class="sourceLine" id="cb2-51" data-line-number="51"></a>
+<a class="sourceLine" id="cb2-52" data-line-number="52"><span class="co"># close connection</span></a>
+<a class="sourceLine" id="cb2-53" data-line-number="53">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
 </div>
 <div id="getting-help-or-reporting-an-issue" class="section level2">
 <h2 class="hasAnchor">
