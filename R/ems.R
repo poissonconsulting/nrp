@@ -96,6 +96,10 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START)
 
+    if(!"Hydroxide Alkalinityunit:mg/L" %in% names(data)){
+      data$`Hydroxide Alkalinityunit:mg/L` <- NA_real_
+    }
+
     key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
                   "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
 
@@ -109,10 +113,49 @@ nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
     metals_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(metals_units, fill_units)
-
-
-  } else {
-    err("analysis_type must be either 'standard' or 'metals'")
+    data %<>% select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID, .data$ANALYZING_AGENCY,
+             .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID, .data$`Alkalinity Phen. 8.3`,
+             .data$`Limit Alkalinity Phen. 8.3`, .data$`Aluminum Dissolved`, .data$`Limit Aluminum Dissolved`,
+             .data$`Aluminum Total`, .data$`Limit Aluminum Total`, .data$`Antimony Dissolved`,
+             .data$`Limit Antimony Dissolved`, .data$`Antimony Total`, .data$`Limit Antimony Total`,
+             .data$`Arsenic Dissolved`, .data$`Limit Arsenic Dissolved`, .data$`Arsenic Total`, .data$`Limit Arsenic Total`,
+             .data$`Barium Dissolved`, .data$`Limit Barium Dissolved`, .data$`Barium Total`, .data$`Limit Barium Total`,
+             .data$`Beryllium Dissolved`, .data$`Limit Beryllium Dissolved`, .data$`Beryllium Total`,
+             .data$`Limit Beryllium Total`, .data$`Bicarbonate Alkalinity`, .data$`Limit Bicarbonate Alkalinity`,
+             .data$`Bismuth Dissolved`, .data$`Limit Bismuth Dissolved`, .data$`Bismuth Total`, .data$`Limit Bismuth Total`,
+             .data$`Boron Dissolved`, .data$`Limit Boron Dissolved`, .data$`Boron Total`, .data$`Limit Boron Total`,
+             .data$`Cadmium Dissolved`, .data$`Limit Cadmium Dissolved`, .data$`Cadmium Total`, .data$`Limit Cadmium Total`,
+             .data$`Calcium Dissolved`, .data$`Limit Calcium Dissolved`, .data$`Calcium Total`, .data$`Limit Calcium Total`,
+             .data$`Carbonate Alkalinity`, .data$`Limit Carbonate Alkalinity`, .data$`Chromium Dissolved`,
+             .data$`Limit Chromium Dissolved`, .data$`Chromium Total`, .data$`Limit Chromium Total`,
+             .data$`Cobalt Dissolved`, .data$`Limit Cobalt Dissolved`, .data$`Cobalt Total`, .data$`Limit Cobalt Total`,
+             .data$`Copper Dissolved`, .data$`Limit Copper Dissolved`, .data$`Copper Total`, .data$`Limit Copper Total`,
+             .data$`Hardness (Dissolved)`, .data$`Limit Hardness (Dissolved)`, .data$`Hardness Total (Total)`,
+             .data$`Limit Hardness Total (Total)`, .data$`Hydroxide Alkalinity`, .data$`Limit Hydroxide Alkalinity`,
+             .data$`Iron Dissolved`, .data$`Limit Iron Dissolved`, .data$`Iron Total`, .data$`Limit Iron Total`,
+             .data$`Lead Dissolved`, .data$`Limit Lead Dissolved`,.data$`Lead Total`, .data$`Limit Lead Total`,
+             .data$`Magnesium Dissolved`, .data$`Limit Magnesium Dissolved`, .data$`Magnesium Total`,
+             .data$`Limit Magnesium Total`, .data$`Manganese Dissolved`, .data$`Limit Manganese Dissolved`,
+             .data$`Manganese Total`, .data$`Limit Manganese Total`, .data$`Molybdenum Dissolved`,
+             .data$`Limit Molybdenum Dissolved`, .data$`Molybdenum Total`, .data$`Limit Molybdenum Total`,
+             .data$`Nickel Dissolved`, .data$`Limit Nickel Dissolved`, .data$`Nickel Total`, .data$`Limit Nickel Total`,
+             .data$`Phosphorus Total Dissolved metals`, .data$`Limit Phosphorus Total Dissolved metals`,
+             .data$`Phosphorus Total metals`, .data$`Limit Phosphorus Total metals`, .data$`Potassium Dissolved`,
+             .data$`Limit Potassium Dissolved`, .data$`Potassium Total`, .data$`Limit Potassium Total`,
+             .data$`Selenium Dissolved`, .data$`Limit Selenium Dissolved`, .data$`Selenium Total`,
+             .data$`Limit Selenium Total`, .data$`Silicon Dissolved`, .data$`Limit Silicon Dissolved`,
+             .data$`Silicon Total`, .data$`Limit Silicon Total`, .data$`Silver Dissolved`, .data$`Limit Silver Dissolved`,
+             .data$`Silver Total`, .data$`Limit Silver Total`, .data$`Sodium Dissolved`, .data$`Limit Sodium Dissolved`,
+             .data$`Sodium Total`, .data$`Limit Sodium Total`, .data$`Strontium Dissolved`, .data$`Limit Strontium Dissolved`,
+             .data$`Strontium Total`, .data$`Limit Strontium Total`, .data$`Sulfur Dissolved`,
+             .data$`Limit Sulfur Dissolved`, .data$`Sulfur Total`, .data$`Limit Sulfur Total`, .data$`Thallium Dissolved`,
+             .data$`Limit Thallium Dissolved`, .data$`Thallium Total`, .data$`Limit Thallium Total`, .data$`Tin Dissolved`,
+             .data$`Limit Tin Dissolved`, .data$`Tin Total`, .data$`Limit Tin Total`, .data$`Titanium Dissolved`,
+             .data$`Limit Titanium Dissolved`, .data$`Titanium Total`, .data$`Limit Titanium Total`,
+             .data$`Uranium Dissolved`, .data$`Limit Uranium Dissolved`, .data$`Uranium Total`, .data$`Limit Uranium Total`,
+             .data$`Vanadium Dissolved`, .data$`Limit Vanadium Dissolved`, .data$`Vanadium Total`,
+             .data$`Limit Vanadium Total`, .data$`Zinc Dissolved`, .data$`Limit Zinc Dissolved`, .data$`Zinc Total`,
+             .data$`Limit Zinc Total`, .data$row_id)
   }
 
   data %<>% mutate(LOWER_DEPTH = units::set_units(as.numeric(.data$LOWER_DEPTH), "m"),
