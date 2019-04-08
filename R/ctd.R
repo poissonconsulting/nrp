@@ -4,10 +4,11 @@
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @param lookup The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
 #' this defaults to a dataset provided with the package that is used for reading historical data
+#' @param skip The number of lines to skip when reading historic data that cannot be read in by the normal method.
 #' @return A tibble
 #' @export
 nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
-                              lookup = nrp::site_date_lookup) {
+                              lookup = nrp::site_date_lookup, skip = 100) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
 
@@ -56,7 +57,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
                    "Conductivity","Conductivity2","Salinity","Backscatter",
                    "Fluorescence","Flag")
 
-    data <- utils::read.table(file = path, col.names = col_names, skip = 100)
+    data <- utils::read.table(file = path, col.names = col_names, skip = skip)
     data$Pressure <- NA_real_
     data$Frequency <- NA_real_
 

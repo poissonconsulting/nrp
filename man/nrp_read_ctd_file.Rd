@@ -5,7 +5,7 @@
 \title{Read CTD File}
 \usage{
 nrp_read_ctd_file(path, db_path = getOption("nrp.db_path", NULL),
-  lookup = nrp::site_date_lookup)
+  lookup = nrp::site_date_lookup, skip = 100)
 }
 \arguments{
 \item{path}{A string of the path to the file.}
@@ -14,6 +14,8 @@ nrp_read_ctd_file(path, db_path = getOption("nrp.db_path", NULL),
 
 \item{lookup}{The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
 this defaults to a dataset provided with the package that is used for reading historical data}
+
+\item{skip}{The number of lines to skip when reading historic data that cannot be read in by the normal method.}
 }
 \value{
 A tibble
