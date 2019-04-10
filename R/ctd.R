@@ -98,7 +98,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
 
   data %<>% select(.data$FileID, .data$SiteID, .data$Date, .data$Time,
                    everything(), -.data$DateTime)
-
   data
 }
 
@@ -221,7 +220,6 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL),
     summarise(DepthDuplicates = length(which(.data$Retain == FALSE)),
               File = first(.data$File)) %>%
     ungroup()
-
 
   visit_db <- nrp_download_ctd_visit(db_path = conn)
   visit_upload <- setdiff(visit, visit_db)

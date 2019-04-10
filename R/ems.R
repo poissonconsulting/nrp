@@ -215,7 +215,8 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
                       last_date, "'))")
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
-      data %<>% setdiff(ems_4year)
+      data %<>% setdiff(ems_4year) %>%
+        filter(.data$COLLECTION_START > last_date)
 
         if(nrow(data) == 0){
           err("The data you are attempting to upload is already in the database")
@@ -259,7 +260,8 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
                       last_date, "'))")
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
-      data %<>% setdiff(ems_4year)
+      data %<>% setdiff(ems_4year) %>%
+        filter(.data$COLLECTION_START > last_date)
 
       if(nrow(data) == 0){
         err("The data you are attempting to upload is already in the database")
