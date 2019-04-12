@@ -6,7 +6,7 @@
 #' @return A a data frame
 #' @export
 #'
-nrp_extract_ems <- function(data, db_path, analysis_type = "standard"){
+nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), analysis_type = "standard"){
 
   if(!analysis_type %in% c("standard", "metals")){
     err("analysis_type must be either 'standard' or 'metals'")

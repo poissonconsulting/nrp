@@ -184,7 +184,7 @@ nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL))
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @export
 #'
-nrp_add_ctd_sites <- function(data, db_path){
+nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", NULL)){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)

@@ -4,7 +4,8 @@
 \alias{nrp_extract_ems}
 \title{Extract and clean EMS data}
 \usage{
-nrp_extract_ems(data, db_path, analysis_type = "standard")
+nrp_extract_ems(data, db_path = getOption("nrp.db_path", NULL),
+  analysis_type = "standard")
 }
 \arguments{
 \item{data}{The EMS data to be extracted. Data must first be downloaded from server by using rems package}
