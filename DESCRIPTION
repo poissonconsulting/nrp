@@ -13,7 +13,7 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.4)
 Imports:
-    err,
+    err (>= 0.0.1.9002),
     checkr (>= 0.4.0.9010),
     yesno,
     fs,
