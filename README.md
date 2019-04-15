@@ -1,8 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-[![BCDevExchange
-Status](https://assets.bcdevexchange.org/images/badges/exploration.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
+[![Lifecycle:
+maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis Build
 Status](https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm1xTQLb&branch=master)](https://www.travis-ci.com/poissonconsulting/nrp)
 [![AppVeyor build
@@ -52,14 +52,17 @@ To install the latest development version from
 ## Demonstration
 
 For simplicity, this demo uses an empty, temporary database to read and
-write to, and uses some test data that travels with the package.
+write to, and uses some test data that travels with the package. When
+connecting to a proper database, you don’t need to create a database
+connection at the start, just provide the file path to the database for
+the argument “db\_path” in all function calls.
 
 ``` r
 library(nrp)
 
 # CTD data
 
-# create empty database with automatically populated Site and BasinArm (Lake) tables
+# create empty database
 # path = ":memory:" creates a temporory, in memory database
 conn <- nrp_create_db(path = ":memory:") 
 
@@ -89,7 +92,8 @@ db_ctd_data <- nrp_download_ctd(start_date = "2018-08-27",
 path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
 ems_raw <- readRDS(path)
 
-# extract into wide fromat that fits the nrp database, chooing either the 'metals' or 'standard' analysis_type
+# extract into wide fromat that fits the nrp database, chooing either the
+# 'metals' or 'standard' analysis_type
 ems_data <- nrp_extract_ems(data = ems_raw, db_path = conn, analysis_type = "standard")
 
 # upload data to database
@@ -104,7 +108,17 @@ db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00"
                                      analysis_type = "standard",
                                      show_detection_limits = TRUE)
 
+# You can also use global options for connecting to the database. Once you've set
+# the global option "nrp.db_path" for the database you want to connect to,
+# you don't have to provide the db_path argument any more within that R session
+options(nrp.db_path = conn) # This could also be a file path to a database
 
+# Now we dont need to provide db_path:
+db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00",
+                                     end_date_time = "2018-07-31 13:28:00",
+                                     sites = NULL,
+                                     analysis_type = "standard",
+                                     show_detection_limits = TRUE)
 
 # close connection
 readwritesqlite::rws_disconnect(conn)

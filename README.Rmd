@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-[![BCDevExchange Status](https://assets.bcdevexchange.org/images/badges/exploration.svg)](https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md)
+[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis Build Status](https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm1xTQLb&branch=master)](https://www.travis-ci.com/poissonconsulting/nrp)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true)](https://ci.appveyor.com/project/joethorley/nrp)
 [![codecov](https://codecov.io/gh/poissonconsulting/nrp/branch/master/graph/badge.svg?token=BYPzzOPDrd)](https://codecov.io/gh/poissonconsulting/nrp)
@@ -45,14 +45,14 @@ devtools::install_github("poissonconsulting/nrp")
 ```
 ## Demonstration
 
-For simplicity, this demo uses an empty, temporary database to read and write to, and uses some test data that travels with the package.
+For simplicity, this demo uses an empty, temporary database to read and write to, and uses some test data that travels with the package. When connecting to a proper database, you don't need to create a database connection at the start, just provide the file path to the database for the argument "db_path" in all function calls.
 
 ```{r}
 library(nrp)
 
 # CTD data
 
-# create empty database with automatically populated Site and BasinArm (Lake) tables
+# create empty database
 # path = ":memory:" creates a temporory, in memory database
 conn <- nrp_create_db(path = ":memory:") 
 
@@ -96,6 +96,17 @@ db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00"
                                      analysis_type = "standard",
                                      show_detection_limits = TRUE)
 
+# You can also use global options for connecting to the database. Once you've set
+# the global option "nrp.db_path" for the database you want to connect to,
+# you don't have to provide the db_path argument any more within that R session
+options(nrp.db_path = conn) # This could also be a file path to a database
+
+# Now we dont need to provide db_path:
+db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00",
+                                     end_date_time = "2018-07-31 13:28:00",
+                                     sites = NULL,
+                                     analysis_type = "standard",
+                                     show_detection_limits = TRUE)
 
 # close connection
 readwritesqlite::rws_disconnect(conn)
