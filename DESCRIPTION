@@ -13,7 +13,7 @@ License: MIT + file LICENSE
 Depends:
     R (>= 3.4)
 Imports:
-    err (>= 0.0.1.9002),
+    err,
     checkr (>= 0.4.0.9010),
     yesno,
     fs,
@@ -37,7 +37,8 @@ Remotes:
 	  poissonconsulting/readwritesqlite,
 	  poissonconsulting/dttr, 
 	  poissonconsulting/poisspatial, 
-	  poissonconsulting/checkr
+	  poissonconsulting/checkr, 
+	  poissonconsulting/err
 Suggests: 
     testthat,
     covr
