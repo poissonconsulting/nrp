@@ -30,7 +30,8 @@ analysis/plotting. During the process, parameters are assigned the
 correct units, and values that were measured as the detection limit are
 set to 0. Detection limit columns for each parameter are created to
 inform the user of the detection limit each time a 0 value is
-encountered.
+encountered. EMS metals and EMS standard are stored in separate tables
+in the database.
 
 **Upload data to the NRP SQLite database**<br /> When uploading new data
 to the database, the package checks to ensure that no duplicate data is
@@ -51,16 +52,16 @@ To install the latest development version from
 
 ## Demonstration
 
-For simplicity, this demo uses an empty, temporary database to read and
-write to, and uses some test data that travels with the package. When
-connecting to a proper database, you don’t need to create a database
-connection at the start, just provide the file path to the database for
-the argument “db\_path” in all function calls.
+For simplicity, this demonstration uses the function `nrp_create_db` to
+create an empty, temporary database to read and write to, and uses some
+test data that travels with the package. When connecting to a proper
+database, just provide the file path to the database for the argument
+`db_path` in all function calls and the connection will be made
+automatically. Alternatively you can connect to a database in R and then
+supply that connection object for the argument `db_path`.
 
 ``` r
 library(nrp)
-
-# CTD data
 
 # create empty database
 # path = ":memory:" creates a temporory, in memory database
@@ -84,10 +85,21 @@ db_ctd_data <- nrp_download_ctd(start_date = "2018-08-27",
                             sites = "KL1",
                             parameters = "all",
                             db_path = conn)
+```
 
+When updating EMS data, the user must supply thier own data set which
+can be easily obtained using a funtion from the `rems` package:
+`get_ems_data(which = "4yr")`. The four year data set must be used as
+the two year data has different structure that does not contain all the
+parameters needed for use with nrp functions. Once you have the four
+year data set loaded in the environment you can easily upload it to the
+database with nrp functions. You don’t have to worry about uploading
+duplicate data as the nrp function for uploading will automatically trim
+the input data so that only new data is added to the database. For this
+demonstration we use a light wieght sample of raw EMS data that travels
+with the package.
 
-# EMS data
-
+``` r
 # read in raw ems data
 path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
 ems_raw <- readRDS(path)
@@ -107,20 +119,36 @@ db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00"
                                      db_path = conn,
                                      analysis_type = "standard",
                                      show_detection_limits = TRUE)
+```
 
-# You can also use global options for connecting to the database. Once you've set
-# the global option "nrp.db_path" for the database you want to connect to,
-# you don't have to provide the db_path argument any more within that R session
-options(nrp.db_path = conn) # This could also be a file path to a database
+There are additional funtions in the nrp package that allow for easy
+downloading of other tables in the database.
 
-# Now we dont need to provide db_path:
-db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00",
-                                     end_date_time = "2018-07-31 13:28:00",
-                                     sites = NULL,
-                                     analysis_type = "standard",
-                                     show_detection_limits = TRUE)
+``` r
+# Lakes and BasinArm tables
+lakes <- nrp_download_lakes(db_path = conn)
+basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
 
-# close connection
+# site tables
+ctd_sites <- nrp_download_ctd_sites(db_path = conn)
+ems_sites <- nrp_download_ems_sites(db_path = conn)
+
+# ctd visit table
+ctd_visit <- nrp_download_ctd_visit(db_path = conn)
+
+# Tip: the nrp functions can also use global options to automatically know
+# what database to connect to. Once you've set the global option "nrp.db_path"
+# for the database you want to connect to, you don't have to provide
+# the db_path argument any more within that R session
+
+options(nrp.db_path = conn) # "conn" can also be a file path to a database
+
+# now we can do things like:
+lakes <- nrp_download_lakes()
+
+
+# we conclude the demo by closing the database connection
+# If you are providing a file path to the database, you do not need to do this
 readwritesqlite::rws_disconnect(conn)
 ```
 

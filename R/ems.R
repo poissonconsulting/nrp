@@ -345,3 +345,22 @@ clean_key_cols <- function(data, cols) {
   cleaned_cols <- stats::complete.cases(data[, cols])
   data[cleaned_cols, ]
 }
+
+#' Download EMS site table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return EMS site table
+#' @export
+#'
+nrp_download_ems_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+  readwritesqlite::rws_read_table("sitesEMS", conn = conn)
+}
+
+
+
+

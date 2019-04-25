@@ -160,7 +160,7 @@ nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
 }
 
 
-#' Download CTD BasinArm table
+#' Download BasinArm table
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @return CTD BasinArm table
 #' @export
@@ -175,6 +175,23 @@ nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL))
 
   readwritesqlite::rws_read_table("BasinArm", conn = conn)
 }
+
+#' Download Lake table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return CTD Lakes table
+#' @export
+#'
+nrp_download_lakes <- function(db_path = getOption("nrp.db_path", NULL)) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  readwritesqlite::rws_read_table("Lake", conn = conn)
+}
+
 
 #' Add new ctd sites to database site table
 #' @param data a tibble or data frame of new site data

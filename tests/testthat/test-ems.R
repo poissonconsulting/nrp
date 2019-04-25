@@ -138,3 +138,14 @@ test_that("nrp_download_ems works", {
   expect_identical(nrow(db_data_standard), 48L)
 })
 
+test_that("nrp_download_ems_sites works", {
+
+  conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  sites_db <- nrp_download_ems_sites(db_path = conn)
+  sites_raw_data <- nrp::emsSites
+
+  expect_identical(nrow(sites_db), nrow(sites_raw_data))
+  expect_identical(names(sites_db), names(sites_raw_data))
+})

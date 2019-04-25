@@ -8,6 +8,9 @@ ctdSites <- read_csv("data-raw/ctdSites.csv") %>%
 emsSites <- read_csv("data-raw/emsSites.csv") %>%
   ps_coords_to_sfc(crs = 26911)
 
+# mapview(emsSites, color = "yellow") +
+#   mapview(ctdSites)
+
 
 ems_param_lookup <- read_excel("~/Poisson/Data/nrp-database-19/Chem Data/Reference files/Chem_parameter_lookup.xlsx")
 ems_param_lookup %<>%  mutate(PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total") &

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ctd.R
 \name{nrp_download_ctd_basin_arm}
 \alias{nrp_download_ctd_basin_arm}
-\title{Download CTD BasinArm table}
+\title{Download BasinArm table}
 \usage{
 nrp_download_ctd_basin_arm(db_path = getOption("nrp.db_path", NULL))
 }
@@ -13,5 +13,5 @@ nrp_download_ctd_basin_arm(db_path = getOption("nrp.db_path", NULL))
 CTD BasinArm table
 }
 \description{
-Download CTD BasinArm table
+Download BasinArm table
 }
