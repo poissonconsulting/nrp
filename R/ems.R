@@ -361,6 +361,3 @@ nrp_download_ems_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
   readwritesqlite::rws_read_table("sitesEMS", conn = conn)
 }
 
-
-
-
