@@ -39,7 +39,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                 Flag REAL,
                 Pressure INTEGER,
                 FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
-                FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
+                FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
                 PRIMARY KEY (SiteID, Date, Time, Depth))"))
 
   suppressWarnings(DBI::dbGetQuery(conn,
@@ -49,14 +49,15 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                  Time TEXT NOT NULL,
                  DepthDuplicates INTEGER NOT NULL,
                  File TEXT NOT NULL,
-                 FOREIGN KEY (SiteID) REFERENCES sitesCTD (SiteID),
+                 FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
                  PRIMARY KEY (SiteID, Date, Time))"))
 
   suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE sitesCTD  (
+                                   "CREATE TABLE Sites  (
                 SiteID TEXT NOT NULL,
-                SiteNumber REAL,
+                EmsSiteNumber REAL,
                 SiteName TEXT,
+                EmsSiteName TEXT,
                 BasinArm TEXT,
                 MaxDepth REAL,
                 geometry BLOB,
@@ -77,13 +78,6 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                  geometry BLOB NOT NULL,
                                  PRIMARY KEY (Lake))"))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE SitesEMS  (
-                                 SiteID TEXT NOT NULL,
-                                 EmsSite TEXT NOT NULL,
-                                 SiteName TEXT NOT NULL,
-                                 geometry BLOB,
-                                 PRIMARY KEY (SiteID))"))
 
   suppressWarnings(DBI::dbGetQuery(conn,
                                    "CREATE TABLE standardEMS  (
@@ -290,16 +284,13 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
 
   ctdSites <- nrp::ctdSites
-  readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "sitesCTD")
+  readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "Sites")
 
   visitCTD <- initialize_ctd_visit()
   readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visitCTD")
 
   ctd <- initialize_ctd()
   readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
-
-  emsSites <- nrp::emsSites
-  readwritesqlite::rws_write(emsSites, exists = TRUE, conn = conn, x_name = "sitesEMS")
 
   ems_metals <- nrp::ems_metals_init
   readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")

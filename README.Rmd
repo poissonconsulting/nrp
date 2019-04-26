@@ -103,9 +103,8 @@ There are additional functions in the nrp package that allow for easy downloadin
 lakes <- nrp_download_lakes(db_path = conn)
 basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
 
-# site tables
-ctd_sites <- nrp_download_ctd_sites(db_path = conn)
-ems_sites <- nrp_download_ems_sites(db_path = conn)
+# site table
+sites <- nrp_download_sites(db_path = conn)
 
 # ctd visit table
 ctd_visit <- nrp_download_ctd_visit(db_path = conn)

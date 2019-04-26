@@ -63,12 +63,12 @@ test_that("nrp_read_ctd works", {
 
 })
 
-test_that("nrp_download_ctd_sites works", {
+test_that("nrp_download_sites works", {
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  sites_db <- nrp_download_ctd_sites(db_path = conn)
+  sites_db <- nrp_download_sites(db_path = conn)
   sites_raw_data <- nrp::ctdSites
 
   expect_identical(nrow(sites_db), nrow(sites_raw_data))
@@ -99,17 +99,18 @@ test_that("nrp_download_ctd_basin_arm works", {
 
 test_that("nrp_add_ctd_sites works", {
 
-  new_data <- tibble(SiteID = "NewID", SiteNumber = "NewNumber", SiteName = "New Site Name",
-                 BasinArm = "Upper", MaxDepth = 100, Easting = 434792, Northing = 5605351)
+  new_data <- tibble(SiteID = "NewID", EmsSiteNumber = "NewNumber", SiteName = "New Site Name",
+                     EmsSiteName = "name ems",BasinArm = "Upper", MaxDepth = 100, Easting = 434792,
+                     Northing = 5605351)
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  old_sites <- nrp_download_ctd_sites(db_path = conn)
+  old_sites <- nrp_download_sites(db_path = conn)
 
   nrp_add_ctd_sites(data = new_data, db_path = conn)
 
-  updated_sites <- nrp_download_ctd_sites(db_path = conn)
+  updated_sites <- nrp_download_sites(db_path = conn)
   sf::st_geometry(updated_sites) <- NULL
 
   expect_equal(nrow(old_sites) + 1, nrow(updated_sites))

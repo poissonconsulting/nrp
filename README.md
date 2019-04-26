@@ -87,16 +87,16 @@ db_ctd_data <- nrp_download_ctd(start_date = "2018-08-27",
                             db_path = conn)
 ```
 
-When updating EMS data, the user must supply thier own data set which
-can be easily obtained using a funtion from the `rems` package:
+When updating EMS data, the user must supply their own data set which
+can be easily obtained using a function from the `rems` package:
 `get_ems_data(which = "4yr")`. The four year data set must be used as
 the two year data has different structure that does not contain all the
 parameters needed for use with nrp functions. Once you have the four
-year data set loaded in the environment you can easily upload it to the
+year data set loaded in the environment, you can easily upload it to the
 database with nrp functions. You don’t have to worry about uploading
 duplicate data as the nrp function for uploading will automatically trim
 the input data so that only new data is added to the database. For this
-demonstration we use a light wieght sample of raw EMS data that travels
+demonstration we use a light weight sample of raw EMS data that travels
 with the package.
 
 ``` r
@@ -121,7 +121,7 @@ db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00"
                                      show_detection_limits = TRUE)
 ```
 
-There are additional funtions in the nrp package that allow for easy
+There are additional functions in the nrp package that allow for easy
 downloading of other tables in the database.
 
 ``` r
@@ -129,9 +129,8 @@ downloading of other tables in the database.
 lakes <- nrp_download_lakes(db_path = conn)
 basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
 
-# site tables
-ctd_sites <- nrp_download_ctd_sites(db_path = conn)
-ems_sites <- nrp_download_ems_sites(db_path = conn)
+# site table
+sites <- nrp_download_sites(db_path = conn)
 
 # ctd visit table
 ctd_visit <- nrp_download_ctd_visit(db_path = conn)

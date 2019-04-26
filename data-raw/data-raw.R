@@ -1,11 +1,16 @@
 library(poispkgs)
 library(usethis)
 
-ctdSites <- read_csv("data-raw/ctdSites.csv") %>%
-  ps_coords_to_sfc(crs = 26911) %>%
-  mutate(MaxDepth = set_units(MaxDepth, "m"))
+emsSites <- read_csv("data-raw/emsSites.csv")
+emsSitesJoin <- emsSites %>% select(SiteID, EmsSiteName = SiteName)
 
-emsSites <- read_csv("data-raw/emsSites.csv") %>%
+ctdSites <- read_csv("data-raw/ctdSites.csv") %>%
+  left_join(emsSitesJoin, by = "SiteID") %>%
+  ps_coords_to_sfc(crs = 26911) %>%
+  mutate(MaxDepth = set_units(MaxDepth, "m")) %>%
+  select(SiteID, EmsSiteNumber = SiteNumber, SiteName, EmsSiteName, BasinArm, MaxDepth)
+
+emsSites %<>%
   ps_coords_to_sfc(crs = 26911)
 
 # mapview(emsSites, color = "yellow") +

@@ -6,6 +6,14 @@
 #' @return A a data frame
 #' @export
 #'
+
+# conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+# db_path = conn
+# analysis_type = "standard"
+# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+# ems <- readRDS(path)
+# data <- ems
+
 nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), analysis_type = "standard"){
 
   if(!analysis_type %in% c("standard", "metals")){
@@ -20,12 +28,15 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), anal
 
   check_ems_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  sites <- nrp::emsSites
+  # sites <- nrp::emsSites
+  sites <- nrp_download_sites(db_path = conn) %>%
+    filter(!is.na(.data$EmsSiteNumber)) %>%
+    filter(!is.na(.data$EmsSiteName))
   sf::st_geometry(sites) <- NULL
 
   params <- nrp::ems_param_lookup
 
-  data %<>% filter(.data$EMS_ID %in% sites$EmsSite) %>%
+  data %<>% filter(.data$EMS_ID %in% sites$EmsSiteNumber) %>%
     mutate(COLLECTION_START = lubridate::ymd_hms(.data$COLLECTION_START, tz = "Etc/GMT+8"),
            COLLECTION_END = lubridate::ymd_hms(.data$COLLECTION_END, tz = "Etc/GMT+8")) %>%
     select(.data$EMS_ID, .data$MONITORING_LOCATION, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
@@ -41,7 +52,7 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), anal
            RESULT = paste0(.data$RESULT, "/", .data$RESULT_LETTER),
            RESULT = gsub(c("NA"), "", .data$RESULT)) %>%
     select(-.data$ANALYTICAL_METHOD, -.data$RESULT_LETTER, -.data$EMS_ID) %>%
-    full_join(select(sites, .data$SiteID, .data$SiteName), by = c("MONITORING_LOCATION" = "SiteName")) %>%
+    left_join(select(sites, .data$SiteID, .data$EmsSiteName), by = c("MONITORING_LOCATION" = "EmsSiteName")) %>%
     select(-.data$MONITORING_LOCATION)
 
   if(analysis_type == "standard"){
@@ -60,8 +71,10 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), anal
     key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
                   "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
 
-    data %<>% clean_key_cols(key_cols) %>%
-      group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
+    data %<>% clean_key_cols(key_cols)
+
+
+    data %<>% group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
                .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
       mutate(ReplicateID = 1:n()) %>%
       ungroup()
@@ -344,20 +357,5 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_dat
 clean_key_cols <- function(data, cols) {
   cleaned_cols <- stats::complete.cases(data[, cols])
   data[cleaned_cols, ]
-}
-
-#' Download EMS site table
-#' @param db_path The SQLite connection object or path to the SQLite database
-#' @return EMS site table
-#' @export
-#'
-nrp_download_ems_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
-  conn <- db_path
-
-  if(!inherits(conn, "SQLiteConnection")){
-    conn <- connect_if_valid_path(path = conn)
-    on.exit(readwritesqlite::rws_disconnect(conn = conn))
-  }
-  readwritesqlite::rws_read_table("sitesEMS", conn = conn)
 }
 

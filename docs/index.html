@@ -134,27 +134,26 @@ devtools::install_github("poissonconsulting/nrp")</a></code></pre>
 <a class="sourceLine" id="cb4-2" data-line-number="2">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>(<span class="dt">db_path =</span> conn)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">basinArm &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span>(<span class="dt">db_path =</span> conn)</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># site tables</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">ctd_sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_sites.html">nrp_download_ctd_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">ems_sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems_sites.html">nrp_download_ems_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co"># ctd visit table</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># for the database you want to connect to, you don't have to provide</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co"># the db_path argument any more within that R session</span></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="co"># now we can do things like:</span></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># site table</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># ctd visit table</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co"># for the database you want to connect to, you don't have to provide</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># the db_path argument any more within that R session</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co"># now we can do things like:</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"></a>
 <a class="sourceLine" id="cb4-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># we conclude the demo by closing the database connection</span></a>
-<a class="sourceLine" id="cb4-24" data-line-number="24"><span class="co"># If you are providing a file path to the database, you do not need to do this</span></a>
-<a class="sourceLine" id="cb4-25" data-line-number="25">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
+<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="co"># we conclude the demo by closing the database connection</span></a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># If you are providing a file path to the database, you do not need to do this</span></a>
+<a class="sourceLine" id="cb4-24" data-line-number="24">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
 </div>
 <div id="getting-help-or-reporting-an-issue" class="section level2">
 <h2 class="hasAnchor">

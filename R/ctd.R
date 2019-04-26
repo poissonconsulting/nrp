@@ -30,7 +30,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
       data$frequency <- NA_real_
     }
 
-    sites <- nrp_download_ctd_sites(db_path = db_path)
+    sites <- nrp_download_sites(db_path = db_path)
 
     siteIDs <- sites$SiteID
     match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
@@ -133,14 +133,14 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL),
 #' @return CTD site table
 #' @export
 #'
-nrp_download_ctd_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-  readwritesqlite::rws_read_table("sitesCTD", conn = conn)
+  readwritesqlite::rws_read_table("Sites", conn = conn)
 }
 
 
@@ -212,7 +212,7 @@ nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", NULL)){
     mutate(MaxDepth = units::set_units(.data$MaxDepth, "m"))
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
-                             x_name = "sitesCTD", conn = conn)
+                             x_name = "Sites", conn = conn)
 }
 
 #' Upload CTD data to nrp database
@@ -296,7 +296,7 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   checkr::check_datetime(as.POSIXct(end_date))
   end_date <- as.character(dttr::dtt_date(end_date))
 
-  site_table <- nrp_download_ctd_sites(db_path = conn)
+  site_table <- nrp_download_sites(db_path = conn)
   if(is.null(sites)){
     sites <- site_table$SiteID
   }
