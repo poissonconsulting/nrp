@@ -4,7 +4,7 @@
 \alias{nrp_download_ctd_visit}
 \title{Download CTD visit table}
 \usage{
-nrp_download_ctd_visit(db_path = getOption("nrp.db_path", NULL))
+nrp_download_ctd_visit(db_path = getOption("nrp.db_path", file.choose()))
 }
 \arguments{
 \item{db_path}{The SQLite connection object or path to the SQLite database}

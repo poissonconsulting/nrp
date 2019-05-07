@@ -4,8 +4,9 @@
 \alias{nrp_upload_ems_standard}
 \title{Upload standard EMS data to nrp database}
 \usage{
-nrp_upload_ems_standard(data, db_path = getOption("nrp.db_path", NULL),
-  commit = TRUE, strict = TRUE, silent = TRUE, replace = FALSE)
+nrp_upload_ems_standard(data, db_path = getOption("nrp.db_path",
+  file.choose()), commit = TRUE, strict = TRUE, silent = TRUE,
+  replace = FALSE)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}

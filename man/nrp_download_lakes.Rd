@@ -4,7 +4,7 @@
 \alias{nrp_download_lakes}
 \title{Download Lake table}
 \usage{
-nrp_download_lakes(db_path = getOption("nrp.db_path", NULL))
+nrp_download_lakes(db_path = getOption("nrp.db_path", file.choose()))
 }
 \arguments{
 \item{db_path}{The SQLite connection object or path to the SQLite database}

@@ -14,7 +14,7 @@
 # ems <- readRDS(path)
 # data <- ems
 
-nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", NULL), analysis_type = "standard"){
+nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose()), analysis_type = "standard"){
 
   if(!analysis_type %in% c("standard", "metals")){
     err("analysis_type must be either 'standard' or 'metals'")
@@ -206,7 +206,7 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE,
+nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                    strict = TRUE, silent = TRUE, replace = FALSE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
@@ -251,7 +251,7 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", NULL
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL), commit = TRUE,
+nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                   strict = TRUE, silent = TRUE, replace = FALSE){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
@@ -299,7 +299,7 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", NULL)
 #' @return EMS data table
 #' @export
 #'
-nrp_download_ems <- function(db_path = getOption("nrp.db_path", NULL), start_date_time = "2018-01-01 00:00:00",
+nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), start_date_time = "2018-01-01 00:00:00",
                              end_date_time = "2018-12-31 00:00:00", sites = NULL, analysis_type = "standard",
                              show_detection_limits = FALSE){
   conn <- db_path

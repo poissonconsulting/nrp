@@ -4,8 +4,8 @@
 \alias{nrp_read_ctd}
 \title{Read CTD Files}
 \usage{
-nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path", NULL),
-  recursive = FALSE, regexp = "[.]cnv$", fail = TRUE,
+nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path",
+  file.choose()), recursive = FALSE, regexp = "[.]cnv$", fail = TRUE,
   lookup = nrp::site_date_lookup)
 }
 \arguments{

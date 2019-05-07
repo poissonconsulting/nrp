@@ -6,7 +6,7 @@
 #' this defaults to a dataset provided with the package that is used for reading historical data
 #' @return A tibble
 #' @export
-nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
+nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choose()),
                               lookup = nrp::site_date_lookup) {
   check_file_exists(path)
   check_site_date_lookup(data = lookup)
@@ -114,7 +114,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", NULL),
 #' @return A list of tibbles.
 #' @export
 #'
-nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL),
+nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
                          recursive = FALSE, regexp = "[.]cnv$",
                          fail = TRUE, lookup = nrp::site_date_lookup) {
   check_dir_exists(path)
@@ -133,7 +133,7 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", NULL),
 #' @return CTD site table
 #' @export
 #'
-nrp_download_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_sites <- function(db_path = getOption("nrp.db_path", file.choose())) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
@@ -149,7 +149,7 @@ nrp_download_sites <- function(db_path = getOption("nrp.db_path", NULL)) {
 #' @return CTD visit table
 #' @export
 #'
-nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", file.choose())) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
@@ -165,7 +165,7 @@ nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", NULL)) {
 #' @return CTD BasinArm table
 #' @export
 #'
-nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", file.choose())) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
@@ -181,7 +181,7 @@ nrp_download_ctd_basin_arm <- function(db_path = getOption("nrp.db_path", NULL))
 #' @return CTD Lakes table
 #' @export
 #'
-nrp_download_lakes <- function(db_path = getOption("nrp.db_path", NULL)) {
+nrp_download_lakes <- function(db_path = getOption("nrp.db_path", file.choose())) {
   conn <- db_path
 
   if(!inherits(conn, "SQLiteConnection")){
@@ -201,7 +201,7 @@ nrp_download_lakes <- function(db_path = getOption("nrp.db_path", NULL)) {
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @export
 #'
-nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", NULL)){
+nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", file.choose())){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -222,7 +222,7 @@ nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", NULL)){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL),
+nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose()),
                            commit = TRUE, strict = TRUE, silent = TRUE,
                            replace = FALSE){
   conn <- db_path
@@ -273,7 +273,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", NULL),
 #'
 nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                              sites = NULL, parameters = "all",
-                             db_path = getOption("nrp.db_path", NULL)){
+                             db_path = getOption("nrp.db_path", file.choose())){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)

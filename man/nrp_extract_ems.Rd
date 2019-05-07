@@ -4,7 +4,7 @@
 \alias{nrp_extract_ems}
 \title{Extract and clean EMS data}
 \usage{
-nrp_extract_ems(data, db_path = getOption("nrp.db_path", NULL),
+nrp_extract_ems(data, db_path = getOption("nrp.db_path", file.choose()),
   analysis_type = "standard")
 }
 \arguments{
