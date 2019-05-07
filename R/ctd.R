@@ -92,8 +92,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   units(data$Temperature) <- "degC"
 
   data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
-  data$Time <- dttr::dtt_time(data$DateTime, tz = "Etc/GMT+8")
-  data$Time[data$Time == 00:00:00] <- NA
+  data$Time <- dttr::dtt_time(data$DateTime)
+  data$Time[data$Time == 00:00:00] <- NA_real_
   data$Date <- dttr::dtt_date(data$DateTime)
 
   data %<>% select(.data$FileID, .data$SiteID, .data$Date, .data$Time,
