@@ -46,7 +46,8 @@ database with optional filtering by SiteID, date range, etc.
 To install the latest development version from
 [GitHub](https://github.com/poissonconsulting/nrp)
 
-    # install.packages("drat")
+    if(!"drat" %in% installed.packages()[,1]) 
+      install.packages("drat")
     drat::addRepo("poissonconsulting")
     devtools::install_github("poissonconsulting/nrp")
 
