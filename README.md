@@ -43,13 +43,15 @@ database with optional filtering by SiteID, date range, etc.
 
 ## Installation
 
-To install the latest development version from
-[GitHub](https://github.com/poissonconsulting/nrp)
+To install the latest development version from the Poisson
+[drat](https://github.com/poissonconsulting/drat) site
 
     if(!"drat" %in% installed.packages()[,1]) 
       install.packages("drat")
     drat::addRepo("poissonconsulting")
-    devtools::install_github("poissonconsulting/nrp")
+    if(!"devtools" %in% installed.packages()[,1]) 
+      install.packages("devtools")
+    install.packages("nrp")
 
 ## Demonstration
 
