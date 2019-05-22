@@ -5,7 +5,7 @@ initialize_ctd <- function(){
   tibble(FileID = integer(),
          SiteID = character(),
          Date = as.Date(character()),
-         Time = dttr::dtt_time(character()),
+         Time = dttr2::dtt_time(character()),
          Depth = units::set_units(numeric(), "m"),
          Temperature = units::set_units(numeric(), "degC"),
          Oxygen = units::set_units(numeric(), "mg/l"),
@@ -23,7 +23,7 @@ initialize_ctd <- function(){
 initialize_ctd_visit <- function(){
   tibble(SiteID = character(),
          Date = as.Date(character()),
-         Time = dttr::dtt_time(character()),
+         Time = dttr2::dtt_time(character()),
          DepthDuplicates = integer(),
          File = character())
 }

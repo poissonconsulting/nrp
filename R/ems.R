@@ -223,7 +223,7 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file
 
     if(!nrow(result) == 0){
       last_date <- result[[1, 1]]
-      date_4yr <- dttr::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
+      date_4yr <- dttr2::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
       query <- paste0("SELECT * FROM standardEMS WHERE ((`COLLECTION_START` >= '", date_4yr, "') AND (`COLLECTION_START` <= '",
                       last_date, "'))")
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
@@ -268,7 +268,7 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
 
     if(!nrow(result) == 0){
       last_date <- result[[1, 1]]
-      date_4yr <- dttr::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
+      date_4yr <- dttr2::dtt_date_time(as.numeric(last_date) - 126316800, tz = "Etc/GMT+8")
       query <- paste0("SELECT * FROM metalsEMS WHERE ((`COLLECTION_START` >= '", date_4yr, "') AND (`COLLECTION_START` <= '",
                       last_date, "'))")
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
@@ -344,8 +344,8 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
   result <- readwritesqlite::rws_query(query = query, conn = conn) %>%
-    dplyr::mutate(COLLECTION_START = dttr::dtt_date_time(.data$COLLECTION_START),
-                  COLLECTION_END = dttr::dtt_date_time(.data$COLLECTION_END))
+    dplyr::mutate(COLLECTION_START = dttr2::dtt_date_time(.data$COLLECTION_START),
+                  COLLECTION_END = dttr2::dtt_date_time(.data$COLLECTION_END))
 
   if(show_detection_limits == FALSE){
     result %<>% select(-c(grep("Limit", names(result))))

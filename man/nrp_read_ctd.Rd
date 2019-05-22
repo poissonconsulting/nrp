@@ -13,8 +13,7 @@ nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path",
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
 
-\item{recursive}{Should directories be listed recursively?
-the filenames.}
+\item{recursive}{(Deprecated) If \code{TRUE} recurse fully.}
 
 \item{regexp}{A regular expression (e.g. \code{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
 

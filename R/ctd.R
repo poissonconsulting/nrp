@@ -45,7 +45,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
 
     colnames(data) %<>% str_to_title()
     data$DateTime <- ctd@metadata$startTime
-    data$DateTime %<>% dttr::dtt_set_tz("Etc/GMT+8")
+    data$DateTime %<>% dttr2::dtt_set_tz("Etc/GMT+8")
 
     data %<>% rename(SiteID = .data$Siteid) %>%
       select(.data$SiteID, .data$DateTime, everything())
@@ -92,9 +92,9 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   units(data$Temperature) <- "degC"
 
   data$DateTime %<>% as.POSIXct(tz = "Etc/GMT+8")
-  data$Time <- dttr::dtt_time(data$DateTime)
+  data$Time <- dttr2::dtt_time(data$DateTime)
   data$Time[data$Time == 00:00:00] <- NA_real_
-  data$Date <- dttr::dtt_date(data$DateTime)
+  data$Date <- dttr2::dtt_date(data$DateTime)
 
   data %<>% select(.data$FileID, .data$SiteID, .data$Date, .data$Time,
                    everything(), -.data$DateTime)
@@ -292,9 +292,9 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   }
 
   checkr::check_datetime(as.POSIXct(start_date))
-  start_date <- as.character(dttr::dtt_date(start_date))
+  start_date <- as.character(dttr2::dtt_date(start_date))
   checkr::check_datetime(as.POSIXct(end_date))
-  end_date <- as.character(dttr::dtt_date(end_date))
+  end_date <- as.character(dttr2::dtt_date(end_date))
 
   site_table <- nrp_download_sites(db_path = conn)
   if(is.null(sites)){
@@ -323,5 +323,5 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
   readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr::dtt_date(.data$Date))
+    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
 }

@@ -31,7 +31,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       FileID = as.integer(),
       SiteID = "character",
       Date = as.Date("2018-01-01"),
-      Time = dttr::dtt_time(c(NA_real_, "00:00:00")),
+      Time = dttr2::dtt_time(c(NA_real_, "00:00:00")),
       Depth = units::as_units(c(NA, 1), "m"),
       Temperature = units::as_units(c(NA, 1), "degC"),
       Oxygen = units::as_units(c(NA, 1), "mg/l"),
