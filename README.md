@@ -49,8 +49,6 @@ To install the latest development version from the Poisson
     if(!"drat" %in% installed.packages()[,1]) 
       install.packages("drat")
     drat::addRepo("poissonconsulting")
-    if(!"devtools" %in% installed.packages()[,1]) 
-      install.packages("devtools")
     install.packages("nrp")
 
 ## Demonstration
