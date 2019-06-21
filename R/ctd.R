@@ -118,7 +118,7 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", file.cho
                          recursive = FALSE, regexp = "[.]cnv$",
                          fail = TRUE, lookup = nrp::site_date_lookup) {
   check_dir_exists(path)
-  paths <- dir_ls(path, type = "file", recursive = recursive, regexp = regexp,
+  paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
                   fail = fail)
   if(!length(paths)) return(named_list())
 
