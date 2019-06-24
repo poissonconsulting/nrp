@@ -186,13 +186,19 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
       next()
     }
     else if(base_name %in% params){
+
       data %<>% tidyr::separate(name, c(paste("value", name), paste("Limit", name)), sep = sep) %>%
-        mutate_at(vars(paste("Limit", name)), funs(if_else(.data$. == "<", .data$., NA_character_))) %>%
+        mutate_at(vars(paste("Limit", name)), list(~if_else(eval(parse(text = paste0("`","Limit ", name, "`"))) == "<",
+                                                            eval(parse(text = paste0("`","Limit ", name, "`"))),
+                                                            NA_character_))) %>%
         mutate_at(vars(paste("Limit", name)),
-                  funs(if_else(.data$. == "<", eval(parse(text = paste0("`","value ", name, "`"))), .data$.))) %>%
+                  list(~if_else(eval(parse(text = paste0("`","Limit ", name, "`"))) == "<",
+                                eval(parse(text = paste0("`","value ", name, "`"))),
+                                eval(parse(text = paste0("`","Limit ", name, "`")))))) %>%
         mutate_at(vars(paste("value", name)),
-                  funs(if_else(!is.na(eval(parse(text = paste0("`","Limit ", name, "`")))), 0, as.numeric(.data$.)))) %>%
-        mutate_at(vars(paste("Limit", name)), funs(as.numeric))
+                  list(~if_else(!is.na(eval(parse(text = paste0("`","Limit ", name, "`")))),
+                                0, as.numeric(eval(parse(text = paste0("`","value ", name, "`"))))))) %>%
+        mutate_at(vars(paste("Limit", name)), list(~as.numeric(eval(parse(text = paste0("`","Limit ", name, "`"))))))
     }
   }
   names(data) <- gsub("value ", "", names(data))
