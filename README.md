@@ -46,10 +46,7 @@ database with optional filtering by SiteID, date range, etc.
 To install the latest development version from the Poisson
 [drat](https://github.com/poissonconsulting/drat) site
 
-    if(!"drat" %in% installed.packages()[,1]) 
-      install.packages("drat")
-    drat::addRepo("poissonconsulting")
-    install.packages("nrp")
+    install.packages("nrp", repos = "http://poissonconsulting.github.io/drat")
 
 ## Demonstration
 

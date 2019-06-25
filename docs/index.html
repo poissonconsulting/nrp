@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">nrp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9003</span>
       </span>
     </div>
 
@@ -76,84 +76,82 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install the latest development version from <a href="https://github.com/poissonconsulting/nrp">GitHub</a></p>
-<pre><code><a href="https://www.rdocumentation.org/packages/drat/topics/addRepo"># install.packages("drat")
-drat::addRepo("poissonconsulting")
-devtools::install_github("poissonconsulting/nrp")</a></code></pre>
+<p>To install the latest development version from the Poisson <a href="https://github.com/poissonconsulting/drat">drat</a> site</p>
+<pre><code><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages("nrp", repos = "http://poissonconsulting.github.io/drat")</a></code></pre>
 </div>
 <div id="demonstration" class="section level2">
 <h2 class="hasAnchor">
 <a href="#demonstration" class="anchor"></a>Demonstration</h2>
 <p>For simplicity, this demonstration uses the function <code>nrp_create_db</code> to create an empty, temporary database to read and write to, and uses some test data that travels with the package. When connecting to a proper database, just provide the file path to the database for the argument <code>db_path</code> in all function calls and the connection will be made automatically. Alternatively you can connect to a database in R and then supply that connection object for the argument <code>db_path</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(nrp)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># create empty database</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># path = ":memory:" creates a temporory, in memory database</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>) </a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># provide a path to a .cnv file</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># read in file</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#&gt; 32 negative depths removed from data</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co"># upload data to the database</span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> ctd_data, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt; 131 duplicate depths removed from data</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">db_ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21">                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22">                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</a>
-<a class="sourceLine" id="cb2-23" data-line-number="23">                            <span class="dt">parameters =</span> <span class="st">"all"</span>,</a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">                            <span class="dt">db_path =</span> conn)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(nrp)</a>
+<a class="sourceLine" id="cb2-2" title="2"></a>
+<a class="sourceLine" id="cb2-3" title="3"><span class="co"># create empty database</span></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co"># path = ":memory:" creates a temporory, in memory database</span></a>
+<a class="sourceLine" id="cb2-5" title="5">conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>) </a>
+<a class="sourceLine" id="cb2-6" title="6"></a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="co"># provide a path to a .cnv file</span></a>
+<a class="sourceLine" id="cb2-8" title="8">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</a>
+<a class="sourceLine" id="cb2-9" title="9">                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="co"># read in file</span></a>
+<a class="sourceLine" id="cb2-12" title="12">ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; 32 negative depths removed from data</span></a>
+<a class="sourceLine" id="cb2-14" title="14"></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="co"># upload data to the database</span></a>
+<a class="sourceLine" id="cb2-16" title="16"><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> ctd_data, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb2-17" title="17"><span class="co">#&gt; 131 duplicate depths removed from data</span></a>
+<a class="sourceLine" id="cb2-18" title="18"></a>
+<a class="sourceLine" id="cb2-19" title="19"><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></a>
+<a class="sourceLine" id="cb2-20" title="20">db_ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</a>
+<a class="sourceLine" id="cb2-21" title="21">                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</a>
+<a class="sourceLine" id="cb2-22" title="22">                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</a>
+<a class="sourceLine" id="cb2-23" title="23">                            <span class="dt">parameters =</span> <span class="st">"all"</span>,</a>
+<a class="sourceLine" id="cb2-24" title="24">                            <span class="dt">db_path =</span> conn)</a></code></pre></div>
 <p>When updating EMS data, the user must supply their own data set which can be easily obtained using a function from the <code>rems</code> package: <code>get_ems_data(which = "4yr")</code>. The four year data set must be used as the two year data has different structure that does not contain all the parameters needed for use with nrp functions. Once you have the four year data set loaded in the environment, you can easily upload it to the database with nrp functions. You don’t have to worry about uploading duplicate data as the nrp function for uploading will automatically trim the input data so that only new data is added to the database. For this demonstration we use a light weight sample of raw EMS data that travels with the package.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># read in raw ems data</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">ems_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS</a></span>(path)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co"># extract into wide fromat that fits the nrp database, chooing either the</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co"># 'metals' or 'standard' analysis_type</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">ems_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_extract_ems.html">nrp_extract_ems</a></span>(<span class="dt">data =</span> ems_raw, <span class="dt">db_path =</span> conn, <span class="dt">analysis_type =</span> <span class="st">"standard"</span>)</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co"># upload data to database</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw"><a href="reference/nrp_upload_ems_standard.html">nrp_upload_ems_standard</a></span>(<span class="dt">data =</span> ems_data, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co"># download data from database, filtering by Date, SiteID, and analysis_type. </span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co"># You can also choose to exlude detection limit columns</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">db_ems_data_standard &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems.html">nrp_download_ems</a></span>(<span class="dt">start_date_time =</span> <span class="st">"2018-07-03 13:48:00"</span>,</a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">                                     <span class="dt">end_date_time =</span> <span class="st">"2018-07-31 13:28:00"</span>,</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16">                                     <span class="dt">sites =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb3-17" data-line-number="17">                                     <span class="dt">db_path =</span> conn,</a>
-<a class="sourceLine" id="cb3-18" data-line-number="18">                                     <span class="dt">analysis_type =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb3-19" data-line-number="19">                                     <span class="dt">show_detection_limits =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># read in raw ems data</span></a>
+<a class="sourceLine" id="cb3-2" title="2">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-3" title="3">ems_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS</a></span>(path)</a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="co"># extract into wide fromat that fits the nrp database, chooing either the</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co"># 'metals' or 'standard' analysis_type</span></a>
+<a class="sourceLine" id="cb3-7" title="7">ems_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_extract_ems.html">nrp_extract_ems</a></span>(<span class="dt">data =</span> ems_raw, <span class="dt">db_path =</span> conn, <span class="dt">analysis_type =</span> <span class="st">"standard"</span>)</a>
+<a class="sourceLine" id="cb3-8" title="8"></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co"># upload data to database</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="kw"><a href="reference/nrp_upload_ems_standard.html">nrp_upload_ems_standard</a></span>(<span class="dt">data =</span> ems_data, <span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="co"># download data from database, filtering by Date, SiteID, and analysis_type. </span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="co"># You can also choose to exlude detection limit columns</span></a>
+<a class="sourceLine" id="cb3-14" title="14">db_ems_data_standard &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems.html">nrp_download_ems</a></span>(<span class="dt">start_date_time =</span> <span class="st">"2018-07-03 13:48:00"</span>,</a>
+<a class="sourceLine" id="cb3-15" title="15">                                     <span class="dt">end_date_time =</span> <span class="st">"2018-07-31 13:28:00"</span>,</a>
+<a class="sourceLine" id="cb3-16" title="16">                                     <span class="dt">sites =</span> <span class="ot">NULL</span>,</a>
+<a class="sourceLine" id="cb3-17" title="17">                                     <span class="dt">db_path =</span> conn,</a>
+<a class="sourceLine" id="cb3-18" title="18">                                     <span class="dt">analysis_type =</span> <span class="st">"standard"</span>,</a>
+<a class="sourceLine" id="cb3-19" title="19">                                     <span class="dt">show_detection_limits =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>There are additional functions in the nrp package that allow for easy downloading of other tables in the database.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Lakes and BasinArm tables</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">basinArm &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># site table</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># ctd visit table</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co"># for the database you want to connect to, you don't have to provide</span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># the db_path argument any more within that R session</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="co"># now we can do things like:</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</a>
-<a class="sourceLine" id="cb4-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="co"># we conclude the demo by closing the database connection</span></a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co"># If you are providing a file path to the database, you do not need to do this</span></a>
-<a class="sourceLine" id="cb4-24" data-line-number="24">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># Lakes and BasinArm tables</span></a>
+<a class="sourceLine" id="cb4-2" title="2">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-3" title="3">basinArm &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-4" title="4"></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="co"># site table</span></a>
+<a class="sourceLine" id="cb4-6" title="6">sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-7" title="7"></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="co"># ctd visit table</span></a>
+<a class="sourceLine" id="cb4-9" title="9">ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</a>
+<a class="sourceLine" id="cb4-10" title="10"></a>
+<a class="sourceLine" id="cb4-11" title="11"><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></a>
+<a class="sourceLine" id="cb4-12" title="12"><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></a>
+<a class="sourceLine" id="cb4-13" title="13"><span class="co"># for the database you want to connect to, you don't have to provide</span></a>
+<a class="sourceLine" id="cb4-14" title="14"><span class="co"># the db_path argument any more within that R session</span></a>
+<a class="sourceLine" id="cb4-15" title="15"></a>
+<a class="sourceLine" id="cb4-16" title="16"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></a>
+<a class="sourceLine" id="cb4-17" title="17"></a>
+<a class="sourceLine" id="cb4-18" title="18"><span class="co"># now we can do things like:</span></a>
+<a class="sourceLine" id="cb4-19" title="19">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</a>
+<a class="sourceLine" id="cb4-20" title="20"></a>
+<a class="sourceLine" id="cb4-21" title="21"></a>
+<a class="sourceLine" id="cb4-22" title="22"><span class="co"># we conclude the demo by closing the database connection</span></a>
+<a class="sourceLine" id="cb4-23" title="23"><span class="co"># If you are providing a file path to the database, you do not need to do this</span></a>
+<a class="sourceLine" id="cb4-24" title="24">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
 </div>
 <div id="getting-help-or-reporting-an-issue" class="section level2">
 <h2 class="hasAnchor">
