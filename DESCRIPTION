@@ -1,17 +1,17 @@
 Package: nrp
 Type: Package
 Title: Kootenay Lake Nutrient Restoration Program Data Loading
-Version: 0.1.0.9003
+Version: 0.1.0.9004
 Authors@R: 
     c(
     person("Evan", "Amies-Galonski", role = c("aut", "cre"), email = "evan@poissonconsulting.ca", comment = c(ORCID = 0000-0003-1096-2089)),
-    person("Joe", "Thorley", role = "aut", email = "joe@poissonconsulting.ca", comment = c(ORCID = "0000-0002-7683-4592"))
+    person("Joe", "Thorley", role = "aut", email = "joe@poissonconsulting.ca", comment = c(ORCID = "0000-0002-7683-4592")),
+    person("Province of British Columbia", role = c("cph", "fnd"))
   )
 Description: Imports CTD and EMS data for 
     the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.
-License: MIT + file LICENSE
-Depends:
-    R (>= 3.4)
+License: Apache License (>= 2.0)
+Depends: R (>= 3.4)
 Imports:
     err,
     checkr,
@@ -33,9 +33,6 @@ Imports:
     units,
     lubridate,
     utils
-Remotes:
-	  poissonconsulting/dttr2, 
-	  poissonconsulting/readwritesqlite
 Suggests: 
     testthat,
     covr

@@ -1,6 +1,8 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+<!-- badges: start -->
+
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 [![Travis Build
@@ -8,6 +10,9 @@ Status](https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true)](https://ci.appveyor.com/project/joethorley/nrp)
 [![codecov](https://codecov.io/gh/poissonconsulting/nrp/branch/master/graph/badge.svg?token=BYPzzOPDrd)](https://codecov.io/gh/poissonconsulting/nrp)
+[![Apache
+license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<!-- badges: end -->
 
 # nrp
 
@@ -43,10 +48,13 @@ database with optional filtering by SiteID, date range, etc.
 
 ## Installation
 
-To install the latest development version from the Poisson
-[drat](https://github.com/poissonconsulting/drat) site
+To install the latest version from
+[GitHub](https://github.com/poissonconsulting/nrp)
 
-    install.packages("nrp", repos = "http://poissonconsulting.github.io/drat")
+``` r
+# install.packages("remotes")
+remotes::install_github("poissonconsulting/nrp")
+```
 
 ## Demonstration
 
@@ -167,7 +175,7 @@ to abide by its terms
 
 The code is released under the Apache License 2.0
 
-    Copyright 2015 Province of British Columbia
+    Copyright 2019 Province of British Columbia
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
