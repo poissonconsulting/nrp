@@ -17,13 +17,15 @@ emsSites %<>%
 #   mapview(ctdSites)
 
 
-ems_param_lookup <- read_excel("~/Poisson/Data/nrp-database-19/Chem Data/Reference files/Chem_parameter_lookup.xlsx")
-ems_param_lookup %<>%  mutate(PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total") &
-                                              ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
-                                              "Phosphorus Total metals", PARAMETER),
-                          PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total Dissolved") &
-                                               ANALYTICAL_METHOD %in% c("ICP"), "Phosphorus Total Dissolved metals", PARAMETER),
-                          Comment = ifelse(Comment == "metals; note that this parameter name is the same as the standard analysis - needs re-naming",
+ems_param_lookup <- read_excel("data-raw/Chem_parameter_lookup.xlsx")
+
+ems_param_lookup %<>%
+  mutate(PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total") &
+                              ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
+                            "Phosphorus Total metals", PARAMETER),
+         PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total Dissolved") &
+                              ANALYTICAL_METHOD %in% c("ICP"), "Phosphorus Total Dissolved metals", PARAMETER),
+         Comment = ifelse(Comment == "metals; note that this parameter name is the same as the standard analysis - needs re-naming",
                           "metals", Comment))
 
 basinArm <- ps_deactivate_sfc(ctdSites) %>%
