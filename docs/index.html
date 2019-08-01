@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kootenay Lake Nutrient Restoration Program Data Loading • nrp</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Kootenay Lake Nutrient Restoration Program Data Loading">
 <meta property="og:description" content="Imports CTD and EMS data for 
     the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.">
@@ -31,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">nrp</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9003</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9004</span>
       </span>
     </div>
 
@@ -39,7 +40,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -56,6 +57,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     
@@ -63,6 +65,7 @@
     
     
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
 
 <div id="nrp" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
@@ -76,82 +79,83 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install the latest development version from the Poisson <a href="https://github.com/poissonconsulting/drat">drat</a> site</p>
-<pre><code><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages("nrp", repos = "http://poissonconsulting.github.io/drat")</a></code></pre>
+<p>To install the latest version from <a href="https://github.com/poissonconsulting/nrp">GitHub</a></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># install.packages("remotes")</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a>remotes<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/remotes/man/install_github.html">install_github</a></span>(<span class="st">"poissonconsulting/nrp"</span>)</span></code></pre></div>
 </div>
 <div id="demonstration" class="section level2">
 <h2 class="hasAnchor">
 <a href="#demonstration" class="anchor"></a>Demonstration</h2>
 <p>For simplicity, this demonstration uses the function <code>nrp_create_db</code> to create an empty, temporary database to read and write to, and uses some test data that travels with the package. When connecting to a proper database, just provide the file path to the database for the argument <code>db_path</code> in all function calls and the connection will be made automatically. Alternatively you can connect to a database in R and then supply that connection object for the argument <code>db_path</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(nrp)</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="co"># create empty database</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="co"># path = ":memory:" creates a temporory, in memory database</span></a>
-<a class="sourceLine" id="cb2-5" title="5">conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>) </a>
-<a class="sourceLine" id="cb2-6" title="6"></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="co"># provide a path to a .cnv file</span></a>
-<a class="sourceLine" id="cb2-8" title="8">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</a>
-<a class="sourceLine" id="cb2-9" title="9">                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb2-10" title="10"></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="co"># read in file</span></a>
-<a class="sourceLine" id="cb2-12" title="12">ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; 32 negative depths removed from data</span></a>
-<a class="sourceLine" id="cb2-14" title="14"></a>
-<a class="sourceLine" id="cb2-15" title="15"><span class="co"># upload data to the database</span></a>
-<a class="sourceLine" id="cb2-16" title="16"><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> ctd_data, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb2-17" title="17"><span class="co">#&gt; 131 duplicate depths removed from data</span></a>
-<a class="sourceLine" id="cb2-18" title="18"></a>
-<a class="sourceLine" id="cb2-19" title="19"><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></a>
-<a class="sourceLine" id="cb2-20" title="20">db_ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-21" title="21">                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</a>
-<a class="sourceLine" id="cb2-22" title="22">                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</a>
-<a class="sourceLine" id="cb2-23" title="23">                            <span class="dt">parameters =</span> <span class="st">"all"</span>,</a>
-<a class="sourceLine" id="cb2-24" title="24">                            <span class="dt">db_path =</span> conn)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(nrp)</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="co"># create empty database</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># path = ":memory:" creates a temporory, in memory database</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a>conn &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_create_db.html">nrp_create_db</a></span>(<span class="dt">path =</span> <span class="st">":memory:"</span>) </span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># provide a path to a .cnv file</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>path &lt;-<span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>                       <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="co"># read in file</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a>ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span>(path, <span class="dt">db_path =</span> conn)</span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="co">#&gt; 32 negative depths removed from data</span></span>
+<span id="cb2-14"><a href="#cb2-14"></a></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="co"># upload data to the database</span></span>
+<span id="cb2-16"><a href="#cb2-16"></a><span class="kw"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span>(<span class="dt">data =</span> ctd_data, <span class="dt">db_path =</span> conn)</span>
+<span id="cb2-17"><a href="#cb2-17"></a><span class="co">#&gt; 131 duplicate depths removed from data</span></span>
+<span id="cb2-18"><a href="#cb2-18"></a></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>db_ctd_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span>(<span class="dt">start_date =</span> <span class="st">"2018-08-27"</span>,</span>
+<span id="cb2-21"><a href="#cb2-21"></a>                            <span class="dt">end_date =</span> <span class="st">"2018-08-27"</span>,</span>
+<span id="cb2-22"><a href="#cb2-22"></a>                            <span class="dt">sites =</span> <span class="st">"KL1"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23"></a>                            <span class="dt">parameters =</span> <span class="st">"all"</span>,</span>
+<span id="cb2-24"><a href="#cb2-24"></a>                            <span class="dt">db_path =</span> conn)</span></code></pre></div>
 <p>When updating EMS data, the user must supply their own data set which can be easily obtained using a function from the <code>rems</code> package: <code>get_ems_data(which = "4yr")</code>. The four year data set must be used as the two year data has different structure that does not contain all the parameters needed for use with nrp functions. Once you have the four year data set loaded in the environment, you can easily upload it to the database with nrp functions. You don’t have to worry about uploading duplicate data as the nrp function for uploading will automatically trim the input data so that only new data is added to the database. For this demonstration we use a light weight sample of raw EMS data that travels with the package.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># read in raw ems data</span></a>
-<a class="sourceLine" id="cb3-2" title="2">path &lt;-<span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb3-3" title="3">ems_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/readRDS">readRDS</a></span>(path)</a>
-<a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="co"># extract into wide fromat that fits the nrp database, chooing either the</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co"># 'metals' or 'standard' analysis_type</span></a>
-<a class="sourceLine" id="cb3-7" title="7">ems_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_extract_ems.html">nrp_extract_ems</a></span>(<span class="dt">data =</span> ems_raw, <span class="dt">db_path =</span> conn, <span class="dt">analysis_type =</span> <span class="st">"standard"</span>)</a>
-<a class="sourceLine" id="cb3-8" title="8"></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co"># upload data to database</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="kw"><a href="reference/nrp_upload_ems_standard.html">nrp_upload_ems_standard</a></span>(<span class="dt">data =</span> ems_data, <span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb3-11" title="11"></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co"># download data from database, filtering by Date, SiteID, and analysis_type. </span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co"># You can also choose to exlude detection limit columns</span></a>
-<a class="sourceLine" id="cb3-14" title="14">db_ems_data_standard &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems.html">nrp_download_ems</a></span>(<span class="dt">start_date_time =</span> <span class="st">"2018-07-03 13:48:00"</span>,</a>
-<a class="sourceLine" id="cb3-15" title="15">                                     <span class="dt">end_date_time =</span> <span class="st">"2018-07-31 13:28:00"</span>,</a>
-<a class="sourceLine" id="cb3-16" title="16">                                     <span class="dt">sites =</span> <span class="ot">NULL</span>,</a>
-<a class="sourceLine" id="cb3-17" title="17">                                     <span class="dt">db_path =</span> conn,</a>
-<a class="sourceLine" id="cb3-18" title="18">                                     <span class="dt">analysis_type =</span> <span class="st">"standard"</span>,</a>
-<a class="sourceLine" id="cb3-19" title="19">                                     <span class="dt">show_detection_limits =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># read in raw ems data</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>path &lt;-<span class="st">  </span><span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, <span class="dt">package =</span> <span class="st">"nrp"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>ems_raw &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span>(path)</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co"># extract into wide fromat that fits the nrp database, chooing either the</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># 'metals' or 'standard' analysis_type</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>ems_data &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_extract_ems.html">nrp_extract_ems</a></span>(<span class="dt">data =</span> ems_raw, <span class="dt">db_path =</span> conn, <span class="dt">analysis_type =</span> <span class="st">"standard"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8"></a></span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co"># upload data to database</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a><span class="kw"><a href="reference/nrp_upload_ems_standard.html">nrp_upload_ems_standard</a></span>(<span class="dt">data =</span> ems_data, <span class="dt">db_path =</span> conn)</span>
+<span id="cb3-11"><a href="#cb3-11"></a></span>
+<span id="cb3-12"><a href="#cb3-12"></a><span class="co"># download data from database, filtering by Date, SiteID, and analysis_type. </span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="co"># You can also choose to exlude detection limit columns</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>db_ems_data_standard &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ems.html">nrp_download_ems</a></span>(<span class="dt">start_date_time =</span> <span class="st">"2018-07-03 13:48:00"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15"></a>                                     <span class="dt">end_date_time =</span> <span class="st">"2018-07-31 13:28:00"</span>,</span>
+<span id="cb3-16"><a href="#cb3-16"></a>                                     <span class="dt">sites =</span> <span class="ot">NULL</span>,</span>
+<span id="cb3-17"><a href="#cb3-17"></a>                                     <span class="dt">db_path =</span> conn,</span>
+<span id="cb3-18"><a href="#cb3-18"></a>                                     <span class="dt">analysis_type =</span> <span class="st">"standard"</span>,</span>
+<span id="cb3-19"><a href="#cb3-19"></a>                                     <span class="dt">show_detection_limits =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
 <p>There are additional functions in the nrp package that allow for easy downloading of other tables in the database.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="co"># Lakes and BasinArm tables</span></a>
-<a class="sourceLine" id="cb4-2" title="2">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-3" title="3">basinArm &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-4" title="4"></a>
-<a class="sourceLine" id="cb4-5" title="5"><span class="co"># site table</span></a>
-<a class="sourceLine" id="cb4-6" title="6">sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-7" title="7"></a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="co"># ctd visit table</span></a>
-<a class="sourceLine" id="cb4-9" title="9">ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</a>
-<a class="sourceLine" id="cb4-10" title="10"></a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="co"># for the database you want to connect to, you don't have to provide</span></a>
-<a class="sourceLine" id="cb4-14" title="14"><span class="co"># the db_path argument any more within that R session</span></a>
-<a class="sourceLine" id="cb4-15" title="15"></a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/options">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></a>
-<a class="sourceLine" id="cb4-17" title="17"></a>
-<a class="sourceLine" id="cb4-18" title="18"><span class="co"># now we can do things like:</span></a>
-<a class="sourceLine" id="cb4-19" title="19">lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</a>
-<a class="sourceLine" id="cb4-20" title="20"></a>
-<a class="sourceLine" id="cb4-21" title="21"></a>
-<a class="sourceLine" id="cb4-22" title="22"><span class="co"># we conclude the demo by closing the database connection</span></a>
-<a class="sourceLine" id="cb4-23" title="23"><span class="co"># If you are providing a file path to the database, you do not need to do this</span></a>
-<a class="sourceLine" id="cb4-24" title="24">readwritesqlite<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/readwritesqlite/topics/rws_disconnect">rws_disconnect</a></span>(conn)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Lakes and BasinArm tables</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>(<span class="dt">db_path =</span> conn)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>basinArm &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span>(<span class="dt">db_path =</span> conn)</span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># site table</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a>sites &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span>(<span class="dt">db_path =</span> conn)</span>
+<span id="cb4-7"><a href="#cb4-7"></a></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># ctd visit table</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>ctd_visit &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span>(<span class="dt">db_path =</span> conn)</span>
+<span id="cb4-10"><a href="#cb4-10"></a></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="co"># for the database you want to connect to, you don't have to provide</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="co"># the db_path argument any more within that R session</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="kw"><a href="https://rdrr.io/r/base/options.html">options</a></span>(<span class="dt">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="co"># now we can do things like:</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a>lakes &lt;-<span class="st"> </span><span class="kw"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span>()</span>
+<span id="cb4-20"><a href="#cb4-20"></a></span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="co"># we conclude the demo by closing the database connection</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="co"># If you are providing a file path to the database, you do not need to do this</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a>readwritesqlite<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/readwritesqlite/man/rws_disconnect.html">rws_disconnect</a></span>(conn)</span></code></pre></div>
 </div>
 <div id="getting-help-or-reporting-an-issue" class="section level2">
 <h2 class="hasAnchor">
@@ -168,7 +172,7 @@
 <h2 class="hasAnchor">
 <a href="#license" class="anchor"></a>License</h2>
 <p>The code is released under the Apache License 2.0</p>
-<pre><code>Copyright 2015 Province of British Columbia
+<pre><code>Copyright 2019 Province of British Columbia
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -189,16 +193,23 @@ limitations under the License.</code></pre>
     <div class="license">
 <h2>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small>Apache License (&gt;= 2.0)</small></li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Evan Amies-Galonski <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/-3188" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
-<li>Joe Thorley <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7683-4592" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID" height="16"></a> </li>
+<li>Evan Amies-Galonski <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/-3188" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
+<li>Joe Thorley <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-7683-4592" target="orcid.widget"><img src="https://members.orcid.org/sites/default/files/vector_iD_icon.svg" class="orcid" alt="ORCID"></a> </li>
+<li>Province of British Columbia <br><small class="roles"> Copyright holder, funder </small>  </li>
 </ul>
 </div>
 
@@ -209,6 +220,7 @@ limitations under the License.</code></pre>
 <li><a href="https://www.travis-ci.com/poissonconsulting/nrp"><img src="https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm1xTQLb&amp;branch=master" alt="Travis Build Status"></a></li>
 <li><a href="https://ci.appveyor.com/project/joethorley/nrp"><img src="https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true" alt="AppVeyor build status"></a></li>
 <li><a href="https://codecov.io/gh/poissonconsulting/nrp"><img src="https://codecov.io/gh/poissonconsulting/nrp/branch/master/graph/badge.svg?token=BYPzzOPDrd" alt="codecov"></a></li>
+<li><a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Apache license"></a></li>
 </ul>
 </div>
 </div>
@@ -216,17 +228,20 @@ limitations under the License.</code></pre>
 </div>
 
 
+
       <footer><div class="copyright">
-  <p>Developed by Evan Amies-Galonski, Joe Thorley.</p>
+  <p>Developed by Evan Amies-Galonski, Joe Thorley, Province of British Columbia.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9100.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
