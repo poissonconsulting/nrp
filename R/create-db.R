@@ -97,6 +97,8 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                  [Limit Carbon Total Organic] REAL,
                                  [Carbon Total] REAL,
                                  [Limit Carbon Total] REAL,
+                                 [Chlorophyll A] REAL,
+                                 [Limit Chlorophyll A] REAL,
                                  [Nitrate (NO3) Dissolved] REAL,
                                  [Limit Nitrate (NO3) Dissolved] REAL,
                                  [Nitrate(NO3) + Nitrite(NO2) Dissolved] REAL,
@@ -296,6 +298,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
 
   ems_standard <- nrp::ems_standard_init
+  # ems_standard <- ems_standard[0, ]
   readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
 
   conn

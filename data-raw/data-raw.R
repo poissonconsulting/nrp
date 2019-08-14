@@ -13,10 +13,6 @@ ctdSites <- read_csv("data-raw/ctdSites.csv") %>%
 emsSites %<>%
   ps_coords_to_sfc(crs = 26911)
 
-# mapview(emsSites, color = "yellow") +
-#   mapview(ctdSites)
-
-
 ems_param_lookup <- read_excel("data-raw/Chem_parameter_lookup.xlsx")
 
 ems_param_lookup %<>%
@@ -76,4 +72,3 @@ use_data(ems_param_lookup, overwrite = TRUE)
 use_data(site_date_lookup, overwrite = TRUE, internal = TRUE)
 use_data(ems_standard_init, overwrite = TRUE)
 use_data(ems_metals_init, overwrite = TRUE)
-

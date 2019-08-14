@@ -9,10 +9,10 @@
 
 # conn <- nrp_create_db(path = ":memory:", ask = FALSE)
 # db_path = conn
-# analysis_type = "standard"
+# analysis_type = "metals"
 # path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-# ems <- readRDS(path)
 # data <- ems
+# ems <- readRDS(path)
 
 nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose()), analysis_type = "standard"){
 
@@ -73,7 +73,6 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
 
     data %<>% clean_key_cols(key_cols)
 
-
     data %<>% group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
                .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
       mutate(ReplicateID = 1:n()) %>%
@@ -87,10 +86,11 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
              .data$`UPPER_DEPTH`, .data$`LOWER_DEPTH`, .data$`ReplicateID`, .data$`Alkalinity Total 4.5`,
              .data$`Limit Alkalinity Total 4.5`, .data$`Carbon Total Inorganic`, .data$`Limit Carbon Total Inorganic`,
              .data$`Carbon Total Organic`, .data$`Limit Carbon Total Organic`, .data$`Carbon Total`,
-             .data$`Limit Carbon Total`,.data$`Nitrate (NO3) Dissolved`, .data$`Limit Nitrate (NO3) Dissolved`,
-             .data$`Nitrate(NO3) + Nitrite(NO2) Dissolved`, .data$`Limit Nitrate(NO3) + Nitrite(NO2) Dissolved`,
-             .data$`Nitrogen - Nitrite Dissolved (NO2)`,.data$`Limit Nitrogen - Nitrite Dissolved (NO2)`,
-             .data$`Nitrogen Ammonia Total`, .data$`Limit Nitrogen Ammonia Total`, .data$`Nitrogen Total`,
+             .data$`Limit Carbon Total`,.data$`Chlorophyll A`, .data$`Limit Chlorophyll A`, .data$`Nitrate (NO3) Dissolved`,
+             .data$`Limit Nitrate (NO3) Dissolved`, .data$`Nitrate(NO3) + Nitrite(NO2) Dissolved`,
+             .data$`Limit Nitrate(NO3) + Nitrite(NO2) Dissolved`, .data$`Nitrogen - Nitrite Dissolved (NO2)`,
+             .data$`Limit Nitrogen - Nitrite Dissolved (NO2)`, .data$`Nitrogen Ammonia Total`,
+             .data$`Limit Nitrogen Ammonia Total`, .data$`Nitrogen Total`,
              .data$`Limit Nitrogen Total`, .data$`Phosphorus Ort.Dis-P`, .data$`Limit Phosphorus Ort.Dis-P`,
              .data$`Phosphorus Total Dissolved`, .data$`Limit Phosphorus Total Dissolved`, .data$`Phosphorus Total`,
              .data$`Limit Phosphorus Total`, .data$`pH`, .data$`Limit pH`, .data$`Silica Reactive Diss`,
@@ -212,6 +212,17 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
+
+# db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
+# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+# ems <- readRDS(path)
+# data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
+#
+# replace = FALSE
+# commit = TRUE
+# strict = TRUE
+# silent = TRUE
+
 nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                    strict = TRUE, silent = TRUE, replace = FALSE){
   conn <- db_path
@@ -249,6 +260,8 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict, silent = silent,
                              replace = replace, x_name = "standardEMS", conn = conn)
 }
+
+# rws_read_table("StandardEMS" , conn = conn)
 
 #' Upload EMS metals data to nrp database
 #'

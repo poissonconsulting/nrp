@@ -16,8 +16,8 @@ test_that("nrp_extract_ems works", {
 
   expect_is(data, "tbl_df")
   check_ems_standard_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(nrow(data), 172L)
-  expect_identical(length(data), 38L)
+  expect_identical(nrow(data), 173L)
+  expect_identical(length(data), 40L)
 
 })
 
@@ -44,8 +44,8 @@ test_that("nrp_upload_ems works", {
 
   readwritesqlite::rws_disconnect(conn)
 
-  expect_identical(nrow(db_data), 172L)
-  expect_identical(length(db_data), 38L)
+  expect_identical(nrow(db_data), 173L)
+  expect_identical(length(db_data), 40L)
 
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -59,8 +59,8 @@ test_that("nrp_upload_ems works", {
   nrp_upload_ems_standard(data = data_new, db_path = conn)
   db_data <- readwritesqlite::rws_read_table("standardEMS", conn = conn)
 
-  expect_identical(nrow(db_data), 172L)
-  expect_identical(length(db_data), 38L)
+  expect_identical(nrow(db_data), 173L)
+  expect_identical(length(db_data), 40L)
 
   data_old <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metals") %>%
     filter(COLLECTION_START <= "2018-09-05 18:35:00")
@@ -134,7 +134,7 @@ test_that("nrp_download_ems works", {
 
   check_ems_standard_data(db_data_standard, exclusive = TRUE, order = TRUE)
   expect_is(db_data_standard, "tbl_df")
-  expect_identical(length(db_data_standard), 38L)
+  expect_identical(length(db_data_standard), 40L)
   expect_identical(nrow(db_data_standard), 48L)
 })
 
