@@ -1,6 +1,11 @@
 library(poispkgs)
 library(usethis)
 
+# NOTE on ems test data: test_ems.rds
+# to update the test ems data use rems::get_ems_data(which = "4yr") to download
+# from the EMS database. subset to a smaller size that can travel with the package
+# the data set is long format, so be sure to include at least 1 observation of each parameter
+
 emsSites <- read_csv("data-raw/emsSites.csv")
 emsSitesJoin <- emsSites %>% select(SiteID, EmsSiteName = SiteName)
 
