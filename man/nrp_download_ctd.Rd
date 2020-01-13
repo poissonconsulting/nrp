@@ -4,9 +4,13 @@
 \alias{nrp_download_ctd}
 \title{Dowload CTD data table from database}
 \usage{
-nrp_download_ctd(start_date = "2018-01-01", end_date = "2018-12-31",
-  sites = NULL, parameters = "all",
-  db_path = getOption("nrp.db_path", file.choose()))
+nrp_download_ctd(
+  start_date = "2018-01-01",
+  end_date = "2018-12-31",
+  sites = NULL,
+  parameters = "all",
+  db_path = getOption("nrp.db_path", file.choose())
+)
 }
 \arguments{
 \item{start_date}{The start date}

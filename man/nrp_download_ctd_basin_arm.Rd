@@ -4,8 +4,7 @@
 \alias{nrp_download_ctd_basin_arm}
 \title{Download BasinArm table}
 \usage{
-nrp_download_ctd_basin_arm(db_path = getOption("nrp.db_path",
-  file.choose()))
+nrp_download_ctd_basin_arm(db_path = getOption("nrp.db_path", file.choose()))
 }
 \arguments{
 \item{db_path}{The SQLite connection object or path to the SQLite database}

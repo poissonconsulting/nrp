@@ -4,8 +4,7 @@
 \alias{nrp_add_ctd_sites}
 \title{Add new ctd sites to database site table}
 \usage{
-nrp_add_ctd_sites(data, db_path = getOption("nrp.db_path",
-  file.choose()))
+nrp_add_ctd_sites(data, db_path = getOption("nrp.db_path", file.choose()))
 }
 \arguments{
 \item{data}{a tibble or data frame of new site data

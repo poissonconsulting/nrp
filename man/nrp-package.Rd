@@ -10,11 +10,11 @@ Imports CTD and EMS data for
     the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.
 }
 \author{
-\strong{Maintainer}: Evan Amies-Galonski \email{evan@poissonconsulting.ca} (-3188)
+\strong{Maintainer}: Evan Amies-Galonski \email{evan@poissonconsulting.ca} (\href{https://orcid.org/-3188}{ORCID})
 
 Authors:
 \itemize{
-  \item Joe Thorley \email{joe@poissonconsulting.ca} (0000-0002-7683-4592)
+  \item Joe Thorley \email{joe@poissonconsulting.ca} (\href{https://orcid.org/0000-0002-7683-4592}{ORCID})
 }
 
 Other contributors:
