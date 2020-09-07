@@ -5,11 +5,10 @@
 
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
-[![Travis Build
-Status](https://www.travis-ci.com/poissonconsulting/nrp.svg?token=LCuTqqVUfUECxm1xTQLb&branch=master)](https://www.travis-ci.com/poissonconsulting/nrp)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/nf8qrbm7imvkuj0q?svg=true)](https://ci.appveyor.com/project/joethorley/nrp)
-[![codecov](https://codecov.io/gh/poissonconsulting/nrp/branch/master/graph/badge.svg?token=BYPzzOPDrd)](https://codecov.io/gh/poissonconsulting/nrp)
+[![R build
+status](https://github.com/poissonconsulting/nrp/workflows/R-CMD-check/badge.svg)](https://github.com/poissonconsulting/nrp/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/poissonconsulting/nrp/branch/master/graph/badge.svg)](https://codecov.io/gh/poissonconsulting/nrp?branch=master)
 [![Apache
 license](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <!-- badges: end -->
@@ -72,6 +71,7 @@ library(nrp)
 # create empty database
 # path = ":memory:" creates a temporory, in memory database
 conn <- nrp_create_db(path = ":memory:") 
+#> Loading required namespace: sf
 
 # provide a path to a .cnv file
 path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
@@ -167,9 +167,11 @@ To report bugs/issues/feature requests, please file an
 If you would like to contribute to the package, please see our
 [CONTRIBUTING](CONTRIBUTING.md) guidelines.
 
-Please note that this project is released with a [Contributor Code of
-Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree
-to abide by its terms
+## Code of Conduct
+
+Please note that the nrp project is released with a [Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
 
 ## License
 
