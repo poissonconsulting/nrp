@@ -1,12 +1,3 @@
-^codecov\.yml$
-^data-raw$
-^appveyor\.yml$
-^\.travis\.yml$
-^README\.Rmd$
-^LICENSE\.md$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^build\.R$
-^CODE_OF_CONDUCT\.md$
-^CONTRIBUTING\.md$
-^docs$
+^\.github$
