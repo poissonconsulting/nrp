@@ -4,11 +4,13 @@
 \name{basinArm}
 \alias{basinArm}
 \title{A Basin-Arm table for Sea-bird CTD data}
-\format{A tbl data frame:
+\format{
+A tbl data frame:
 \describe{
   \item{Lake}{The name of the lake}
   \item{BasinArm}{What arms or basins are within each lake}
-}}
+}
+}
 \usage{
 basinArm
 }

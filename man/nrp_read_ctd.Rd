@@ -20,7 +20,7 @@ nrp_read_ctd(
 
 \item{recursive}{(Deprecated) If \code{TRUE} recurse fully.}
 
-\item{regexp}{A regular expression (e.g. \code{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
+\item{regexp}{A regular expression (e.g. \verb{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
 
 \item{fail}{Should the call fail (the default) or warn if a file cannot be
 accessed.}

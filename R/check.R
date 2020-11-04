@@ -1,5 +1,5 @@
 check_path <- function(path) {
-  check_string(path)
+  chk_string(path)
   path
 }
 
@@ -260,9 +260,10 @@ check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE){
 }
 
 check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE){
-  check_data(
+  chk_data(data)
+  check_names(
     data,
-    values = c(
+    names = c(
          "EMS_ID",
          "MONITORING_LOCATION",
          "LATITUDE",
@@ -325,6 +326,7 @@ check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE){
          "RESULT_LIFE_STAGE"),
     exclusive = exclusive, order = order
   )
+  data
 }
 
 check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {

@@ -4,7 +4,9 @@
 \name{ems_metals_init}
 \alias{ems_metals_init}
 \title{An initialized table for EMS metals data}
-\format{A tbl data frame:}
+\format{
+A tbl data frame:
+}
 \usage{
 ems_metals_init
 }

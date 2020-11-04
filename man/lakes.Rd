@@ -4,12 +4,14 @@
 \name{lakes}
 \alias{lakes}
 \title{A lakes table for Sea-bird CTD data}
-\format{A tbl data frame:
+\format{
+A tbl data frame:
 \describe{
   \item{Lake}{The name of the lake}
   \item{Area}{the area of te lake in meters squared}
   \item{geometry}{Spatial polygon data}
-}}
+}
+}
 \usage{
 lakes
 }

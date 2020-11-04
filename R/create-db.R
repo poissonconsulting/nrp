@@ -10,8 +10,8 @@
 #' nrp_create_db("new_database.sqlite", TRUE)
 #' }
 nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
-  check_string(path)
-  check_flag(ask)
+  chk_string(path)
+  chk_flag(ask)
   if(file_exists(path)) {
     if(ask && !yesno("Really delete file '", path, "'?"))
       return(path)

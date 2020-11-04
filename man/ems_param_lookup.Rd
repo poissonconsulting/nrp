@@ -4,7 +4,8 @@
 \name{ems_param_lookup}
 \alias{ems_param_lookup}
 \title{A lookup table for for selecting the desired columns from EMS}
-\format{A tbl data frame:
+\format{
+A tbl data frame:
 \describe{
   \item{PARAMETER_CODE}{PARAMETER_CODE}
   \item{PARAMETER}{PARAMETER}
@@ -12,7 +13,8 @@
   \item{chem.make.names}{chem.make.names}
   \item{chem.names}{chem.names}
   \item{Comment}{Comment}
-}}
+}
+}
 \usage{
 ems_param_lookup
 }
