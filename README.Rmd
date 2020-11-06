@@ -54,7 +54,7 @@ For simplicity, this demonstration uses the function `nrp_create_db` to create a
 library(nrp)
 
 # create empty database
-# path = ":memory:" creates a temporory, in memory database
+# path = ":memory:" creates a temporary, in memory database
 conn <- nrp_create_db(path = ":memory:") 
 
 # provide a path to a .cnv file

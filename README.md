@@ -69,7 +69,7 @@ supply that connection object for the argument `db_path`.
 library(nrp)
 
 # create empty database
-# path = ":memory:" creates a temporory, in memory database
+# path = ":memory:" creates a temporary, in memory database
 conn <- nrp_create_db(path = ":memory:") 
 #> Loading required namespace: sf
 
