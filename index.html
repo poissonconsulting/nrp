@@ -69,19 +69,19 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install the latest version from <a href="https://github.com/poissonconsulting/nrp">GitHub</a></p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"poissonconsulting/nrp"</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"poissonconsulting/nrp"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="demonstration" class="section level2">
 <h2 class="hasAnchor">
 <a href="#demonstration" class="anchor"></a>Demonstration</h2>
 <p>For simplicity, this demonstration uses the function <code>nrp_create_db</code> to create an empty, temporary database to read and write to, and uses some test data that travels with the package. When connecting to a proper database, just provide the file path to the database for the argument <code>db_path</code> in all function calls and the connection will be made automatically. Alternatively you can connect to a database in R and then supply that connection object for the argument <code>db_path</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">nrp</span><span class="op">)</span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">nrp</span><span class="op">)</span>
 
 <span class="co"># create empty database</span>
-<span class="co"># path = ":memory:" creates a temporory, in memory database</span>
+<span class="co"># path = ":memory:" creates a temporary, in memory database</span>
 <span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_create_db.html">nrp_create_db</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">":memory:"</span><span class="op">)</span> 
 <span class="co">#&gt; Loading required namespace: sf</span>
 
@@ -102,10 +102,10 @@
                             end_date <span class="op">=</span> <span class="st">"2018-08-27"</span>,
                             sites <span class="op">=</span> <span class="st">"KL1"</span>,
                             parameters <span class="op">=</span> <span class="st">"all"</span>,
-                            db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></pre></div>
+                            db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></code></pre></div>
 <p>When updating EMS data, the user must supply their own data set which can be easily obtained using a function from the <code>rems</code> package: <code>get_ems_data(which = "4yr")</code>. The four year data set must be used as the two year data has different structure that does not contain all the parameters needed for use with nrp functions. Once you have the four year data set loaded in the environment, you can easily upload it to the database with nrp functions. You don’t have to worry about uploading duplicate data as the nrp function for uploading will automatically trim the input data so that only new data is added to the database. For this demonstration we use a light weight sample of raw EMS data that travels with the package.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co"># read in raw ems data</span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># read in raw ems data</span>
 <span class="va">path</span> <span class="op">&lt;-</span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ems/test_ems.rds"</span>, package <span class="op">=</span> <span class="st">"nrp"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">ems_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html">readRDS</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span>
 
@@ -123,10 +123,10 @@
                                      sites <span class="op">=</span> <span class="cn">NULL</span>,
                                      db_path <span class="op">=</span> <span class="va">conn</span>,
                                      analysis_type <span class="op">=</span> <span class="st">"standard"</span>,
-                                     show_detection_limits <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></pre></div>
+                                     show_detection_limits <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>There are additional functions in the nrp package that allow for easy downloading of other tables in the database.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="co"># Lakes and BasinArm tables</span>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Lakes and BasinArm tables</span>
 <span class="va">lakes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span>
 <span class="va">basinArm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span>
 
@@ -149,7 +149,7 @@
 
 <span class="co"># we conclude the demo by closing the database connection</span>
 <span class="co"># If you are providing a file path to the database, you do not need to do this</span>
-<span class="fu">readwritesqlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/readwritesqlite/man/rws_disconnect.html">rws_disconnect</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></pre></div>
+<span class="fu">readwritesqlite</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/readwritesqlite/man/rws_disconnect.html">rws_disconnect</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="getting-help-or-reporting-an-issue" class="section level2">
 <h2 class="hasAnchor">
