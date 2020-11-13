@@ -4,15 +4,21 @@
 \alias{nrp_upload_ctd}
 \title{Upload CTD data to nrp database}
 \usage{
-nrp_upload_ctd(data, db_path = getOption("nrp.db_path", file.choose()),
-  commit = TRUE, strict = TRUE, silent = TRUE, replace = FALSE)
+nrp_upload_ctd(
+  data,
+  db_path = getOption("nrp.db_path", file.choose()),
+  commit = TRUE,
+  strict = TRUE,
+  silent = TRUE,
+  replace = FALSE
+)
 }
 \arguments{
 \item{data}{the object name of the data to be uploaded}
 
 \item{db_path}{An Sqlite Database Connection, or path to an SQLite Database}
 
-\item{commit}{A flag specifying whether to commit the operations 
+\item{commit}{A flag specifying whether to commit the operations
 (calling with commit = FALSE can be useful for checking data).}
 
 \item{strict}{A flag specifying whether to error if x has extraneous columns or if exists = TRUE extraneous data frames.}

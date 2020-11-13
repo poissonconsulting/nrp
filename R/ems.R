@@ -334,8 +334,8 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
     err("end date is later than present day")
   }
 
-  checkr::check_datetime(as.POSIXct(start_date_time))
-  checkr::check_datetime(as.POSIXct(end_date_time))
+  chk_s3_class(as.POSIXct(start_date_time), "POSIXct")
+  chk_s3_class(as.POSIXct(end_date_time), "POSIXct")
 
   site_table <- nrp::emsSites
 

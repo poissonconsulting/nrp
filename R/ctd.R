@@ -291,9 +291,9 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     err("end date is later than present day")
   }
 
-  checkr::check_datetime(as.POSIXct(start_date))
+  chk_s3_class(as.POSIXct(start_date), "POSIXct")
   start_date <- as.character(dttr2::dtt_date(start_date))
-  checkr::check_datetime(as.POSIXct(end_date))
+  chk_s3_class(as.POSIXct(end_date), "POSIXct")
   end_date <- as.character(dttr2::dtt_date(end_date))
 
   site_table <- nrp_download_sites(db_path = conn)

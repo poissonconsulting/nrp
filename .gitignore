@@ -2,6 +2,15 @@
 .Rhistory
 .RData
 .Ruserdata
-.DS_Store
 
-~$*.xlsx
+.DS_Store
+.Renviron
+.RProfile
+.httr-oauth
+
+*.html
+*.db
+
+docs/
+inst/docs/
+docs

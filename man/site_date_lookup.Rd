@@ -4,12 +4,14 @@
 \name{site_date_lookup}
 \alias{site_date_lookup}
 \title{A lookup table for matching historical file names with Site IDs and Dates}
-\format{A tbl data frame:
+\format{
+A tbl data frame:
 \describe{
   \item{File}{File name}
   \item{Date}{Date data was collected}
   \item{SiteID}{Site ID}
-}}
+}
+}
 \usage{
 site_date_lookup
 }

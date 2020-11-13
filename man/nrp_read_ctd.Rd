@@ -4,9 +4,14 @@
 \alias{nrp_read_ctd}
 \title{Read CTD Files}
 \usage{
-nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path",
-  file.choose()), recursive = FALSE, regexp = "[.]cnv$", fail = TRUE,
-  lookup = nrp::site_date_lookup)
+nrp_read_ctd(
+  path = ".",
+  db_path = getOption("nrp.db_path", file.choose()),
+  recursive = FALSE,
+  regexp = "[.]cnv$",
+  fail = TRUE,
+  lookup = nrp::site_date_lookup
+)
 }
 \arguments{
 \item{path}{A string of the path to the directory.}
@@ -15,7 +20,7 @@ nrp_read_ctd(path = ".", db_path = getOption("nrp.db_path",
 
 \item{recursive}{(Deprecated) If \code{TRUE} recurse fully.}
 
-\item{regexp}{A regular expression (e.g. \code{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
+\item{regexp}{A regular expression (e.g. \verb{[.]csv$}) passed on to \code{\link[=grep]{grep()}} to filter paths.}
 
 \item{fail}{Should the call fail (the default) or warn if a file cannot be
 accessed.}

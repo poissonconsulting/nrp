@@ -4,8 +4,11 @@
 \alias{nrp_read_ctd_file}
 \title{Read CTD File}
 \usage{
-nrp_read_ctd_file(path, db_path = getOption("nrp.db_path",
-  file.choose()), lookup = nrp::site_date_lookup)
+nrp_read_ctd_file(
+  path,
+  db_path = getOption("nrp.db_path", file.choose()),
+  lookup = nrp::site_date_lookup
+)
 }
 \arguments{
 \item{path}{A string of the path to the file.}

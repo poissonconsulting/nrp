@@ -4,12 +4,14 @@
 \name{emsSites}
 \alias{emsSites}
 \title{A site table for EMS data}
-\format{A tbl data frame:
+\format{
+A tbl data frame:
 \describe{
   \item{SiteID}{Site ID}
   \item{EmsSite}{EMS database site name}
   \item{SiteName}{Site name}
-}}
+}
+}
 \usage{
 emsSites
 }
