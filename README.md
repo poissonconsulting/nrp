@@ -1,10 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![Lifecycle:
-maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R build
 status](https://github.com/poissonconsulting/nrp/workflows/R-CMD-check/badge.svg)](https://github.com/poissonconsulting/nrp/actions)
 [![Codecov test
@@ -71,7 +70,6 @@ library(nrp)
 # create empty database
 # path = ":memory:" creates a temporary, in memory database
 conn <- nrp_create_db(path = ":memory:") 
-#> Loading required namespace: sf
 
 # provide a path to a .cnv file
 path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
@@ -178,13 +176,13 @@ By contributing to this project, you agree to abide by its terms.
 The code is released under the Apache License 2.0
 
     Copyright 2019 Province of British Columbia
-    
+
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at 
-    
+
        http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
