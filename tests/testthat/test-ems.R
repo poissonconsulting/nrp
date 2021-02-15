@@ -1,5 +1,3 @@
-context("ems")
-
 test_that("nrp_extract_ems works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))

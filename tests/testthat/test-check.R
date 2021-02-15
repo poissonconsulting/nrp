@@ -1,5 +1,3 @@
-context("check")
-
 test_that("check_file_exists works", {
   path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
               package = "nrp", mustWork = TRUE)
