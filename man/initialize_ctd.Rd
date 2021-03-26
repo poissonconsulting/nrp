@@ -2,7 +2,7 @@
 % Please edit documentation in R/initialize_tables.R
 \name{initialize_ctd}
 \alias{initialize_ctd}
-\title{Initialize ctd table for database}
+\title{Initialize tables for database}
 \usage{
 initialize_ctd()
 }
@@ -10,5 +10,5 @@ initialize_ctd()
 initialized table with units
 }
 \description{
-Initialize ctd table for database
+Initialize tables for database
 }

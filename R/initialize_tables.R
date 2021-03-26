@@ -1,4 +1,4 @@
-#' Initialize ctd table for database
+#' Initialize tables for database
 #'
 #' @return initialized table with units
 initialize_ctd <- function(){
@@ -28,3 +28,54 @@ initialize_ctd_visit <- function(){
          File = character())
 }
 
+initialize_zoo_sample <- function(){
+  tibble(Date = as.Date(as.character()),
+         SiteID = as.character(),
+         Replicate = as.integer(),
+         FileName = as.character(),
+         MonthCat = as.character(),
+         MaxDepth = units::set_units(numeric(), "m"),
+         EndRev = as.integer(),
+         StartRev = as.integer(),
+         SplMade = as.integer(),
+         SplCount = as.integer(),
+         FundingSource = as.character(),
+         FieldCollection = as.character(),
+         Analyst = as.character())
+}
+
+initialize_zoo <- function(){
+  tibble(Date = as.Date(as.character()),
+         SiteID = as.character(),
+         Replicate = as.integer(),
+         FileName = as.character(),
+         Parameter = as.character(),
+         Value = as.numeric(),
+         RawCount = as.integer())
+}
+
+initialize_mysid_sample <- function(){
+  tibble(Date = as.Date(as.character()),
+         SiteID = as.character(),
+         Replicate = as.integer(),
+         FileName = as.character(),
+         MonthCat = as.character(),
+         Time = as.integer(),
+         Depth = units::set_units(numeric(), "m"),
+         DepthCat = factor(as.character(), levels = c("Shallow", "Deep")),
+         SideLake = as.character(),
+         SplMade = as.integer(),
+         SplCount = as.integer(),
+         FundingSource = as.character(),
+         FieldCollection = as.character(),
+         Analyst = as.character(),
+         Comment = as.character())
+}
+
+initialize_mysid <- function(){
+  tibble(Date = as.Date(as.character()),
+         SiteID = as.character(),
+         Replicate = as.integer(),
+         Parameter = as.character(),
+         Value = as.numeric())
+}

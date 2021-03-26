@@ -279,6 +279,112 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                  ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
 
 
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE MysidSample (
+                                    Date TEXT NOT NULL,
+                                    SiteID TEXT NOT NULL,
+                                    Replicate INTEGER NOT NULL,
+                                    FileName TEXT,
+                                    MonthCat TEXT,
+                                    Time INTEGER,
+                                    Depth INTEGER,
+                                    DepthCat TEXT,
+                                    SideLake TEXT,
+                                    SplMade INTEGER,
+                                    SplCount INTEGER,
+                                    FundingSource TEXT,
+                                    FieldCollection TEXT,
+                                    Analyst TEXT,
+                                    Comment TEXT,
+                                    CHECK(
+                                    Date >= '1993-02-22' AND
+                                    Depth >= 0 AND
+                                    Depth <= 400 AND
+                                    SplMade >= 1 AND
+                                    SplMade <= 1024 AND
+                                    SplCount >= 1 AND
+                                    SplCount <= 10 AND
+                                    Replicate >= 1 AND
+                                    Replicate <= 10
+                                    ),
+                                    FOREIGN KEY(SiteID) REFERENCES sitesCTD (SiteID),
+                                    PRIMARY KEY (Date, SiteID, Replicate))"))
+
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE Mysid (
+                                    Date TEXT NOT NULL,
+                                    SiteID TEXT NOT NULL,
+                                    Replicate INTEGER NOT NULL,
+                                    Parameter TEXT NOT NULL,
+                                    Value REAL,
+                                    CHECK(
+                                    Date >= '1993-02-22' AND
+                                    Value >= 0 AND
+                                    Value <= 30000 AND
+                                    Replicate >= 1 AND
+                                    Replicate <= 10
+                                    ),
+                                    FOREIGN KEY(SiteID) REFERENCES sitesCTD (SiteID),
+                                    FOREIGN KEY (Date, SiteID, Replicate) REFERENCES MysidSample (Date, SiteID, Replicate),
+                                    PRIMARY KEY (Date, SiteID, Replicate, Parameter))"))
+
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE ZooplanktonSample (
+                                    Date TEXT NOT NULL,
+                                    SiteID TEXT NOT NULL,
+                                    Replicate INTEGER NOT NULL,
+                                    FileName TEXT,
+                                    MonthCat TEXT,
+                                    EndRev INTEGER,
+                                    StartRev INTEGER,
+                                    SplMade INTEGER,
+                                    SplCount INTEGER,
+                                    FundingSource TEXT,
+                                    FieldCollection TEXT,
+                                    Analyst TEXT,
+                                    MaxDepth INTEGER NOT NULL,
+                                    CHECK(
+                                    Date >= '1992-04-29' AND
+                                    MaxDepth >= 0 AND
+                                    MaxDepth <= 400 AND
+                                    EndRev >= 0 AND
+                                    EndRev <= 500000 AND
+                                    StartRev >= 0 AND
+                                    StartRev <= 500000 AND
+                                    StartRev < EndRev AND
+                                    EndRev > StartRev AND
+                                    SplMade >= 1 AND
+                                    SplMade <= 1024 AND
+                                    SplCount >= 1 AND
+                                    SplCount <= 10 AND
+                                    Replicate >= 1 AND
+                                    Replicate <= 10
+                                    ),
+                                    FOREIGN KEY(SiteID) REFERENCES sitesCTD (SiteID),
+                                    PRIMARY KEY (Date, SiteID, Replicate, FileName))"))
+
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE Zooplankton (
+                                    Date TEXT NOT NULL,
+                                    SiteID TEXT NOT NULL,
+                                    Replicate INTEGER NOT NULL,
+                                    FileName TEXT NOT NULL,
+                                    Parameter TEXT NOT NULL,
+                                    Value REAL,
+                                    RawCount INTEGER,
+                                    CHECK(
+                                    Date >= '1992-04-29' AND
+                                    Value >= 0 AND
+                                    Value <= 15000 AND
+                                    RawCount >= 0 AND
+                                    RawCount <= 10000 AND
+                                    Replicate >= 1 AND
+                                    Replicate <= 3
+                                    ),
+                                    FOREIGN KEY(SiteID) REFERENCES sitesCTD (SiteID),
+                                    FOREIGN KEY (Date, SiteID, Replicate, FileName) REFERENCES ZooplanktonSample (Date, SiteID, Replicate, FileName),
+                                    PRIMARY KEY (Date, SiteID, Replicate, FileName, Parameter))"))
+
   lakes <- nrp::lakes
   readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 
@@ -298,8 +404,19 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
 
   ems_standard <- nrp::ems_standard_init
-  # ems_standard <- ems_standard[0, ]
   readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
+
+  mysid_sample_init <- initialize_mysid_sample()
+  readwritesqlite::rws_write(mysid_sample_init, exists = TRUE, conn = conn, x_name = "MysidSample")
+
+  mysid_init <- initialize_mysid()
+  readwritesqlite::rws_write(mysid_init, exists = TRUE, conn = conn, x_name = "Mysid")
+
+  zoo_sample_init <- initialize_zoo_sample()
+  readwritesqlite::rws_write(zoo_sample_init, exists = TRUE, conn = conn, x_name = "ZooplanktonSample")
+
+  zoo_init <- initialize_zoo()
+  readwritesqlite::rws_write(zoo_init, exists = TRUE, conn = conn, x_name = "Zooplankton")
 
   conn
 }
