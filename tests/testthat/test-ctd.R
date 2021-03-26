@@ -1,5 +1,3 @@
-context("ctd")
-
 test_that("nrp_read_ctd_file works", {
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)

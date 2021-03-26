@@ -1,5 +1,3 @@
-context("create-db")
-
 test_that("nrp-create-db works", {
 
   conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
