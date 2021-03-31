@@ -32,7 +32,8 @@ Imports:
     sf,
     units,
     lubridate,
-    utils
+    utils,
+    readxl
 Suggests: 
     testthat,
     covr
