@@ -1,5 +1,8 @@
-library(poispkgs)
+library(readxl)
 library(usethis)
+library(poisspatial)
+library(dplyr)
+library(sf)
 
 # NOTE on ems test data: test_ems.rds
 # to update the test ems data use rems::get_ems_data(which = "4yr") to download
@@ -69,6 +72,46 @@ ems_metals <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metal
 ems_metals_init <- ems_metals[0, ]
 
 
+zoo_cols <- c("FileName", "YearComp", "Year", "Month", "Date1", "Date2",
+              "Station", "Season", "Basin", "Replicate", "SexFecCode", "CopStageCode",
+              "DenTotal", "DCopep", "DClad", "DClad other than Daph", "DDash",
+              "DDkenai", "DEpi", "DCycl", "DNaup", "DDaph", "DDiaph", "DBosm",
+              "DScap", "DLepto", "DCerio", "DChyd", "DOtherCopep", "DOtherClad",
+              "DDashM", "DDashF", "DDash5", "DDash4", "DDash3", "DDash2", "DDash1",
+              "DDashC", "DDkenaiM", "DDkenaiF", "DDkenaiC", "DEpiM", "DEpiF",
+              "DEpiC", "DCyclM", "DCyclF", "DCycl5", "DCycl4", "DCycl3", "DCycl2",
+              "DCycl1", "DCyclC", "BiomTotal", "BCopep", "BClad", "BClad other than Daph",
+              "BDash", "BDkenai", "BEpi", "BCycl", "BNaup", "BDaph", "BDiaph",
+              "BBosm", "BScap", "BLepto", "BCerio", "BChyd", "BOtherCopep",
+              "BOtherClad", "BDashM", "BDashF", "BDash5", "BDash4", "BDash3",
+              "BDash2", "BDash1", "BDashC", "BDkenaiM", "BDkenaiF", "BDkenaiC",
+              "BEpiM", "BEpiF", "BEpiC", "BCyclM", "BCyclF", "BCycl5", "BCycl4",
+              "BCycl3", "BCycl2", "BCycl1", "BCyclC", "F1Dash", "F1Dkenai",
+              "F1Epi", "F1Cycl", "F1Daph", "F1Diaph", "F1Bosm", "F1Scap", "F1Lepto",
+              "F1Cerio", "F1Chyd", "F2Dash", "F2Dkenai", "F2Epi", "F2Cycl",
+              "F2Daph", "F2Diaph", "F2Bosm", "F2Scap", "F2Lepto", "F2Cerio",
+              "F2Chyd", "F3Dash", "F3Dkenai", "F3Epi", "F3Cycl", "F3Daph",
+              "F3Diaph", "F3Bosm", "F3Scap", "F3Lepto", "F3Cerio", "F3Chyd",
+              "F4Dash", "F4Dkenai", "F4Epi", "F4Cycl", "F4Daph", "F4Diaph",
+              "F4Bosm", "F4Scap", "F4Lepto", "F4Cerio", "F4Chyd", "F5Dash",
+              "F5Dkenai", "F5Epi", "F5Cycl", "F5Daph", "F5Diaph", "F5Bosm",
+              "F5Scap", "F5Lepto", "F5Cerio", "F5Chyd", "F6Dash", "F6Dkenai",
+              "F6Epi", "F6Cycl", "F6Daph", "F6Diaph", "F6Bosm", "F6Scap", "F6Lepto",
+              "F6Cerio", "F6Chyd", "HaulTime", "ENDREV", "STARTREV", "TOTREV",
+              "SPLmade", "SPLcount", "vertical haul depth_m", "vertical haul net size_m",
+              "Funding Source", "Field Collection", "Analyst")
+
+mysid_cols <- c("FileName", "Date", "Year", "Month", "Day", "Station", "Replicate",
+                               "Time", "Depth", "SideLake", "#splitsCounted", "#splitsMade",
+                               "DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "DmatF",
+                               "DbroodF", "DspentF", "DdistBrF", "BiomTotal", "Bjuv", "BimmM",
+                               "BmatM", "BbreedM", "BimmF", "BmatF", "BbroodF", "BspentF", "BdistBrF",
+                               "VolDenTotal", "VolDjuv", "VolDimmM", "VolDmatM", "VolDbreedM",
+                               "VolDimmF", "VolDmatF", "VolDbroodF", "VolDspentF", "VolDdisBrF",
+                               "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid")
+
+use_data(zoo_cols, overwrite = TRUE)
+use_data(mysid_cols, overwrite = TRUE)
 use_data(basinArm, overwrite = TRUE)
 use_data(ctdSites, overwrite = TRUE)
 use_data(lakes, overwrite = TRUE)
