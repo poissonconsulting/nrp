@@ -31,8 +31,12 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
   zoo_col_types <- c("text", "numeric", "numeric", "text",  "date",  "date",  "numeric",  "text",  "text",
                      "numeric", "text", "text", rep("numeric", 154), "text", "text", "text")
 
-  data <- readxl::read_excel(path, col_types = zoo_col_types)
-  check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
+  data <- try(readxl::read_excel(path, col_types = zoo_col_types), silent = TRUE)
+
+  if(inherits(data, "try-error")){
+    err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_cols` for correct column names and order.")
+  }
+  check_zoo_raw_data(data)
 
   data %<>% filter(!all_na(data)) %>%
     mutate(Station = paste0(system, .data$Station))
