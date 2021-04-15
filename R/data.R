@@ -72,3 +72,13 @@
 #'
 #' @format A tbl data frame:
 "ems_metals_init"
+
+#' A character vector with the correct column names and order for raw zooplankton data
+#'
+#' @format A character vector:
+"zoo_cols"
+
+#' A character vector with the correct column names and order for raw mysid data
+#'
+#' @format A character vector:
+"mysid_cols"
