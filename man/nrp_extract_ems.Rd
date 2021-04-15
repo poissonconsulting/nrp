@@ -13,7 +13,7 @@ nrp_extract_ems(
 \arguments{
 \item{data}{The EMS data to be extracted. Data must first be downloaded from server by using rems package}
 
-\item{db_path}{The SQLite connection object or path to the SQLite database}
+\item{db_path}{The SQLite connection object or path to the nrp SQLite database}
 
 \item{analysis_type}{EMS data of interest. Must be either "standard" or "metals"}
 }

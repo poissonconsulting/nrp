@@ -13,7 +13,7 @@ nrp_read_ctd_file(
 \arguments{
 \item{path}{A string of the path to the file.}
 
-\item{db_path}{The SQLite connection object or path to the SQLite database}
+\item{db_path}{The SQLite connection object or path to the nrp SQLite database}
 
 \item{lookup}{The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
 this defaults to a dataset provided with the package that is used for reading historical data}

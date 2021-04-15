@@ -1,7 +1,7 @@
 #' Read CTD File
 #'
 #' @param path A string of the path to the file.
-#' @param db_path The SQLite connection object or path to the SQLite database
+#' @param db_path The SQLite connection object or path to the nrp SQLite database
 #' @param lookup The lookup table for assigning site names/dates (used when reading files that cannot be read by oce package).
 #' this defaults to a dataset provided with the package that is used for reading historical data
 #' @return A tibble
