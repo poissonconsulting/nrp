@@ -208,7 +208,7 @@ nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", file.choo
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
 
-  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 26911) %>%
+  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326) %>%
     mutate(MaxDepth = units::set_units(.data$MaxDepth, "m"))
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,

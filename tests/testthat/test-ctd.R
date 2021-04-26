@@ -10,8 +10,8 @@ test_that("nrp_read_ctd_file works", {
   expect_is(data, "tbl_df")
   expect_identical(nrow(data), 1413L)
 
-  path <-  system.file("extdata", "bad ctd/2018/KL_Badly_named_file_1.cnv",
-                       package = "nrp", mustWork = TRUE)
+  path <-  system.file("extdata", "bad ctd/2018/KL_badly_named_file.cnv", package = "nrp", mustWork = TRUE)
+
   expect_error(data <- nrp_read_ctd_file(path, db_path = conn),
                "Station name could not be extracted from file name: No matches")
 
@@ -53,7 +53,7 @@ test_that("nrp_read_ctd works", {
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
   expect_identical(length(data), 18L)
-  expect_identical(nrow(data), 5329L)
+  expect_identical(nrow(data), 3549L)
 
   path <-  system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn)
@@ -98,8 +98,8 @@ test_that("nrp_download_ctd_basin_arm works", {
 test_that("nrp_add_ctd_sites works", {
 
   new_data <- tibble(SiteID = "NewID", EmsSiteNumber = "NewNumber", SiteName = "New Site Name",
-                     EmsSiteName = "name ems",BasinArm = "Upper", MaxDepth = 100, Easting = 434792,
-                     Northing = 5605351)
+                     EmsSiteName = "name ems",BasinArm = "Upper", MaxDepth = 100, Easting = -75.32016,
+                     Northing = 2.932139)
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
@@ -181,7 +181,7 @@ test_that("nrp_download_ctd works", {
 
   expect_is(data, "tbl_df")
   expect_identical(length(db_data), 16L)
-  expect_identical(nrow(db_data), 4749L)
+  expect_identical(nrow(db_data), 3076L)
 
 })
 

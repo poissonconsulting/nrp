@@ -1,8 +1,11 @@
 library(readxl)
+library(readr)
 library(usethis)
 library(poisspatial)
 library(dplyr)
 library(sf)
+library(units)
+
 
 # NOTE on ems test data: test_ems.rds
 # to update the test ems data use rems::get_ems_data(which = "4yr") to download
@@ -15,11 +18,13 @@ emsSitesJoin <- emsSites %>% select(SiteID, EmsSiteName = SiteName)
 ctdSites <- read_csv("data-raw/ctdSites.csv") %>%
   left_join(emsSitesJoin, by = "SiteID") %>%
   ps_coords_to_sfc(crs = 26911) %>%
+  st_transform(4326) %>%
   mutate(MaxDepth = set_units(MaxDepth, "m")) %>%
   select(SiteID, EmsSiteNumber = SiteNumber, SiteName, EmsSiteName, BasinArm, MaxDepth)
 
 emsSites %<>%
-  ps_coords_to_sfc(crs = 26911)
+  ps_coords_to_sfc(crs = 26911) %>%
+  st_transform(4326)
 
 ems_param_lookup <- read_excel("data-raw/Chem_parameter_lookup.xlsx")
 
@@ -32,7 +37,7 @@ ems_param_lookup %<>%
          Comment = ifelse(Comment == "metals; note that this parameter name is the same as the standard analysis - needs re-naming",
                           "metals", Comment))
 
-basinArm <- ps_deactivate_sfc(ctdSites) %>%
+basinArm <- as_tibble(ctdSites) %>%
   select(SiteID, BasinArm)
 
 basinArm$Lake[grepl("AR", basinArm$SiteID) | grepl("HL", basinArm$SiteID)] <- "Arrow"
@@ -44,12 +49,13 @@ basinArm %<>% select(Lake, BasinArm) %>%
 
 lakes <- st_read("data-raw/lakes.gpkg")
 lakes$Area <- st_area(lakes)
-lakes %<>% ps_deactivate_sfc() %>%
+lakes %<>% as_tibble() %>%
   select(Lake, Area, geometry = geom) %>%
-  ps_activate_sfc()
+  ps_activate_sfc() %>%
+  st_transform(4326)
 
-kl_lookup <- read.csv("data-raw/KL-site-lookup.csv", stringsAsFactors = FALSE)
-ar_lookup <- read.csv("data-raw/AR-site-lookup.csv", stringsAsFactors = FALSE)
+kl_lookup <- read.csv("data-raw/KL-site-lookup.csv")
+ar_lookup <- read.csv("data-raw/AR-site-lookup.csv")
 site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
 path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
