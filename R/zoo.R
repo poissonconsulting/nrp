@@ -48,3 +48,26 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
 
   data
 }
+
+#' Read zooplankton raw data files
+#'
+#' @param path A string of the path to the directory.
+#' @param db_path The SQLite connection object or path to the nrp SQLite database.
+#' @param system The system 'arrow' or 'kootenay'. If null, the system is detected from the file names.
+#' @inheritParams fs::dir_ls
+#' @return A tibble.
+#' @export
+#'
+nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
+                                 recursive = FALSE, system = NULL, regexp = "[.]xlsx$",
+                                 fail = TRUE) {
+  check_dir_exists(path)
+  paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
+                  fail = fail)
+  if(!length(paths)) return(named_list())
+
+  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_zooplankton_file(., db_path = db_path, system = system))))
+  rownames(datas) <- NULL
+
+  datas
+}

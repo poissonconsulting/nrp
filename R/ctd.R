@@ -111,7 +111,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
 #' this defaults to a dataset provided with the package that is used for
 #' reading historical data
 #' @inheritParams fs::dir_ls
-#' @return A list of tibbles.
+#' @return A tibble.
 #' @export
 #'
 nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),

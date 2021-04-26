@@ -3,7 +3,7 @@
 #' @param data The EMS data to be extracted. Data must first be downloaded from server by using rems package
 #' @param db_path The SQLite connection object or path to the nrp SQLite database
 #' @param analysis_type EMS data of interest. Must be either "standard" or "metals"
-#' @return A a data frame
+#' @return A tibble.
 #' @export
 #'
 

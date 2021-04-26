@@ -18,7 +18,7 @@ nrp_extract_ems(
 \item{analysis_type}{EMS data of interest. Must be either "standard" or "metals"}
 }
 \value{
-A a data frame
+A tibble.
 }
 \description{
 Extract and clean EMS data

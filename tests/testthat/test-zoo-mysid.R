@@ -25,6 +25,25 @@ test_that("nrp_read_zooplankton_file works", {
 
 })
 
+test_that("nrp_read_zooplankton works", {
+
+  path <- system.file("extdata", "zooplankton",
+                      package = "nrp", mustWork = TRUE)
+  data <- nrp_read_zooplankton(path, db_path = conn)
+
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 169L)
+  expect_identical(nrow(data), 132L)
+
+  expect_error(nrp_read_mysid("not-a-path", db_path = conn),
+               "path 'not-a-path' must exist")
+
+  path <- system.file("extdata",
+                      package = "nrp", mustWork = TRUE)
+  data <- nrp_read_mysid(path, db_path = conn)
+  expect_identical(data,  list(x = 1)[-1])
+
+})
 
 test_that("nrp_read_mysid_file works", {
 
@@ -46,5 +65,26 @@ test_that("nrp_read_mysid_file works", {
 
   expect_error(nrp_read_mysid_file(path = wrong_path, db_path = conn),
                "Columns in data do not match template for mysid raw data. see `nrp::mysid_cols` for correct column names and order.")
+
+})
+
+
+test_that("nrp_read_mysid works", {
+
+  path <- system.file("extdata", "mysid",
+                      package = "nrp", mustWork = TRUE)
+  data <- nrp_read_mysid(path, db_path = conn)
+
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 46L)
+  expect_identical(nrow(data), 78L)
+
+  expect_error(nrp_read_mysid("not-a-path", db_path = conn),
+               "path 'not-a-path' must exist")
+
+  path <- system.file("extdata",
+                      package = "nrp", mustWork = TRUE)
+  data <- nrp_read_mysid(path, db_path = conn)
+  expect_identical(data,  list(x = 1)[-1])
 
 })
