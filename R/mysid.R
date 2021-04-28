@@ -71,3 +71,52 @@ nrp_read_mysid <- function(path = ".", db_path = getOption("nrp.db_path", file.c
 
   datas
 }
+
+#' Upload CTD data to the nrp database
+#'
+#' @param data the object name of the data to be uploaded
+#' @param db_path An SQLite Database Connection, or path to an SQLite Database
+#' @inheritParams readwritesqlite::rws_write
+#' @export
+#'
+nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choose()),
+                             commit = TRUE, strict = TRUE, silent = TRUE,
+                             replace = FALSE){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  check_mysid_raw_data(data, exclusive = TRUE, order = TRUE)
+
+  data %<>% mutate(Date = dttr2::dtt_date(.data$Date),
+                   Depth = units::as_units(.data$Depth, "m"),
+                   DepthCat = factor(.data$DepthCat, levels = c("Shallow", "Deep")))
+
+  mysid_sample <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$FileName,
+                                 .data$MonthCat, .data$Time, .data$Depth, .data$DepthCat,
+                                 .data$SideLake, SplMade = .data$`#splitsMade`,
+                                 SplCount = .data$`#splitsCounted`, .data$FundingSource,
+                                 .data$FieldCollection, .data$Analyst, .data$Comment))
+
+  readwritesqlite::rws_write(x = mysid_sample, commit = commit,
+                             strict = strict, silent = silent,
+                             x_name = "MysidSample", conn = conn, replace = replace)
+
+  mysid_data <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$DenTotal,
+                               .data$Djuv, .data$DimmM, .data$DmatM, .data$DbreedM,
+                               .data$DimmF, .data$DmatF, .data$DbroodF, .data$DspentF,
+                               .data$DdistBrF, .data$BiomTotal, .data$Bjuv, .data$BimmM,
+                               .data$BmatM, .data$BbreedM, .data$BimmF, .data$BmatF,
+                               .data$BbroodF, .data$BspentF, .data$BdistBrF, .data$VolDenTotal,
+                               .data$VolDjuv, .data$VolDimmM, .data$VolDmatM, .data$VolDbreedM,
+                               .data$VolDimmF, .data$VolDmatF, .data$VolDbroodF, .data$VolDspentF,
+                               .data$VolDdisBrF, .data$`Eggs/BroodF`, .data$`Eggs/DistBrF`,
+                               .data$`Eggs/Total#Mysids`, .data$PropFemGravid)) %>%
+    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate), names_to = "Parameter", values_to = "Value")
+
+  readwritesqlite::rws_write(x = mysid_data, commit = commit, strict = strict,
+                             silent = silent,
+                             x_name = "Mysid", conn = conn, replace = replace)
+}

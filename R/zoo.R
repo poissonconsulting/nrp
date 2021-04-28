@@ -73,3 +73,73 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
 
   datas
 }
+
+#' Upload CTD data to the nrp database
+#'
+#' @param data the object name of the data to be uploaded
+#' @param db_path An SQLite Database Connection, or path to an SQLite Database
+#' @inheritParams readwritesqlite::rws_write
+#' @export
+#'
+nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.choose()),
+                                  commit = TRUE, strict = TRUE, silent = TRUE,
+                                  replace = FALSE){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
+
+  data %<>% mutate(Date1 = dttr2::dtt_date(.data$Date1),
+                   MaxDepth = units::as_units(.data$MaxDepth, "m"))
+
+  zoo_sample <- select(data, c(Date = .data$Date1, SiteID = .data$Station, .data$Replicate,
+                               .data$FileName, .data$MonthCat, EndRev = .data$ENDREV,
+                               StartRev = .data$STARTREV, SplMade = .data$SPLmade,
+                               SplCount = .data$SPLcount, .data$FundingSource, .data$FieldCollection,
+                               .data$Analyst, .data$MaxDepth))
+
+  readwritesqlite::rws_write(x = zoo_sample, commit = commit,
+                             strict = strict, silent = silent,
+                             x_name = "ZooplanktonSample", conn = conn, replace = replace)
+
+  zoo_data <- select(data, c(Date = .data$Date1, SiteID = .data$Station, .data$Replicate, .data$FileName,
+                             .data$DenTotal, .data$DCopep, .data$DClad, .data$`DClad other than Daph`,
+                             .data$DDash, .data$DDkenai, .data$DEpi, .data$DCycl, .data$DNaup,
+                             .data$DDaph, .data$DDiaph, .data$DBosm, .data$DScap, .data$DLepto,
+                             .data$DCerio, .data$DChyd, .data$DOtherCopep, .data$DOtherClad,
+                             .data$DDashM, .data$DDashF, .data$DDash5, .data$DDash4, .data$DDash3,
+                             .data$DDash2, .data$DDash1, .data$DDashC, .data$DDkenaiM, .data$DDkenaiF,
+                             .data$DDkenaiC, .data$DEpiM, .data$DEpiF, .data$DEpiC, .data$DCyclM,
+                             .data$DCyclF, .data$DCycl5, .data$DCycl4, .data$DCycl3, .data$DCycl2,
+                             .data$DCycl1, .data$DCyclC, .data$BiomTotal, .data$BCopep, .data$BClad,
+                             .data$`BClad other than Daph`, .data$BDash, .data$BDkenai, .data$BEpi,
+                             .data$BCycl, .data$BNaup, .data$BDaph, .data$BDiaph, .data$BBosm,
+                             .data$BScap, .data$BLepto, .data$BCerio, .data$BChyd, .data$BOtherCopep,
+                             .data$BOtherClad, .data$BDashM, .data$BDashF, .data$BDash5, .data$BDash4,
+                             .data$BDash3, .data$BDash2, .data$BDash1, .data$BDashC, .data$BDkenaiM,
+                             .data$BDkenaiF, .data$BDkenaiC, .data$BEpiM, .data$BEpiF, .data$BEpiC,
+                             .data$BCyclM, .data$BCyclF, .data$BCycl5, .data$BCycl4, .data$BCycl3,
+                             .data$BCycl2, .data$BCycl1, .data$BCyclC, .data$F1Dash, .data$F1Dkenai,
+                             .data$F1Epi, .data$F1Cycl, .data$F1Daph, .data$F1Diaph, .data$F1Bosm,
+                             .data$F1Scap, .data$F1Lepto, .data$F1Cerio, .data$F1Chyd, .data$F2Dash,
+                             .data$F2Dkenai, .data$F2Epi, .data$F2Cycl, .data$F2Daph, .data$F2Diaph,
+                             .data$F2Bosm, .data$F2Scap, .data$F2Lepto, .data$F2Cerio, .data$F2Chyd,
+                             .data$F3Dash, .data$F3Dkenai, .data$F3Epi, .data$F3Cycl, .data$F3Daph,
+                             .data$F3Diaph, .data$F3Bosm, .data$F3Scap, .data$F3Lepto, .data$F3Cerio,
+                             .data$F3Chyd, .data$F4Dash, .data$F4Dkenai, .data$F4Epi, .data$F4Cycl,
+                             .data$F4Daph, .data$F4Diaph, .data$F4Bosm, .data$F4Scap, .data$F4Lepto,
+                             .data$F4Cerio, .data$F4Chyd, .data$F5Dash, .data$F5Dkenai, .data$F5Epi,
+                             .data$F5Cycl, .data$F5Daph, .data$F5Diaph, .data$F5Bosm, .data$F5Scap,
+                             .data$F5Lepto, .data$F5Cerio, .data$F5Chyd, .data$F6Dash, .data$F6Dkenai,
+                             .data$F6Epi, .data$F6Cycl, .data$F6Daph, .data$F6Diaph, .data$F6Bosm,
+                             .data$F6Scap, .data$F6Lepto, .data$F6Cerio, .data$F6Chyd)) %>%
+    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate, .data$FileName), names_to = "Parameter", values_to = "Value") %>%
+    mutate(RawCount = NA_integer_)
+
+  readwritesqlite::rws_write(x = zoo_data, commit = commit, strict = strict,
+                             silent = silent,
+                             x_name = "Zooplankton", conn = conn, replace = replace)
+}
