@@ -28,8 +28,8 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-  mysid_col_types <- c("text", "date", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric",
-                       "numeric", "text", rep("numeric", 36))
+  mysid_col_types <- c("text", "date", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric",
+                       "numeric", "text", "text", rep("numeric", 36), "text", "text", "text", "text")
 
   data <- try(readxl::read_excel(path, col_types = mysid_col_types), silent = TRUE)
 

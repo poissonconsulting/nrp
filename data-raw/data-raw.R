@@ -5,6 +5,7 @@ library(poisspatial)
 library(dplyr)
 library(sf)
 library(units)
+library(magrittr)
 
 
 # NOTE on ems test data: test_ems.rds
@@ -78,7 +79,7 @@ ems_metals <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metal
 ems_metals_init <- ems_metals[0, ]
 
 
-zoo_cols <- c("FileName", "YearComp", "Year", "Month", "Date1", "Date2",
+zoo_cols <- c("FileName", "YearComp", "Year", "Month", "MonthCat", "Date1", "Date2",
               "Station", "Season", "Basin", "Replicate", "SexFecCode", "CopStageCode",
               "DenTotal", "DCopep", "DClad", "DClad other than Daph", "DDash",
               "DDkenai", "DEpi", "DCycl", "DNaup", "DDaph", "DDiaph", "DBosm",
@@ -105,16 +106,17 @@ zoo_cols <- c("FileName", "YearComp", "Year", "Month", "Date1", "Date2",
               "F6Epi", "F6Cycl", "F6Daph", "F6Diaph", "F6Bosm", "F6Scap", "F6Lepto",
               "F6Cerio", "F6Chyd", "HaulTime", "ENDREV", "STARTREV", "TOTREV",
               "SPLmade", "SPLcount", "vertical haul depth_m", "vertical haul net size_m",
-              "Funding Source", "Field Collection", "Analyst")
+              "FundingSource", "FieldCollection", "Analyst", "MaxDepth")
 
-mysid_cols <- c("FileName", "Date", "Year", "Month", "Day", "Station", "Replicate",
-                               "Time", "Depth", "SideLake", "#splitsCounted", "#splitsMade",
+mysid_cols <- c("FileName", "Date", "Year", "Month", "MonthCat", "Day", "Station", "Replicate",
+                               "Time", "Depth", "DepthCat", "SideLake", "#splitsCounted", "#splitsMade",
                                "DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "DmatF",
                                "DbroodF", "DspentF", "DdistBrF", "BiomTotal", "Bjuv", "BimmM",
                                "BmatM", "BbreedM", "BimmF", "BmatF", "BbroodF", "BspentF", "BdistBrF",
                                "VolDenTotal", "VolDjuv", "VolDimmM", "VolDmatM", "VolDbreedM",
                                "VolDimmF", "VolDmatF", "VolDbroodF", "VolDspentF", "VolDdisBrF",
-                               "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid")
+                               "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid",
+                               "FundingSource", "FieldCollection", "Analyst", "Comment")
 
 use_data(zoo_cols, overwrite = TRUE)
 use_data(mysid_cols, overwrite = TRUE)

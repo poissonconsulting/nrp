@@ -5,6 +5,7 @@
 #' @param system The system 'arrow' or 'kootenay'. If null, the system is detected from the file name.
 #' @return A tibble
 #' @export
+#'
 nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
                                                                 file.choose()), system = NULL) {
   check_file_exists(path)
@@ -28,8 +29,9 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-  zoo_col_types <- c("text", "numeric", "numeric", "text",  "date",  "date",  "numeric",  "text",  "text",
-                     "numeric", "text", "text", rep("numeric", 154), "text", "text", "text")
+  zoo_col_types <- c("text", "numeric", "numeric", "text", "text", "date",  "date",  "numeric",  "text",  "text",
+                     "numeric", "text", "text", rep("numeric", 154), "text", "text",
+                     "text", "numeric")
 
   data <- try(readxl::read_excel(path, col_types = zoo_col_types), silent = TRUE)
 
