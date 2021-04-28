@@ -22,7 +22,6 @@ test_that("nrp_read_zooplankton_file works", {
 
   expect_error(nrp_read_zooplankton_file(path = wrong_path, db_path = conn),
                "Columns in data do not match template for zooplankton raw data. see `nrp::zoo_cols` for correct column names and order.")
-
 })
 
 test_that("nrp_read_zooplankton works", {
@@ -42,7 +41,33 @@ test_that("nrp_read_zooplankton works", {
                       package = "nrp", mustWork = TRUE)
   data <- nrp_read_mysid(path, db_path = conn)
   expect_identical(data,  list(x = 1)[-1])
+})
 
+test_that("nrp_upload_zooplankton works", {
+
+  path <- system.file("extdata", "zooplankton/Arzp20.xlsx",
+                      package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_zooplankton_file(path = path, db_path = conn)
+
+  nrp_upload_zooplankton(data = data, db_path = conn)
+
+  db_data <- readwritesqlite::rws_read_table("Zooplankton", conn = conn)
+  expect_identical(length(db_data), 7L)
+  expect_identical(nrow(db_data), 8760L)
+
+  db_sample <- readwritesqlite::rws_read_table("ZooplanktonSample", conn = conn)
+  expect_identical(length(db_sample), 13L)
+  expect_identical(nrow(db_sample), 60L)
+
+  nrp_upload_zooplankton(data = data, db_path = conn, replace = TRUE)
+
+  db_data <- readwritesqlite::rws_read_table("Zooplankton", conn = conn)
+  expect_identical(length(db_data), 7L)
+  expect_identical(nrow(db_data), 8760L)
+
+  expect_error(nrp_upload_zooplankton(data = data, db_path = conn),
+               "UNIQUE constraint failed: ZooplanktonSample.Date, ZooplanktonSample.SiteID, ZooplanktonSample.Replicate, ZooplanktonSample.FileName")
 })
 
 test_that("nrp_read_mysid_file works", {
@@ -65,7 +90,6 @@ test_that("nrp_read_mysid_file works", {
 
   expect_error(nrp_read_mysid_file(path = wrong_path, db_path = conn),
                "Columns in data do not match template for mysid raw data. see `nrp::mysid_cols` for correct column names and order.")
-
 })
 
 
@@ -86,5 +110,33 @@ test_that("nrp_read_mysid works", {
                       package = "nrp", mustWork = TRUE)
   data <- nrp_read_mysid(path, db_path = conn)
   expect_identical(data,  list(x = 1)[-1])
+})
 
+test_that("nrp_upload_mysid works", {
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  path <- system.file("extdata", "mysid/KLFmys20.xlsx",
+                      package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_mysid_file(path = path, db_path = conn)
+
+  nrp_upload_mysid(data = data, db_path = conn)
+
+  db_data <- readwritesqlite::rws_read_table("Mysid", conn = conn)
+  expect_identical(length(db_data), 5L)
+  expect_identical(nrow(db_data), 2040L)
+
+  db_sample <- readwritesqlite::rws_read_table("MysidSample", conn = conn)
+  expect_identical(length(db_sample), 15L)
+  expect_identical(nrow(db_sample), 60L)
+
+  nrp_upload_mysid(data = data, db_path = conn, replace = TRUE)
+
+  db_data <- readwritesqlite::rws_read_table("Mysid", conn = conn)
+  expect_identical(length(db_data), 5L)
+  expect_identical(nrow(db_data), 2040L)
+
+  expect_error(nrp_upload_mysid(data = data, db_path = conn),
+               "UNIQUE constraint failed: MysidSample.Date, MysidSample.SiteID, MysidSample.Replicate")
 })
