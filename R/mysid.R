@@ -72,7 +72,7 @@ nrp_read_mysid <- function(path = ".", db_path = getOption("nrp.db_path", file.c
   datas
 }
 
-#' Upload CTD data to the nrp database
+#' Upload mysid data to the nrp database
 #'
 #' @param data the object name of the data to be uploaded
 #' @param db_path An SQLite Database Connection, or path to an SQLite Database
@@ -119,4 +119,19 @@ nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choos
   readwritesqlite::rws_write(x = mysid_data, commit = commit, strict = strict,
                              silent = silent,
                              x_name = "Mysid", conn = conn, replace = replace)
+}
+
+#' Download Mysid sample table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return Mysid sample table
+#' @export
+#'
+nrp_download_mysid_sample <- function(db_path = getOption("nrp.db_path", file.choose())) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+  readwritesqlite::rws_read_table("MysidSample", conn = conn)
 }

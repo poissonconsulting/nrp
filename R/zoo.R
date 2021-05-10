@@ -74,7 +74,7 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
   datas
 }
 
-#' Upload CTD data to the nrp database
+#' Upload zooplanktondata to the nrp database
 #'
 #' @param data the object name of the data to be uploaded
 #' @param db_path An SQLite Database Connection, or path to an SQLite Database
@@ -142,4 +142,19 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
   readwritesqlite::rws_write(x = zoo_data, commit = commit, strict = strict,
                              silent = silent,
                              x_name = "Zooplankton", conn = conn, replace = replace)
+}
+
+#' Download Zooplankton sample table
+#' @param db_path The SQLite connection object or path to the SQLite database
+#' @return Zooplankton sample table
+#' @export
+#'
+nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choose())) {
+  conn <- db_path
+
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+  readwritesqlite::rws_read_table("ZooplanktonSample", conn = conn)
 }
