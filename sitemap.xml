@@ -55,6 +55,9 @@
     <loc>/reference/mysid_input_cols.html</loc>
   </url>
   <url>
+    <loc>/reference/mysid_params.html</loc>
+  </url>
+  <url>
     <loc>/reference/nrp-package.html</loc>
   </url>
   <url>
@@ -128,5 +131,8 @@
   </url>
   <url>
     <loc>/reference/zoo_input_cols.html</loc>
+  </url>
+  <url>
+    <loc>/reference/zoo_params.html</loc>
   </url>
 </urlset>
