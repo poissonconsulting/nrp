@@ -2,7 +2,7 @@
 % Please edit documentation in R/mysid.R
 \name{nrp_upload_mysid}
 \alias{nrp_upload_mysid}
-\title{Upload CTD data to the nrp database}
+\title{Upload mysid data to the nrp database}
 \usage{
 nrp_upload_mysid(
   data,
@@ -28,5 +28,5 @@ nrp_upload_mysid(
 \item{replace}{A flag specifying whether to replace any existing rows whose inclusion would violate unique or primary key constraints.}
 }
 \description{
-Upload CTD data to the nrp database
+Upload mysid data to the nrp database
 }
