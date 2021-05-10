@@ -70,6 +70,13 @@ test_that("nrp_upload_zooplankton works", {
                "UNIQUE constraint failed: ZooplanktonSample.Date, ZooplanktonSample.SiteID, ZooplanktonSample.Replicate, ZooplanktonSample.FileName")
 })
 
+test_that("nrp_download_zoo_sample works", {
+
+  sample <- nrp_download_zoo_sample(db_path = conn)
+  expect_identical(nrow(sample), 60L)
+
+})
+
 test_that("nrp_read_mysid_file works", {
 
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
@@ -113,8 +120,6 @@ test_that("nrp_read_mysid works", {
 })
 
 test_that("nrp_upload_mysid works", {
-  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-  teardown(DBI::dbDisconnect(conn))
 
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
                       package = "nrp", mustWork = TRUE)
@@ -140,3 +145,11 @@ test_that("nrp_upload_mysid works", {
   expect_error(nrp_upload_mysid(data = data, db_path = conn),
                "UNIQUE constraint failed: MysidSample.Date, MysidSample.SiteID, MysidSample.Replicate")
 })
+
+test_that("nrp_download_mysid_visit works", {
+
+  sample <- nrp_download_mysid_sample(db_path = conn)
+  expect_identical(nrow(sample), 60L)
+
+})
+
