@@ -345,7 +345,7 @@ check_mysid_raw_data <- function(data, exclusive = TRUE, order = TRUE){
   chk_data(data)
   data <- try(check_names(
     data,
-    names = nrp::mysid_cols,
+    names = nrp::mysid_input_cols,
     exclusive = exclusive, order = order),
     silent = TRUE)
 
@@ -359,7 +359,7 @@ check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE){
   chk_data(data)
   data <- try(check_names(
     data,
-    names = nrp::zoo_cols,
+    names = nrp::zoo_input_cols,
     exclusive = exclusive, order = order),
     silent = TRUE)
 

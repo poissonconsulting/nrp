@@ -76,9 +76,9 @@
 #' A character vector with the correct column names and order for raw zooplankton data
 #'
 #' @format A character vector:
-"zoo_cols"
+"zoo_input_cols"
 
 #' A character vector with the correct column names and order for raw mysid data
 #'
 #' @format A character vector:
-"mysid_cols"
+"mysid_input_cols"

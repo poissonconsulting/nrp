@@ -21,7 +21,7 @@ test_that("nrp_read_zooplankton_file works", {
                "'system' must be one of 'arrow', 'kootenay'.")
 
   expect_error(nrp_read_zooplankton_file(path = wrong_path, db_path = conn),
-               "Columns in data do not match template for zooplankton raw data. see `nrp::zoo_cols` for correct column names and order.")
+               "Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order.")
 })
 
 test_that("nrp_read_zooplankton works", {
@@ -96,7 +96,7 @@ test_that("nrp_read_mysid_file works", {
                "'system' must be one of 'arrow', 'kootenay'.")
 
   expect_error(nrp_read_mysid_file(path = wrong_path, db_path = conn),
-               "Columns in data do not match template for mysid raw data. see `nrp::mysid_cols` for correct column names and order.")
+               "Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
 })
 
 

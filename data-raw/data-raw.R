@@ -79,7 +79,7 @@ ems_metals <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "metal
 ems_metals_init <- ems_metals[0, ]
 
 
-zoo_cols <- c("FileName", "YearComp", "Year", "Month", "MonthCat", "Date1", "Date2",
+zoo_input_cols <- c("FileName", "YearComp", "Year", "Month", "MonthCat", "Date1", "Date2",
               "Station", "Season", "Basin", "Replicate", "SexFecCode", "CopStageCode",
               "DenTotal", "DCopep", "DClad", "DClad other than Daph", "DDash",
               "DDkenai", "DEpi", "DCycl", "DNaup", "DDaph", "DDiaph", "DBosm",
@@ -108,7 +108,7 @@ zoo_cols <- c("FileName", "YearComp", "Year", "Month", "MonthCat", "Date1", "Dat
               "SPLmade", "SPLcount", "vertical haul depth_m", "vertical haul net size_m",
               "FundingSource", "FieldCollection", "Analyst", "MaxDepth")
 
-mysid_cols <- c("FileName", "Date", "Year", "Month", "MonthCat", "Day", "Station", "Replicate",
+mysid_input_cols <- c("FileName", "Date", "Year", "Month", "MonthCat", "Day", "Station", "Replicate",
                                "Time", "Depth", "DepthCat", "SideLake", "#splitsCounted", "#splitsMade",
                                "DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "DmatF",
                                "DbroodF", "DspentF", "DdistBrF", "BiomTotal", "Bjuv", "BimmM",
@@ -118,8 +118,8 @@ mysid_cols <- c("FileName", "Date", "Year", "Month", "MonthCat", "Day", "Station
                                "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid",
                                "FundingSource", "FieldCollection", "Analyst", "Comment")
 
-use_data(zoo_cols, overwrite = TRUE)
-use_data(mysid_cols, overwrite = TRUE)
+use_data(zoo_input_cols, overwrite = TRUE)
+use_data(mysid_input_cols, overwrite = TRUE)
 use_data(basinArm, overwrite = TRUE)
 use_data(ctdSites, overwrite = TRUE)
 use_data(lakes, overwrite = TRUE)

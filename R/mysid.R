@@ -34,7 +34,7 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
   data <- try(readxl::read_excel(path, col_types = mysid_col_types), silent = TRUE)
 
   if(inherits(data, "try-error")){
-    err("Columns in data do not match template for mysid raw data. see `nrp::mysid_cols` for correct column names and order.")
+    err("Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
   }
   check_mysid_raw_data(data)
 
