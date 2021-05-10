@@ -82,3 +82,13 @@
 #'
 #' @format A character vector:
 "mysid_input_cols"
+
+#' A character vector of all parameters for the zooplankton data in the database
+#'
+#' @format A character vector:
+"zoo_params"
+
+#' A character vector of all parameters for the mysid data in the database
+#'
+#' @format A character vector
+"mysid_params"
