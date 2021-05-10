@@ -52,7 +52,7 @@
     <loc>/reference/lakes.html</loc>
   </url>
   <url>
-    <loc>/reference/mysid_cols.html</loc>
+    <loc>/reference/mysid_input_cols.html</loc>
   </url>
   <url>
     <loc>/reference/nrp-package.html</loc>
@@ -127,6 +127,6 @@
     <loc>/reference/site_date_lookup.html</loc>
   </url>
   <url>
-    <loc>/reference/zoo_cols.html</loc>
+    <loc>/reference/zoo_input_cols.html</loc>
   </url>
 </urlset>
