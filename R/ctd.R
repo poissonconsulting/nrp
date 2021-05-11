@@ -257,7 +257,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
                              x_name = "CTD", conn = conn, replace = replace)
 }
 
-#' Dowload CTD data table from database
+#' Download CTD data table from database
 #'
 #' @param start_date The start date
 #' @param end_date The end date

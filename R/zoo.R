@@ -158,3 +158,73 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
   }
   readwritesqlite::rws_read_table("ZooplanktonSample", conn = conn)
 }
+
+#' Download Zooplankton data table from database
+#'
+#' @param start_date The start date
+#' @param end_date The end date
+#' @param sites A character vector of the Site IDs
+#' @param parameters A character vector of the parameters to include.
+#' Permissable values can be found in the nrp::zoo_params
+#' @param db_path The SQLite connection object or path to the SQLite database
+#'
+#' @return CTD data table
+#' @export
+#'
+nrp_download_zooplakton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
+                                    sites = NULL, parameters = "all",
+                                    db_path = getOption("nrp.db_path", file.choose())){
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  if(start_date > end_date){
+    err("start date is later than end date")
+  }
+  if(end_date > Sys.Date()){
+    err("end date is later than present day")
+  }
+
+  chk_s3_class(as.POSIXct(start_date), "POSIXct")
+  start_date <- as.character(dttr2::dtt_date(start_date))
+  chk_s3_class(as.POSIXct(end_date), "POSIXct")
+  end_date <- as.character(dttr2::dtt_date(end_date))
+
+  site_table <- nrp_download_sites(db_path = conn)
+  if(is.null(sites)){
+    sites <- site_table$SiteID
+  }
+  if(!all(sites %in% site_table$SiteID)){
+    err(paste("1 or more invalid site names"))
+  }
+
+  if(parameters == "all"){
+    parameters <- nrp::zoo_params
+  } else if(!all(parameters %in% nrp::zoo_params)){
+    err(paste("1 or more invalid parameter names"))
+  }
+
+  Date <- NULL
+  SiteID <- NULL
+
+  paramsSql <- cc(parameters, ellipsis = 1000)
+
+  sitesSql <- cc(sites, ellipsis = 1000)
+
+  start_dateSql <- paste0("'", start_date, "'")
+  end_dateSql <- paste0("'", end_date, "'")
+
+  cols <- c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value")
+  colsSql <- cc(c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value"),
+                ellipsis = length(cols) + 1, brac = "`")
+
+  query <- paste0("SELECT", colsSql, "FROM Zooplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
+                  end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Parameter` IN (", paramsSql,")))")
+
+  if(nrow(query) == 0) warning("no data available for query provided.")
+
+  readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+}
