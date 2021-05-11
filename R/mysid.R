@@ -200,5 +200,7 @@ nrp_download_mysid <- function(start_date = "2018-01-01", end_date = "2018-12-31
     dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
 
   if(nrow(result) == 0) warning("no data available for query provided.")
+
+  result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
   result
 }
