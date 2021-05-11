@@ -76,6 +76,27 @@ test_that("nrp_download_zoo_sample works", {
 
 })
 
+test_that("nrp_download_zooplankton works", {
+
+  db_data <- nrp_download_zooplankton(start_date = "2020-04-01",
+                                      end_date = "2020-04-25", db_path = conn)
+
+  expect_identical(length(db_data), 150L)
+  expect_identical(nrow(db_data), 12L)
+
+  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+                                          end_date = "2020-04-25", db_path = conn,
+                                          sites = "wrong"),
+                 "1 or more invalid site names")
+
+  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+                                        end_date = "2020-04-25", db_path = conn,
+                                        parameters = "wrong"),
+               "1 or more invalid parameter names")
+
+})
+
+
 test_that("nrp_read_mysid_file works", {
 
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
@@ -147,5 +168,25 @@ test_that("nrp_download_mysid_visit works", {
 
   sample <- nrp_download_mysid_sample(db_path = conn)
   expect_identical(nrow(sample), 60L)
+
+})
+
+test_that("nrp_download_mysid works", {
+
+  db_data <- nrp_download_mysid(start_date = "2020-04-01",
+                                      end_date = "2020-04-25", db_path = conn)
+
+  expect_identical(length(db_data), 37L)
+  expect_identical(nrow(db_data), 24L)
+
+  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+                                        end_date = "2020-04-25", db_path = conn,
+                                        sites = "wrong"),
+               "1 or more invalid site names")
+
+  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+                                        end_date = "2020-04-25", db_path = conn,
+                                        parameters = "wrong"),
+               "1 or more invalid parameter names")
 
 })
