@@ -208,23 +208,19 @@ nrp_download_zooplakton <- function(start_date = "2018-01-01", end_date = "2018-
 
   Date <- NULL
   SiteID <- NULL
-
   paramsSql <- cc(parameters, ellipsis = 1000)
-
   sitesSql <- cc(sites, ellipsis = 1000)
-
   start_dateSql <- paste0("'", start_date, "'")
   end_dateSql <- paste0("'", end_date, "'")
-
-  cols <- c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value")
   colsSql <- cc(c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value"),
-                ellipsis = length(cols) + 1, brac = "`")
+                ellipsis = 1000, brac = "`")
 
   query <- paste0("SELECT", colsSql, "FROM Zooplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Parameter` IN (", paramsSql,")))")
 
-  if(nrow(query) == 0) warning("no data available for query provided.")
-
-  readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
     dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+
+  if(nrow(result) == 0) warning("no data available for query provided.")
+  result
 }
