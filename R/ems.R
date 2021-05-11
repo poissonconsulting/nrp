@@ -349,7 +349,7 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
   Date <- NULL
   SiteID <- NULL
 
-  sitesSql <- cc(sites, ellipsis = length(sites) + 1)
+  sitesSql <- cc(sites, ellipsis = 1000)
   start_dateSql <- paste0("'", start_date_time, "'")
   end_dateSql <- paste0("'", end_date_time, "'")
 
