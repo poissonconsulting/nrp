@@ -314,13 +314,14 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   Date <- NULL
   SiteID <- NULL
 
-  paramsSql <- cc(parameters, ellipsis = length(parameters) + 1, bracket = "`")
+  paramsSql <- cc(parameters, ellipsis = length(parameters) + 1, brac = "`")
   sitesSql <- cc(sites, ellipsis = length(sites) + 1)
   start_dateSql <- paste0("'", start_date, "'")
   end_dateSql <- paste0("'", end_date, "'")
 
   query <- paste0("SELECT ", paramsSql, " FROM CTD WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
+
 
   readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
     dplyr::mutate(Date = dttr2::dtt_date(.data$Date))

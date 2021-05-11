@@ -16,7 +16,6 @@ test_that("nrp_read_zooplankton_file works", {
   expect_identical(nrow(data), 60L)
   check_zoo_raw_data(data)
 
-
   expect_error(nrp_read_zooplankton_file(path = path, db_path = conn, system = "columbia"),
                "'system' must be one of 'arrow', 'kootenay'.")
 
@@ -91,14 +90,12 @@ test_that("nrp_read_mysid_file works", {
   expect_identical(nrow(data), 60L)
   check_mysid_raw_data(data)
 
-
   expect_error(nrp_read_mysid_file(path = path, db_path = conn, system = "columbia"),
                "'system' must be one of 'arrow', 'kootenay'.")
 
   expect_error(nrp_read_mysid_file(path = wrong_path, db_path = conn),
                "Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
 })
-
 
 test_that("nrp_read_mysid works", {
 
@@ -152,4 +149,3 @@ test_that("nrp_download_mysid_visit works", {
   expect_identical(nrow(sample), 60L)
 
 })
-
