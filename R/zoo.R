@@ -171,7 +171,7 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
 #' @return CTD data table
 #' @export
 #'
-nrp_download_zooplakton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
+nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                                     sites = NULL, parameters = "all",
                                     db_path = getOption("nrp.db_path", file.choose())){
   conn <- db_path
