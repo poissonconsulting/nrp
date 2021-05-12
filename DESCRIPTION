@@ -8,8 +8,8 @@ Authors@R:
     person("Joe", "Thorley", role = "aut", email = "joe@poissonconsulting.ca", comment = c(ORCID = "0000-0002-7683-4592")),
     person("Province of British Columbia", role = c("cph", "fnd"))
   )
-Description: Imports CTD and EMS data for 
-    the Kootenay Lake Nutrient Restoration Program (NRP) and uploads it to to a SQLite database.
+Description: Imports CTD, EMS, Zooplankton, and Mysid data for 
+    the Kootenay Lake Nutrient Restoration Program (NRP) and provides functionality for uploading and downloading with an SQLite database.
 License: Apache License (>= 2.0)
 Depends: R (>= 3.6)
 Imports:
