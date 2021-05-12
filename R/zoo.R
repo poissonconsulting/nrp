@@ -166,14 +166,15 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
 #' @param sites A character vector of the Site IDs
 #' @param parameters A character vector of the parameters to include.
 #' Permissable values can be found in the nrp::zoo_params
+#' @param counts A flag indicating whether to return the raw counts instead.
 #' @param db_path The SQLite connection object or path to the SQLite database
 #'
 #' @return CTD data table
 #' @export
 #'
 nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
-                                    sites = NULL, parameters = "all",
-                                    db_path = getOption("nrp.db_path", file.choose())){
+                                     sites = NULL, parameters = "all", counts = FALSE,
+                                     db_path = getOption("nrp.db_path", file.choose())){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -212,8 +213,10 @@ nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018
   sitesSql <- cc(sites, ellipsis = 1000)
   start_dateSql <- paste0("'", start_date, "'")
   end_dateSql <- paste0("'", end_date, "'")
-  colsSql <- cc(c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value"),
-                ellipsis = 1000, brac = "`")
+
+  cols <- c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value")
+  if(counts) cols[cols == "Value"] <- "RawCount"
+  colsSql <- cc(cols, ellipsis = 1000, brac = "`")
 
   query <- paste0("SELECT", colsSql, "FROM Zooplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Parameter` IN (", paramsSql,")))")
@@ -223,6 +226,11 @@ nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018
 
   if(nrow(result) == 0) warning("no data available for query provided.")
 
-  result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
+  if(counts){
+    result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "RawCount")
+  } else {
+    result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
+  }
+
   result
 }

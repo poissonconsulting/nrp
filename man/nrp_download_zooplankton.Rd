@@ -9,6 +9,7 @@ nrp_download_zooplankton(
   end_date = "2018-12-31",
   sites = NULL,
   parameters = "all",
+  counts = FALSE,
   db_path = getOption("nrp.db_path", file.choose())
 )
 }
@@ -21,6 +22,8 @@ nrp_download_zooplankton(
 
 \item{parameters}{A character vector of the parameters to include.
 Permissable values can be found in the nrp::zoo_params}
+
+\item{counts}{A flag indicating whether to return the raw counts instead.}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
 }

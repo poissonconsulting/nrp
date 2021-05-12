@@ -84,6 +84,15 @@ test_that("nrp_download_zooplankton works", {
   expect_identical(length(db_data), 150L)
   expect_identical(nrow(db_data), 12L)
 
+  db_data <- nrp_download_zooplankton(start_date = "2020-04-01",
+                                end_date = "2020-04-25",
+                                counts = TRUE,
+                                db_path = conn)
+
+  expect_identical(length(db_data), 150L)
+  expect_identical(nrow(db_data), 12L)
+  expect_true(all(is.na(db_data$BBosm)))
+
   expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
                                           end_date = "2020-04-25", db_path = conn,
                                           sites = "wrong"),
@@ -95,7 +104,6 @@ test_that("nrp_download_zooplankton works", {
                "1 or more invalid parameter names")
 
 })
-
 
 test_that("nrp_read_mysid_file works", {
 
