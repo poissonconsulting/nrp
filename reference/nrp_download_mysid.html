@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A Basin-Arm table for Sea-bird CTD data — basinArm • nrp</title>
+<title>Download Mysid data table from database — nrp_download_mysid • nrp</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="A Basin-Arm table for Sea-bird CTD data — basinArm" />
-<meta property="og:description" content="A Basin-Arm table for Sea-bird CTD data" />
+<meta property="og:title" content="Download Mysid data table from database — nrp_download_mysid" />
+<meta property="og:description" content="Download Mysid data table from database" />
 
 
 
@@ -106,26 +106,52 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A Basin-Arm table for Sea-bird CTD data</h1>
+    <h1>Download Mysid data table from database</h1>
     
-    <div class="hidden name"><code>basinArm.Rd</code></div>
+    <div class="hidden name"><code>nrp_download_mysid.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A Basin-Arm table for Sea-bird CTD data</p>
+    <p>Download Mysid data table from database</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='va'>basinArm</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>nrp_download_mysid</span><span class='op'>(</span>
+  start_date <span class='op'>=</span> <span class='st'>"2018-01-01"</span>,
+  end_date <span class='op'>=</span> <span class='st'>"2018-12-31"</span>,
+  sites <span class='op'>=</span> <span class='cn'>NULL</span>,
+  parameters <span class='op'>=</span> <span class='st'>"all"</span>,
+  db_path <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span><span class='op'>(</span><span class='st'>"nrp.db_path"</span>, <span class='fu'><a href='https://rdrr.io/r/base/file.choose.html'>file.choose</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span>
+<span class='op'>)</span></code></pre></div>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>start_date</th>
+      <td><p>The start date</p></td>
+    </tr>
+    <tr>
+      <th>end_date</th>
+      <td><p>The end date</p></td>
+    </tr>
+    <tr>
+      <th>sites</th>
+      <td><p>A character vector of the Site IDs</p></td>
+    </tr>
+    <tr>
+      <th>parameters</th>
+      <td><p>A character vector of the parameters to include.
+Permissible values can be found in the nrp::mysid_params</p></td>
+    </tr>
+    <tr>
+      <th>db_path</th>
+      <td><p>The SQLite connection object or path to the SQLite database</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A tbl data frame:</p><dl>
-  <dt>Lake</dt><dd><p>The name of the lake</p></dd>
-  <dt>BasinArm</dt><dd><p>What arms or basins are within each lake</p></dd>
-
-</dl>
-
+    <p>CTD data table</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -82,6 +82,9 @@
     <loc>/reference/nrp_download_lakes.html</loc>
   </url>
   <url>
+    <loc>/reference/nrp_download_mysid.html</loc>
+  </url>
+  <url>
     <loc>/reference/nrp_download_mysid_sample.html</loc>
   </url>
   <url>
@@ -89,6 +92,9 @@
   </url>
   <url>
     <loc>/reference/nrp_download_zoo_sample.html</loc>
+  </url>
+  <url>
+    <loc>/reference/nrp_download_zooplankton.html</loc>
   </url>
   <url>
     <loc>/reference/nrp_extract_ems.html</loc>
