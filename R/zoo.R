@@ -9,6 +9,7 @@
 nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
                                                                 file.choose()), system = NULL) {
   check_file_exists(path)
+  chk::chkor(chk::chk_chr(system), chk::chk_null(system))
 
   if(is.null(system)){
     if(str_detect(tolower(basename(path)), "^ar")){
@@ -64,6 +65,11 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
                                  recursive = FALSE, system = NULL, regexp = "[.]xlsx$",
                                  fail = TRUE) {
   check_dir_exists(path)
+  chk::chkor(chk::chk_character(system), chk::chk_null(system))
+  chk::chk_chr(regexp)
+  chk::chk_flag(recursive)
+  chk::chk_flag(fail)
+
   paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
                   fail = fail)
   if(!length(paths)) return(named_list())
@@ -74,7 +80,7 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
   datas
 }
 
-#' Upload zooplanktondata to the nrp database
+#' Upload zooplankton data to the nrp database
 #'
 #' @param data the object name of the data to be uploaded
 #' @param db_path An SQLite Database Connection, or path to an SQLite Database
@@ -84,6 +90,11 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
 nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.choose()),
                                   commit = TRUE, strict = TRUE, silent = TRUE,
                                   replace = FALSE){
+  chk::chk_flag(replace)
+  chk::chk_flag(commit)
+  chk::chk_flag(strict)
+  chk::chk_flag(silent)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -175,6 +186,13 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
 nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                                      sites = NULL, parameters = "all", counts = FALSE,
                                      db_path = getOption("nrp.db_path", file.choose())){
+
+  chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
+  chk::chk_character(parameters)
+  chk::chk_flag(counts)
+  check_chr_date(start_date)
+  check_chr_date(end_date)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -184,14 +202,6 @@ nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018
   if(start_date > end_date){
     err("start date is later than end date")
   }
-  if(end_date > Sys.Date()){
-    err("end date is later than present day")
-  }
-
-  chk_s3_class(as.POSIXct(start_date), "POSIXct")
-  start_date <- as.character(dttr2::dtt_date(start_date))
-  chk_s3_class(as.POSIXct(end_date), "POSIXct")
-  end_date <- as.character(dttr2::dtt_date(end_date))
 
   site_table <- nrp_download_sites(db_path = conn)
   if(is.null(sites)){

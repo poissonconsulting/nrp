@@ -101,7 +101,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   data
 }
 
-
 #' Read CTD Files
 #'
 #' @param path A string of the path to the directory.
@@ -117,6 +116,11 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
 nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
                          recursive = FALSE, regexp = "[.]cnv$",
                          fail = TRUE, lookup = nrp::site_date_lookup) {
+  check_dir_exists(path)
+  chk::chk_chr(regexp)
+  chk::chk_flag(recursive)
+  chk::chk_flag(fail)
+
   check_dir_exists(path)
   paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
                   fail = fail)
@@ -143,7 +147,6 @@ nrp_download_sites <- function(db_path = getOption("nrp.db_path", file.choose())
   readwritesqlite::rws_read_table("Sites", conn = conn)
 }
 
-
 #' Download CTD visit table
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @return CTD visit table
@@ -158,7 +161,6 @@ nrp_download_ctd_visit <- function(db_path = getOption("nrp.db_path", file.choos
   }
   readwritesqlite::rws_read_table("VisitCTD", conn = conn)
 }
-
 
 #' Download BasinArm table
 #' @param db_path The SQLite connection object or path to the SQLite database
@@ -225,6 +227,11 @@ nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", file.choo
 nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose()),
                            commit = TRUE, strict = TRUE, silent = TRUE,
                            replace = FALSE){
+  chk::chk_flag(replace)
+  chk::chk_flag(commit)
+  chk::chk_flag(strict)
+  chk::chk_flag(silent)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -274,6 +281,11 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
 nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                              sites = NULL, parameters = "all",
                              db_path = getOption("nrp.db_path", file.choose())){
+  chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
+  chk::chk_character(parameters)
+  check_chr_date(start_date)
+  check_chr_date(end_date)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -287,14 +299,6 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
   if(start_date > end_date){
     err("start date is later than end date")
   }
-  if(end_date > Sys.Date()){
-    err("end date is later than present day")
-  }
-
-  chk_s3_class(as.POSIXct(start_date), "POSIXct")
-  start_date <- as.character(dttr2::dtt_date(start_date))
-  chk_s3_class(as.POSIXct(end_date), "POSIXct")
-  end_date <- as.character(dttr2::dtt_date(end_date))
 
   site_table <- nrp_download_sites(db_path = conn)
   if(is.null(sites)){
@@ -321,7 +325,6 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
 
   query <- paste0("SELECT ", paramsSql, " FROM CTD WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
-
 
   readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
     dplyr::mutate(Date = dttr2::dtt_date(.data$Date))

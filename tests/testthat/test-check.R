@@ -27,3 +27,23 @@ test_that("check_dir_exists works", {
                "path '.*/extdata/ctd/missing' must exist")
 })
 
+test_that("check_chr_date works", {
+  x <- 1
+  expect_error(check_chr_date(x), "`x` must be a character scalar.")
+
+  x <- "a"
+  expect_error(check_chr_date(x), "Invalid date for `x`. Please use format: yyyy-mm-dd.")
+
+})
+
+test_that("check_chr_datetime works", {
+  x <- 1
+  expect_error(check_chr_datetime(x), "`x` must be a character scalar.")
+
+  x <- "a"
+  expect_error(check_chr_datetime(x), "Invalid date-time for `x`. Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
+
+  x <- "1/2/3"
+  expect_error(check_chr_datetime(x), "Invalid date-time for `x`. Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
+
+})

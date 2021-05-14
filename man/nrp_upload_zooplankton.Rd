@@ -2,7 +2,7 @@
 % Please edit documentation in R/zoo.R
 \name{nrp_upload_zooplankton}
 \alias{nrp_upload_zooplankton}
-\title{Upload zooplanktondata to the nrp database}
+\title{Upload zooplankton data to the nrp database}
 \usage{
 nrp_upload_zooplankton(
   data,
@@ -28,5 +28,5 @@ nrp_upload_zooplankton(
 \item{replace}{A flag specifying whether to replace any existing rows whose inclusion would violate unique or primary key constraints.}
 }
 \description{
-Upload zooplanktondata to the nrp database
+Upload zooplankton data to the nrp database
 }

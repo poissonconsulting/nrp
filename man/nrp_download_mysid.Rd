@@ -20,7 +20,7 @@ nrp_download_mysid(
 \item{sites}{A character vector of the Site IDs}
 
 \item{parameters}{A character vector of the parameters to include.
-Permissable values can be found in the nrp::mysid_params}
+Permissible values can be found in the nrp::mysid_params}
 
 \item{db_path}{The SQLite connection object or path to the SQLite database}
 }

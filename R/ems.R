@@ -5,17 +5,9 @@
 #' @param analysis_type EMS data of interest. Must be either "standard" or "metals"
 #' @return A tibble.
 #' @export
-#'
-
-# conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-# db_path = conn
-# analysis_type = "metals"
-# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-# data <- ems
-# ems <- readRDS(path)
-
 nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose()), analysis_type = "standard"){
 
+  chk::chk_chr(analysis_type)
   if(!analysis_type %in% c("standard", "metals")){
     err("analysis_type must be either 'standard' or 'metals'")
   }
@@ -28,7 +20,6 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
 
   check_ems_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  # sites <- nrp::emsSites
   sites <- nrp_download_sites(db_path = conn) %>%
     filter(!is.na(.data$EmsSiteNumber)) %>%
     filter(!is.na(.data$EmsSiteName))
@@ -211,20 +202,13 @@ add_ems_detection_limit_cols <- function(data, params, sep = "/"){
 #' @param db_path An Sqlite Database Connection, or path to an SQLite Database
 #' @inheritParams readwritesqlite::rws_write
 #' @export
-#'
-
-# db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
-# path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-# ems <- readRDS(path)
-# data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
-#
-# replace = FALSE
-# commit = TRUE
-# strict = TRUE
-# silent = TRUE
-
 nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                    strict = TRUE, silent = TRUE, replace = FALSE){
+  chk::chk_flag(replace)
+  chk::chk_flag(commit)
+  chk::chk_flag(strict)
+  chk::chk_flag(silent)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -272,6 +256,11 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file
 #'
 nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                   strict = TRUE, silent = TRUE, replace = FALSE){
+  chk::chk_flag(replace)
+  chk::chk_flag(commit)
+  chk::chk_flag(strict)
+  chk::chk_flag(silent)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
@@ -321,6 +310,12 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
 nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), start_date_time = "2018-01-01 00:00:00",
                              end_date_time = "2018-12-31 00:00:00", sites = NULL, analysis_type = "standard",
                              show_detection_limits = FALSE){
+  check_chr_datetime(end_date_time)
+  check_chr_datetime(start_date_time)
+  chk::chk_chr(analysis_type)
+  chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
+  chk::chk_flag(show_detection_limits)
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
