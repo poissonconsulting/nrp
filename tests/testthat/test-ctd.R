@@ -171,6 +171,8 @@ test_that("nrp_download_ctd works", {
 
   nrp_upload_ctd(data = data, db_path = conn)
 
+  chk_bd <- readwritesqlite::rws_read_table("CTD", conn = conn)
+
   db_data <- nrp_download_ctd(db_path = conn)
 
   expect_is(data, "tbl_df")

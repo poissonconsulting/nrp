@@ -278,13 +278,13 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
 #' @return CTD data table
 #' @export
 #'
-nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
+nrp_download_ctd <- function(start_date = NULL, end_date = NULL,
                              sites = NULL, parameters = "all",
                              db_path = getOption("nrp.db_path", file.choose())){
   chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
   chk::chk_character(parameters)
-  check_chr_date(start_date)
-  check_chr_date(end_date)
+  chk::chkor(check_chr_date(start_date), chk::chk_null(start_date))
+  chk::chkor(check_chr_date(end_date), chk::chk_null(start_date))
 
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
@@ -296,9 +296,6 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
                           "Conductivity","Conductivity2",
                           "Salinity", "Backscatter", "Fluorescence",
                           "Frequency", "Flag", "Pressure")
-  if(start_date > end_date){
-    err("start date is later than end date")
-  }
 
   site_table <- nrp_download_sites(db_path = conn)
   if(is.null(sites)){
@@ -311,6 +308,15 @@ nrp_download_ctd <- function(start_date = "2018-01-01", end_date = "2018-12-31",
     parameters <- default_parameters
   } else if(!all(parameters %in% default_parameters)){
     err(paste("1 or more invalid parameter names"))
+  }
+
+  dates <- fill_date_query(table = "CTD", col = "Date", end = end_date, start = start_date,
+                           connection = conn)
+  start_date <- dates["start_date"][[1]]
+  end_date <- dates["end_date"][[1]]
+
+  if(start_date > end_date){
+    err("start date is later than end date")
   }
 
   parameters <-c("FileID", "SiteID", "Date", "Time", parameters)

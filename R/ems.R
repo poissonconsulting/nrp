@@ -253,7 +253,6 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file
 #' @param db_path An Sqlite Database Connection, or path to an SQLite Database
 #' @inheritParams readwritesqlite::rws_write
 #' @export
-#'
 nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.choose()), commit = TRUE,
                                   strict = TRUE, silent = TRUE, replace = FALSE){
   chk::chk_flag(replace)
@@ -306,12 +305,11 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
 #' @param show_detection_limits Whether to include detection limit columns for each parameter
 #' @return EMS data table
 #' @export
-#'
-nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), start_date_time = "2018-01-01 00:00:00",
-                             end_date_time = "2018-12-31 00:00:00", sites = NULL, analysis_type = "standard",
+nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), start_date_time = NULL,
+                             end_date_time = NULL, sites = NULL, analysis_type = "standard",
                              show_detection_limits = FALSE){
-  check_chr_datetime(end_date_time)
-  check_chr_datetime(start_date_time)
+  chk::chkor(check_chr_date(start_date_time), chk::chk_null(start_date_time))
+  chk::chkor(check_chr_date(end_date_time), chk::chk_null(end_date_time))
   chk::chk_chr(analysis_type)
   chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
   chk::chk_flag(show_detection_limits)
@@ -321,16 +319,6 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
-  if(start_date_time > end_date_time){
-    err("start date is later than end date")
-  }
-  if(end_date_time > Sys.Date()){
-    err("end date is later than present day")
-  }
-
-  chk_s3_class(as.POSIXct(start_date_time), "POSIXct")
-  chk_s3_class(as.POSIXct(end_date_time), "POSIXct")
 
   site_table <- nrp::emsSites
 
@@ -344,15 +332,24 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
   Date <- NULL
   SiteID <- NULL
 
-  sitesSql <- cc(sites, ellipsis = 1000)
-  start_dateSql <- paste0("'", start_date_time, "'")
-  end_dateSql <- paste0("'", end_date_time, "'")
-
   if(analysis_type == "standard"){
     table <- "standardEMS"
   } else if(analysis_type == "metals"){
     table <- "metalsEMS"
   }
+
+  dates <- fill_date_time_query(table = table, col = "COLLECTION_START", end = end_date_time, start = start_date_time,
+                                connection = conn)
+  start_date <- dates["start_date_time"][[1]]
+  end_date <- dates["end_date_time"][[1]]
+
+  if(start_date > end_date){
+    err("start date is later than end date")
+  }
+
+  sitesSql <- cc(sites, ellipsis = 1000)
+  start_dateSql <- paste0("'", start_date_time, "'")
+  end_dateSql <- paste0("'", end_date_time, "'")
 
   query <- paste0("SELECT * FROM ", table, " WHERE ((`COLLECTION_START` >= ", start_dateSql, ") AND (`COLLECTION_START` <= ",
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
@@ -372,4 +369,3 @@ clean_key_cols <- function(data, cols) {
   cleaned_cols <- stats::complete.cases(data[, cols])
   data[cleaned_cols, ]
 }
-

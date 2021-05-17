@@ -102,7 +102,6 @@ test_that("nrp_download_ems works", {
   data <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard")
   nrp_upload_ems_standard(data = data, db_path = conn)
 
-
   db_data_metals_no_det_lims <- nrp_download_ems(start_date_time = "2018-08-27 11:50:00",
                               end_date_time = "2018-09-03 18:38:00",
                               sites = NULL,

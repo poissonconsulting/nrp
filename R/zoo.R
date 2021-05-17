@@ -183,24 +183,20 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
 #' @return CTD data table
 #' @export
 #'
-nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018-12-31",
+nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
                                      sites = NULL, parameters = "all", counts = FALSE,
                                      db_path = getOption("nrp.db_path", file.choose())){
 
   chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
   chk::chk_character(parameters)
   chk::chk_flag(counts)
-  check_chr_date(start_date)
-  check_chr_date(end_date)
+  chk::chkor(check_chr_date(start_date), chk::chk_null(start_date))
+  chk::chkor(check_chr_date(end_date), chk::chk_null(start_date))
 
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
-  }
-
-  if(start_date > end_date){
-    err("start date is later than end date")
   }
 
   site_table <- nrp_download_sites(db_path = conn)
@@ -215,6 +211,15 @@ nrp_download_zooplankton <- function(start_date = "2018-01-01", end_date = "2018
     parameters <- nrp::zoo_params
   } else if(!all(parameters %in% nrp::zoo_params)){
     err(paste("1 or more invalid parameter names"))
+  }
+
+  dates <- fill_date_query(table = "Zooplankton", col = "Date", end = end_date, start = start_date,
+                           connection = conn)
+  start_date <- dates["start_date"][[1]]
+  end_date <- dates["end_date"][[1]]
+
+  if(start_date > end_date){
+    err("start date is later than end date")
   }
 
   Date <- NULL
