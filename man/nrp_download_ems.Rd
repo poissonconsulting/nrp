@@ -6,8 +6,8 @@
 \usage{
 nrp_download_ems(
   db_path = getOption("nrp.db_path", file.choose()),
-  start_date_time = "2018-01-01 00:00:00",
-  end_date_time = "2018-12-31 00:00:00",
+  start_date_time = NULL,
+  end_date_time = NULL,
   sites = NULL,
   analysis_type = "standard",
   show_detection_limits = FALSE

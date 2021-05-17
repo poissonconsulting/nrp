@@ -5,8 +5,8 @@
 \title{Download Mysid data table from database}
 \usage{
 nrp_download_mysid(
-  start_date = "2018-01-01",
-  end_date = "2018-12-31",
+  start_date = NULL,
+  end_date = NULL,
   sites = NULL,
   parameters = "all",
   db_path = getOption("nrp.db_path", file.choose())

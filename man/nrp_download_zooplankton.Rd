@@ -5,8 +5,8 @@
 \title{Download Zooplankton data table from database}
 \usage{
 nrp_download_zooplankton(
-  start_date = "2018-01-01",
-  end_date = "2018-12-31",
+  start_date = NULL,
+  end_date = NULL,
   sites = NULL,
   parameters = "all",
   counts = FALSE,
