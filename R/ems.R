@@ -5,6 +5,7 @@
 #' @param analysis_type EMS data of interest. Must be either "standard" or "metals"
 #' @return A tibble.
 #' @export
+
 nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose()), analysis_type = "standard"){
 
   chk::chk_chr(analysis_type)
