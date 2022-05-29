@@ -5,6 +5,7 @@
 #' @param system The system 'arrow' or 'kootenay'. If null, the system is detected from the file name.
 #' @return A tibble
 #' @export
+#'
 nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
                                                           file.choose()), system = NULL) {
   check_file_exists(path)
@@ -29,23 +30,23 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-  mysid_col_types <- c("text", "date", "numeric", "numeric", "text", "numeric", "numeric", "numeric", "numeric",
-                       "numeric", "text", "text", rep("numeric", 36), "text", "text", "text", "text")
-
-  data <- try(readxl::read_excel(path, col_types = mysid_col_types), silent = TRUE)
+  data <- try(readxl::read_excel(path, col_types = "text"), silent = TRUE)
 
   if(inherits(data, "try-error")){
-    err("Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
+    err("Please ensure input data is a valid excel spreadsheet (.xlsx).")
   }
-  check_mysid_raw_data(data)
 
   data %<>% filter(!all_na(data)) %>%
+    mutate(Station = as.integer(str_extract(.data$Station, "\\d")))
+
+  chk::check_key(data, key = c("Date", "Station", "Replicate"))
+
+  data %<>% clean_input_cols(lookup = nrp::mysid_input_cols) %>%
     mutate(Station = paste0(system, .data$Station))
 
   sites <- nrp_download_sites(db_path = db_path)
 
   if(!all(unique(data$Station) %in% sites$SiteID)) err("Unknown Stations in raw data.")
-  chk::check_key(data, key = c("Date", "Station", "Replicate"))
 
   data
 }

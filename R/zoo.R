@@ -30,24 +30,23 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-  zoo_col_types <- c("text", "numeric", "numeric", "text", "text", "date",  "date",  "numeric",  "text",  "text",
-                     "numeric", "text", "text", rep("numeric", 154), "text", "text",
-                     "text", "numeric")
-
-  data <- try(readxl::read_excel(path, col_types = zoo_col_types), silent = TRUE)
+  data <- try(readxl::read_excel(path, col_types = "text"), silent = TRUE)
 
   if(inherits(data, "try-error")){
-    err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order.")
+    err("Please ensure input data is a valid excel spreadsheet (.xlsx).")
   }
-  check_zoo_raw_data(data)
 
   data %<>% filter(!all_na(data)) %>%
+    mutate(Station = as.integer(str_extract(.data$Station, "\\d")))
+
+  chk::check_key(data, key = c("Date", "Station", "Replicate", "FileName"))
+
+  data %<>% clean_input_cols(lookup = nrp::zoo_input_cols) %>%
     mutate(Station = paste0(system, .data$Station))
 
   sites <- nrp_download_sites(db_path = db_path)
 
   if(!all(unique(data$Station) %in% sites$SiteID)) err("Unknown Stations in raw data.")
-  chk::check_key(data, key = c("Date1", "Station", "Replicate", "FileName"))
 
   data
 }
@@ -103,10 +102,9 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
 
   check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  data %<>% mutate(Date1 = dttr2::dtt_date(.data$Date1),
-                   MaxDepth = units::as_units(.data$MaxDepth, "m"))
+  data %<>% mutate(MaxDepth = units::as_units(.data$MaxDepth, "m"))
 
-  zoo_sample <- select(data, c(Date = .data$Date1, SiteID = .data$Station, .data$Replicate,
+  zoo_sample <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate,
                                .data$FileName, .data$MonthCat, EndRev = .data$ENDREV,
                                StartRev = .data$STARTREV, SplMade = .data$SPLmade,
                                SplCount = .data$SPLcount, .data$FundingSource, .data$FieldCollection,
@@ -116,7 +114,7 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
                              strict = strict, silent = silent,
                              x_name = "ZooplanktonSample", conn = conn, replace = replace)
 
-  zoo_data <- select(data, c(Date = .data$Date1, SiteID = .data$Station, .data$Replicate, .data$FileName,
+  zoo_data <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$FileName,
                              .data$DenTotal, .data$DCopep, .data$DClad, .data$`DClad other than Daph`,
                              .data$DDash, .data$DDkenai, .data$DEpi, .data$DCycl, .data$DNaup,
                              .data$DDaph, .data$DDiaph, .data$DBosm, .data$DScap, .data$DLepto,
@@ -147,7 +145,8 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
                              .data$F5Lepto, .data$F5Cerio, .data$F5Chyd, .data$F6Dash, .data$F6Dkenai,
                              .data$F6Epi, .data$F6Cycl, .data$F6Daph, .data$F6Diaph, .data$F6Bosm,
                              .data$F6Scap, .data$F6Lepto, .data$F6Cerio, .data$F6Chyd)) %>%
-    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate, .data$FileName), names_to = "Parameter", values_to = "Value") %>%
+    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate, .data$FileName),
+                        names_to = "Parameter", values_to = "Value") %>%
     mutate(RawCount = NA_integer_)
 
   readwritesqlite::rws_write(x = zoo_data, commit = commit, strict = strict,
