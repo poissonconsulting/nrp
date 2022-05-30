@@ -57,7 +57,7 @@ test_that("nrp_upload_zooplankton works", {
   expect_identical(nrow(db_data), 8760L)
 
   db_sample <- readwritesqlite::rws_read_table("ZooplanktonSample", conn = conn)
-  expect_identical(length(db_sample), 13L)
+  expect_identical(length(db_sample), 12L)
   expect_identical(nrow(db_sample), 60L)
 
   nrp_upload_zooplankton(data = data, db_path = conn, replace = TRUE)

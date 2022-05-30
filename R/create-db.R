@@ -342,11 +342,8 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     FundingSource TEXT,
                                     FieldCollection TEXT,
                                     Analyst TEXT,
-                                    MaxDepth INTEGER NOT NULL,
                                     CHECK(
                                     Date >= '1992-04-29' AND
-                                    MaxDepth >= 0 AND
-                                    MaxDepth <= 400 AND
                                     EndRev >= 0 AND
                                     EndRev <= 500000 AND
                                     StartRev >= 0 AND

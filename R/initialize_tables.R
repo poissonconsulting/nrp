@@ -34,7 +34,6 @@ initialize_zoo_sample <- function(){
          Replicate = as.integer(),
          FileName = as.character(),
          MonthCat = as.character(),
-         MaxDepth = units::set_units(numeric(), "m"),
          EndRev = as.integer(),
          StartRev = as.integer(),
          SplMade = as.integer(),
