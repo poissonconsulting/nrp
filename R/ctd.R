@@ -305,7 +305,7 @@ nrp_download_ctd <- function(start_date = NULL, end_date = NULL,
   if(!all(sites %in% site_table$SiteID)){
     err(paste("1 or more invalid site names"))
   }
-  if(parameters == "all"){
+  if(length(parameters) == 1 && parameters == "all"){
     parameters <- default_parameters
   } else if(!all(parameters %in% default_parameters)){
     err(paste("1 or more invalid parameter names"))
