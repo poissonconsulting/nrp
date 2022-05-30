@@ -44,7 +44,7 @@ clean_input_cols <- function(data, lookup){
   }
 
   if(length(excess_cols) > 0) {
-    warning <- paste("The input data contains the following unrecognized columns that will be discarded: ",
+    warning <- paste("The input data contains the following unnecessary columns that will be discarded: ",
                      paste(excess_cols, collapse = ", "))
     warning(warning)
     data[excess_cols] <- NULL
