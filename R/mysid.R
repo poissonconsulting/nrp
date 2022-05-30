@@ -36,12 +36,13 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
     err("Please ensure input data is a valid excel spreadsheet (.xlsx).")
   }
 
-  data %<>% filter(!all_na(data)) %>%
-    mutate(Station = as.integer(str_extract(.data$Station, "\\d")))
+  data %<>% filter(!all_na(data))
 
   chk::check_key(data, key = c("Date", "Station", "Replicate"))
 
-  data %<>% clean_input_cols(lookup = nrp::mysid_input_cols) %>%
+  data %<>%
+    mutate(Station = as.integer(str_extract(.data$Station, "\\d"))) %>%
+    clean_input_cols(lookup = nrp::mysid_input_cols) %>%
     mutate(Station = paste0(system, .data$Station))
 
   sites <- nrp_download_sites(db_path = db_path)
