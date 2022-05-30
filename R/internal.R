@@ -57,7 +57,7 @@ clean_input_cols <- function(data, lookup){
     if(new_class == "date") {
       col <- dttr2::dtt_date(as.integer(col), origin = "1899-12-30")
     } else {
-      col <- suppressWarnings(as(col, new_class))
+      col <- suppressWarnings(methods::as(col, new_class))
     }
 
     col <- as.data.frame(col)
