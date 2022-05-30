@@ -309,10 +309,10 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
 nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), start_date_time = NULL,
                              end_date_time = NULL, sites = NULL, analysis_type = "standard",
                              show_detection_limits = FALSE){
-  chk::chkor(check_chr_date(start_date_time), chk::chk_null(start_date_time))
-  chk::chkor(check_chr_date(end_date_time), chk::chk_null(end_date_time))
+  chk::chk_null_or(start_date_time, chk = check_chr_date)
+  chk::chk_null_or(end_date_time, chk = check_chr_date)
   chk::chk_chr(analysis_type)
-  chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
+  chk::chk_null_or(sites, chk = chk::chk_character)
   chk::chk_flag(show_detection_limits)
 
   conn <- db_path

@@ -9,8 +9,7 @@
 nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
                                                                 file.choose()), system = NULL) {
   check_file_exists(path)
-  chk::chkor(chk::chk_chr(system), chk::chk_null(system))
-
+  chk::chk_null_or(system, chk = chk::chk_chr)
   if(is.null(system)){
     if(str_detect(tolower(basename(path)), "^ar")){
       system <- "AR"
@@ -64,7 +63,7 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
                                  recursive = FALSE, system = NULL, regexp = "[.]xlsx$",
                                  fail = TRUE) {
   check_dir_exists(path)
-  chk::chkor(chk::chk_character(system), chk::chk_null(system))
+  chk::chk_null_or(system, chk = chk::chk_character)
   chk::chk_chr(regexp)
   chk::chk_flag(recursive)
   chk::chk_flag(fail)
@@ -186,12 +185,13 @@ nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
                                      sites = NULL, parameters = "all", counts = FALSE,
                                      db_path = getOption("nrp.db_path", file.choose())){
 
-  chk::chkor(chk::chk_character(sites), chk::chk_null(sites))
+  chk::chk_null_or(sites, chk = chk::chk_character)
   chk::chk_character(parameters)
   chk::chk_flag(counts)
-  chk::chkor(check_chr_date(start_date), chk::chk_null(start_date))
-  chk::chkor(check_chr_date(end_date), chk::chk_null(start_date))
-
+  chk::chk_null_or(start_date, chk = check_chr_date)
+  if(!is.null(start_date)) {
+    check_chr_date(end_date)
+}
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
