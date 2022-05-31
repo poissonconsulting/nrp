@@ -30,7 +30,7 @@ test_that("nrp_read_zooplankton works", {
   data <- nrp_read_zooplankton(path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 169L)
+  expect_identical(length(data), 165L)
   expect_identical(nrow(data), 132L)
 
   expect_error(nrp_read_mysid("not-a-path", db_path = conn),
@@ -114,7 +114,8 @@ test_that("nrp_read_mysid_file works", {
   wrong_path <- system.file("extdata", "ar-empty.rtf",
                       package = "nrp", mustWork = TRUE)
 
-  data <- nrp_read_mysid_file(path = path, db_path = conn)
+  data <- nrp_read_mysid_file(path = path, db_path = conn) %>%
+    suppressWarnings()
 
   expect_is(data, "tbl_df")
   expect_identical(nrow(data), 60L)
@@ -134,7 +135,7 @@ test_that("nrp_read_mysid works", {
   data <- nrp_read_mysid(path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 52L)
+  expect_identical(length(data), 50L)
   expect_identical(nrow(data), 78L)
 
   expect_error(nrp_read_mysid("not-a-path", db_path = conn),
@@ -151,7 +152,8 @@ test_that("nrp_upload_mysid works", {
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
                       package = "nrp", mustWork = TRUE)
 
-  data <- nrp_read_mysid_file(path = path, db_path = conn)
+  data <- nrp_read_mysid_file(path = path, db_path = conn) %>%
+    suppressWarnings()
 
   nrp_upload_mysid(data = data, db_path = conn)
 

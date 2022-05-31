@@ -79,13 +79,9 @@ conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
 
 zoo_input_cols <- c(
   "FileName" = "character",
-  "YearComp" = "numeric",
-  "Year" = "integer",
-  "Month" = "character",
   "MonthCat" = "character",
   "Date" = "date",
   "Station" = "integer",
-  "Season" = "character",
   "Replicate" = "integer",
   "SexFecCode" = "character",
   "CopStageCode" = "character",
@@ -279,8 +275,6 @@ zoo_params <- c("SexFecCode", "CopStageCode",
 mysid_input_cols <- c(
   "FileName" = "character",
   "Date" = "date",
-  "Year" = "integer",
-  "Month" = "integer",
   "MonthCat" = "character",
   "Day" = "integer",
   "Station" = "integer",
