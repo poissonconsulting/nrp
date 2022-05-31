@@ -6,6 +6,7 @@ library(dplyr)
 library(sf)
 library(units)
 library(magrittr)
+devtools::load_all()
 
 # NOTE on ems test data: test_ems.rds
 # to update the test ems data use rems::get_ems_data(which = "4yr") to download
@@ -241,8 +242,7 @@ zoo_input_cols <- c(
   "vertical haul net size_m" = "numeric",
   "FundingSource" = "character",
   "FieldCollection" = "character",
-  "Analyst" = "character",
-  "MaxDepth" = "integer"
+  "Analyst" = "character"
   )
 
 zoo_params <- c("SexFecCode", "CopStageCode",

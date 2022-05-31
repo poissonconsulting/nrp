@@ -102,13 +102,11 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
 
   check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  data %<>% mutate(MaxDepth = units::as_units(.data$MaxDepth, "m"))
-
   zoo_sample <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate,
                                .data$FileName, .data$MonthCat, EndRev = .data$ENDREV,
                                StartRev = .data$STARTREV, SplMade = .data$SPLmade,
                                SplCount = .data$SPLcount, .data$FundingSource, .data$FieldCollection,
-                               .data$Analyst, .data$MaxDepth))
+                               .data$Analyst))
 
   readwritesqlite::rws_write(x = zoo_sample, commit = commit,
                              strict = strict, silent = silent,

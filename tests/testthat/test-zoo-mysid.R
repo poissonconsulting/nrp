@@ -30,7 +30,7 @@ test_that("nrp_read_zooplankton works", {
   data <- nrp_read_zooplankton(path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 165L)
+  expect_identical(length(data), 164L)
   expect_identical(nrow(data), 132L)
 
   expect_error(nrp_read_mysid("not-a-path", db_path = conn),
