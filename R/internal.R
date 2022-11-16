@@ -68,3 +68,14 @@ clean_input_cols <- function(data, lookup){
   select(reclassed, all_of(names(lookup)))
 
 }
+
+nrp_install_unit <- function(x) {
+
+  result <- units::install_unit(x) %>%
+    suppressWarnings() %>%
+    try(silent = TRUE)
+
+  if(length(result) && !str_detect(result, "already maps to existing but different unit")){
+    err("Unit", x, " could not be installed.")
+  }
+}
