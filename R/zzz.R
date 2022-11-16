@@ -1,5 +1,5 @@
 .onLoad <- function(...) {
-  suppressWarnings(units::install_unit("NTU"))
-  suppressWarnings(units::install_unit("PSU"))
-  suppressWarnings(units::install_unit("degC"))
+  nrp_install_unit("NTU")
+  nrp_install_unit("PSU")
+  nrp_install_unit("degC")
 }
