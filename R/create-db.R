@@ -10,6 +10,7 @@
 #' nrp_create_db("new_database.sqlite", TRUE)
 #' }
 nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
+
   chk_string(path)
   chk_flag(ask)
   if(file_exists(path)) {
@@ -17,7 +18,6 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
       return(path)
     file_delete(path)
   }
-
   conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 
   suppressWarnings(DBI::dbGetQuery(conn,
@@ -75,9 +75,9 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    "CREATE TABLE Lake  (
                                    Lake TEXT NOT NULL,
                                    Area REAL NOT NULL,
-                                   geometry BLOB NOT NULL,
-                                   PRIMARY KEY (Lake))"))
 
+                                   PRIMARY KEY (Lake))"))
+#               geometry BLOB NOT NULL,
 
   suppressWarnings(DBI::dbGetQuery(conn,
                                    "CREATE TABLE standardEMS  (
@@ -382,7 +382,17 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     FOREIGN KEY (Date, SiteID, Replicate, FileName) REFERENCES ZooplanktonSample (Date, SiteID, Replicate, FileName),
                                     PRIMARY KEY (Date, SiteID, Replicate, FileName, Parameter))"))
 
-  lakes <- nrp::lakes
+  # lakes <- nrp::lakes %>%
+  #   as_tibble() %>%
+  #  select(-geometry)
+
+  lakes <- structure(list(Lake = c("Arrow", "Kootenay"), Area = structure(c(511830815.827064,
+                                                                            422995361.724155), units = structure(list(numerator = c("m",
+                                                                                                                                    "m"), denominator = character(0)), class = "symbolic_units"), class = "units")), row.names = c(NA,
+                                                                                                                                                                                                                                   -2L), class = c("tbl_df", "tbl", "data.frame"), sf_column = "geometry", agr = structure(c(Lake = NA_integer_,
+                                                                                                                                                                                                                                                                                                                             Area = NA_integer_), class = "factor", levels = c("constant",
+                                                                                                                                                                                                                                                                                                                                                                               "aggregate", "identity")))
+
   readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 
   basinArm <- nrp::basinArm
