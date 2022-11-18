@@ -26,7 +26,6 @@ Imports:
     purrr, 
     dttr2,
     DBI,
-    dbplyr,
     readwritesqlite, 
     stats,
     sf,
