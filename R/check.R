@@ -1,7 +1,9 @@
 check_chr_date <- function(x) {
  x_name <- chk::deparse_backtick_chk((substitute(x)))
- chk::chk_chr(x, x_name = x_name)
- date <-   datetime <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
+ chk::chk_character(x, x_name = x_name)
+ chk::chk_scalar(x, x_name = x_name)
+
+ date <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
 
  if(inherits(date, "error") | inherits(date, "warning")) {
    err("Invalid date for ", x_name, ". Please use format: yyyy-mm-dd.")
@@ -13,7 +15,8 @@ check_chr_date <- function(x) {
 
 check_chr_datetime <- function(x) {
   x_name <- chk::deparse_backtick_chk((substitute(x)))
-  chk::chk_chr(x, x_name = x_name)
+  chk::chk_character(x, x_name = x_name)
+  chk::chk_scalar(x, x_name = x_name)
 
   datetime <- tryCatch(dttr2::dtt_date_time(x), error = function(e) e, warning = function(w) w)
 

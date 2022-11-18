@@ -281,12 +281,18 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
 nrp_download_ctd <- function(start_date = NULL, end_date = NULL,
                              sites = NULL, parameters = "all",
                              db_path = getOption("nrp.db_path", file.choose())){
-  chk::chk_null_or(sites, chk = chk::chk_character)
+
+  chk::chk_null_or(sites, vld = chk::vld_character)
   chk::chk_character(parameters)
-  chk::chk_null_or(start_date, chk = check_chr_date)
+
   if(!is.null(start_date)) {
+    check_chr_date(start_date)
+  }
+
+  if(!is.null(end_date)) {
     check_chr_date(end_date)
   }
+
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
