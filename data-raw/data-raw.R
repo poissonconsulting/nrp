@@ -7,7 +7,6 @@ library(sf)
 library(units)
 library(magrittr)
 devtools::load_all()
-
 # NOTE on ems test data: test_ems.rds
 # to update the test ems data use rems::get_ems_data(which = "4yr") to download
 # from the EMS database. subset to a smaller size that can travel with the package
