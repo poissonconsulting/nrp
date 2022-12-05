@@ -330,9 +330,9 @@ mysid_params <- c("DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "Dma
                   "VolDimmF", "VolDmatF", "VolDbroodF", "VolDspentF", "VolDdisBrF",
                   "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid")
 
-phtyo_species <- read_csv("data-raw/phyto_species.csv")
+phyto_species <- read_csv("data-raw/phyto_species.csv")
 
-use_data(phtyo_species, overwrite = TRUE)
+use_data(phyto_species, overwrite = TRUE)
 use_data(zoo_input_cols, overwrite = TRUE)
 use_data(mysid_input_cols, overwrite = TRUE)
 use_data(zoo_params, overwrite = TRUE)
