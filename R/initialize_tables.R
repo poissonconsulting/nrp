@@ -78,3 +78,30 @@ initialize_mysid <- function(){
          Parameter = as.character(),
          Value = as.numeric())
 }
+
+initialize_phyto_species <- function(){
+  tibble(Taxa = as.character(),
+         Genus = as.character(),
+         ClassName = as.character(),
+         ClassAlias = as.character())
+}
+
+initialize_phyto_sample <- function(){
+  tibble(Date = as.Date(as.character()),
+         SiteID = as.character(),
+         Depth = as.character(),
+         Discrete = as.logical(),
+         FileName = as.character())
+}
+
+initialize_phyto <- function(){
+  tibble(Date = as.character(),
+         SiteID = as.character(),
+         Depth = units::set_units(numeric(), "m"),
+         Taxa = as.character(),
+         SpeciesBvol = as.numeric(),
+         Biomass = as.numeric(),
+         Abundance = as.numeric(),
+         Biovolume = as.numeric(),
+         CellCount = as.integer())
+}

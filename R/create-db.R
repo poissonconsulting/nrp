@@ -379,6 +379,50 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     FOREIGN KEY (Date, SiteID, Replicate, FileName) REFERENCES ZooplanktonSample (Date, SiteID, Replicate, FileName),
                                     PRIMARY KEY (Date, SiteID, Replicate, FileName, Parameter))"))
 
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE PhytoplanktonSample (
+                                   Date TEXT NOT NULL,
+                                   SiteID TEXT NOT NULL,
+                                   Depth TEXT NOT NULL,
+                                   Discrete BOOLEAN NOT NULL,
+                                   FileName TEXT NOT NULL,
+                                   CHECK(
+                                   Date >= '1992-04-29'
+                                   ),
+                                   FOREIGN KEY(SiteID) REFERENCES Sites (SiteID)
+                                   PRIMARY KEY (Date, SiteID, Depth))"))
+
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE PhytoplanktonSpecies (
+                                   Taxa TEXT NOT NULL,
+                                   Genus TEXT,
+                                   ClassName TEXT NOT NULL,
+                                   ClassAlias TEXT,
+                                   PRIMARY KEY (Taxa))"))
+
+  suppressWarnings(DBI::dbGetQuery(conn,
+                                   "CREATE TABLE Phytoplankton (
+                                   Date TEXT NOT NULL,
+                                   SiteID TEXT NOT NULL,
+                                   Depth TEXT NOT NULL,
+                                   Taxa TEXT NOT NULL,
+                                   SpeciesBvol REAL,
+                                   Biomass REAL,
+                                   Abundance REAL NOT NULL,
+                                   Biovolume REAL,
+                                   CellCount REAL,
+                                   CHECK(
+                                   Date >= '1992-04-29' AND
+                                   SpeciesBvol >= 0 AND
+                                   Biomass >= 0 AND
+                                   Abundance >= 0 AND
+                                   Biovolume >= 0 AND
+                                   CellCount >= 0
+                                   ),
+                                   FOREIGN KEY (Date, SiteID, Depth) REFERENCES PhytoplanktonSample(Date, SiteID, Depth),
+                                   FOREIGN KEY (Taxa) REFERENCES PhytoplanktonSpecies (Taxa),
+                                   PRIMARY KEY (Date, SiteID, Depth, Taxa))"))
+
   lakes <- nrp::lakes %>%
     sf::st_make_valid()
 
@@ -413,6 +457,15 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
 
   zoo_init <- initialize_zoo()
   readwritesqlite::rws_write(zoo_init, exists = TRUE, conn = conn, x_name = "Zooplankton")
+
+  phyto_species <- initialize_phyto_species()
+  readwritesqlite::rws_write(phyto_species, exists = TRUE, conn = conn, x_name = "PhytoplanktonSpecies")
+
+  phyto_sample_init <- initialize_phyto_sample()
+  readwritesqlite::rws_write(phyto_sample_init, exists = TRUE, conn = conn, x_name = "PhytoplanktonSample")
+
+  phyto_init <- initialize_phyto()
+  readwritesqlite::rws_write(phyto_init, exists = TRUE, conn = conn, x_name = "Phytoplankton")
 
   conn
 }
