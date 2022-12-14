@@ -387,7 +387,11 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    Discrete BOOLEAN NOT NULL,
                                    FileName TEXT NOT NULL,
                                    CHECK(
-                                   Date >= '1992-04-29'
+                                   Date >= '1992-04-29' AND
+                                   Depth IN (
+                                   '1', '2', '5', '10', '15', '20', '25', '28', '30',
+                                   '35', '0-10', '0-15', '0-20', '1-20', '2-20'
+                                    )
                                    ),
                                    FOREIGN KEY(SiteID) REFERENCES Sites (SiteID)
                                    PRIMARY KEY (Date, SiteID, Depth))"))
