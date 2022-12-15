@@ -73,15 +73,20 @@
 #' @format A tbl data frame:
 "ems_metals_init"
 
-#' A character vector with the correct column names and order for raw zooplankton data
+#' A named character vector with the correct column names, data types,  and order for raw zooplankton data
 #'
 #' @format A character vector:
 "zoo_input_cols"
 
-#' A character vector with the correct column names and order for raw mysid data
+#' A named character vector with the correct column names, data types, and order for raw mysid data
 #'
 #' @format A character vector:
 "mysid_input_cols"
+
+#' A named character vector with the correct column names, data types, and order for raw phytoplankton data
+#'
+#' @format A character vector:
+"phyto_input_cols"
 
 #' A character vector of all parameters for the zooplankton data in the database
 #'
