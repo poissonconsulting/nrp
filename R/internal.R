@@ -55,8 +55,29 @@ clean_input_cols <- function(data, lookup){
     new_class <- as.character(lookup[x])
 
     if(new_class == "date") {
-      col <- dttr2::dtt_date(as.integer(col), origin = "1899-12-30")
+
+      col <- dttr2::dtt_date(as.integer(col), origin = "1899-12-30") %>%
+        tryCatch(
+          warning = function(w){
+          if(str_detect(w$message, "NAs introduced by coercion")){
+            err("Ivalid date format for column: '", x, "'.please ensure column is formatted as 'date' (yyyy-mm-dd) in Excel.")
+          }
+          dttr2::dtt_date(as.integer(col), origin = "1899-12-30") %>%
+            suppressWarnings()
+        },
+          error = function(e) err("Ivalid date format for column: '", x, "'. Please ensure column is formatted as 'date' (yyyy-mm-dd) in Excel.")
+        )
+
     } else {
+
+      col <- methods::as(col, new_class) %>%
+        tryCatch(warning = function(w){
+          if(str_detect(w$message, "NAs introduced by coercion")){
+            err("NAs introduced when cleaning data columns. Please Ensure all values in excel column: '", x, "' are type: '", new_class, "'.")
+          }
+          methods::as(col, new_class) %>% suppressWarnings()
+        })
+
       col <- suppressWarnings(methods::as(col, new_class))
     }
 
