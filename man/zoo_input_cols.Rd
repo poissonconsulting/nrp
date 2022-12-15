@@ -3,7 +3,7 @@
 \docType{data}
 \name{zoo_input_cols}
 \alias{zoo_input_cols}
-\title{A character vector with the correct column names and order for raw zooplankton data}
+\title{A named character vector with the correct column names, data types,  and order for raw zooplankton data}
 \format{
 A character vector:
 }
@@ -11,6 +11,6 @@ A character vector:
 zoo_input_cols
 }
 \description{
-A character vector with the correct column names and order for raw zooplankton data
+A named character vector with the correct column names, data types,  and order for raw zooplankton data
 }
 \keyword{datasets}

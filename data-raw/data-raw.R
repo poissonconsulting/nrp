@@ -330,11 +330,25 @@ mysid_params <- c("DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "Dma
                   "VolDimmF", "VolDmatF", "VolDbroodF", "VolDspentF", "VolDdisBrF",
                   "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid")
 
+phyto_input_cols <- c(
+  "Samp_Date" = "date",
+  "Site_Name" = "character",
+  "SiteLoc_LocName" = "character",
+  "Samp_Depth" = "character",
+  "Class_Name" = "character",
+  "Class_Alias" = "character",
+  "Species_Name" = "character",
+  "NCU/mL" = "numeric",
+  "Biovolume (mm3/L)" = "numeric",
+  "Edibility" = "character"
+)
+
 phyto_species <- read_csv("data-raw/phyto_species.csv")
 
 use_data(phyto_species, overwrite = TRUE)
 use_data(zoo_input_cols, overwrite = TRUE)
 use_data(mysid_input_cols, overwrite = TRUE)
+use_data(phyto_input_cols, overwrite = TRUE)
 use_data(zoo_params, overwrite = TRUE)
 use_data(mysid_params, overwrite = TRUE)
 use_data(basinArm, overwrite = TRUE)

@@ -3,7 +3,7 @@
 \docType{data}
 \name{mysid_input_cols}
 \alias{mysid_input_cols}
-\title{A character vector with the correct column names and order for raw mysid data}
+\title{A named character vector with the correct column names, data types, and order for raw mysid data}
 \format{
 A character vector:
 }
@@ -11,6 +11,6 @@ A character vector:
 mysid_input_cols
 }
 \description{
-A character vector with the correct column names and order for raw mysid data
+A named character vector with the correct column names, data types, and order for raw mysid data
 }
 \keyword{datasets}
