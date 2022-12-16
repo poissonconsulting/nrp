@@ -363,3 +363,37 @@ check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE){
   invisible(data)
 }
 
+check_new_phyto_species <- function(data) {
+  check_data(
+    data,
+    values = list(
+      Taxa = "character",
+      Genus = "character",
+      ClassName = "character",
+      ClassAlias = "character"
+    ),
+    key = c("Taxa"),
+    exclusive = TRUE,
+    order = TRUE
+  )
+}
+
+check_new_site <- function(data) {
+  check_data(
+    data,
+    values = list(
+      SiteID = "character",
+      EmsSiteNumber = c("character", NA),
+      SiteName = "character",
+      EmsSiteName = c("character", NA),
+      BasinArm = "character",
+      MaxDepth = 1.1,
+      Easting = 1.1,
+      Northing = 1.1
+    ),
+    key = c("SiteID"),
+    exclusive = TRUE,
+    order = TRUE
+  )
+}
+
