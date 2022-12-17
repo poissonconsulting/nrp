@@ -61,7 +61,10 @@
     <loc>/reference/nrp-package.html</loc>
   </url>
   <url>
-    <loc>/reference/nrp_add_ctd_sites.html</loc>
+    <loc>/reference/nrp_add_phyto_species.html</loc>
+  </url>
+  <url>
+    <loc>/reference/nrp_add_sites.html</loc>
   </url>
   <url>
     <loc>/reference/nrp_create_db.html</loc>
