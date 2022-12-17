@@ -370,7 +370,7 @@ check_new_phyto_species <- function(data) {
       Taxa = "character",
       Genus = "character",
       ClassName = "character",
-      ClassAlias = "character"
+      ClassAlias = c("character", NA)
     ),
     key = c("Taxa"),
     exclusive = TRUE,

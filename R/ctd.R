@@ -195,15 +195,15 @@ nrp_download_lakes <- function(db_path = getOption("nrp.db_path", file.choose())
 }
 
 
-#' Add new ctd sites to database site table
-#' @param data a tibble or data frame of new site data
+#' Add new sites to the 'Sites' table in the database.
+#' @param data a tibble or data frame of new site data.
 #' Must have columns "SiteID", "SiteNumber", "SiteName", "BasinArm",
 #' "Depth", as well as columns
 #' "Easting" and "Northing" with coordinates in projection UTM zone 11N.
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @export
 #'
-nrp_add_ctd_sites <- function(data, db_path = getOption("nrp.db_path", file.choose())){
+nrp_add_sites <- function(data, db_path = getOption("nrp.db_path", file.choose())){
   conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
