@@ -94,7 +94,7 @@ test_that("nrp_download_ctd_basin_arm works", {
   expect_identical(names(basin_arm_db), names(basin_arm_raw_data))
 })
 
-test_that("nrp_add_ctd_sites works", {
+test_that("nrp_add_sites works", {
 
   new_data <- tibble(SiteID = "NewID", EmsSiteNumber = "NewNumber", SiteName = "New Site Name",
                      EmsSiteName = "name ems",BasinArm = "Upper", MaxDepth = 100, Easting = -75.32016,
@@ -105,7 +105,7 @@ test_that("nrp_add_ctd_sites works", {
 
   old_sites <- nrp_download_sites(db_path = conn)
 
-  nrp_add_ctd_sites(data = new_data, db_path = conn)
+  nrp_add_sites(data = new_data, db_path = conn)
 
   updated_sites <- nrp_download_sites(db_path = conn)
   sf::st_geometry(updated_sites) <- NULL
