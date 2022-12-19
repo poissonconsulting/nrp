@@ -16,8 +16,9 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-  suppressWarnings(
-    ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE))
+
+    ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE) %>%
+      suppressWarnings()
 
   if(!inherits(ctd, "try-error")){
     data <- as_tibble(ctd@data)

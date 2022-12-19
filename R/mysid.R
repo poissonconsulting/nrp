@@ -47,7 +47,7 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
 
   sites <- nrp_download_sites(db_path = db_path)
 
-  if(!all(unique(data$Station) %in% sites$SiteID)) err("Unknown Stations in raw data.")
+  if(!all(unique(data$Station) %in% sites$SiteID)) warning("Sites present in input data that are not found in 'Sites' table in database.")
 
   data
 }
