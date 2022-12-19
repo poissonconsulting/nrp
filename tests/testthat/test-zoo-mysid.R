@@ -1,8 +1,7 @@
-
-conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-teardown(DBI::dbDisconnect(conn))
-
 test_that("nrp_read_zooplankton_file works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
 
   path <- system.file("extdata", "zooplankton/Arzp20.xlsx",
                       package = "nrp", mustWork = TRUE)
@@ -25,6 +24,9 @@ test_that("nrp_read_zooplankton_file works", {
 
 test_that("nrp_read_zooplankton works", {
 
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
   path <- system.file("extdata", "zooplankton",
                       package = "nrp", mustWork = TRUE)
   data <- nrp_read_zooplankton(path, db_path = conn)
@@ -42,7 +44,10 @@ test_that("nrp_read_zooplankton works", {
   expect_identical(data,  list(x = 1)[-1])
 })
 
-test_that("nrp_upload_zooplankton works", {
+test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
 
   path <- system.file("extdata", "zooplankton/Arzp20.xlsx",
                       package = "nrp", mustWork = TRUE)
@@ -70,14 +75,10 @@ test_that("nrp_upload_zooplankton works", {
                "UNIQUE constraint failed: ZooplanktonSample.Date, ZooplanktonSample.SiteID, ZooplanktonSample.Replicate, ZooplanktonSample.FileName")
 })
 
-test_that("nrp_download_zoo_sample works", {
-
-  sample <- nrp_download_zoo_sample(db_path = conn)
-  expect_identical(nrow(sample), 60L)
-
-})
-
 test_that("nrp_download_zooplankton works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
 
   db_data <- nrp_download_zooplankton(start_date = "2020-04-01",
                                       end_date = "2020-04-25", db_path = conn)
@@ -108,6 +109,9 @@ test_that("nrp_download_zooplankton works", {
 
 test_that("nrp_read_mysid_file works", {
 
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
                       package = "nrp", mustWork = TRUE)
 
@@ -130,6 +134,9 @@ test_that("nrp_read_mysid_file works", {
 
 test_that("nrp_read_mysid works", {
 
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
   path <- system.file("extdata", "mysid",
                       package = "nrp", mustWork = TRUE)
   data <- nrp_read_mysid(path, db_path = conn)
@@ -147,7 +154,10 @@ test_that("nrp_read_mysid works", {
   expect_identical(data,  list(x = 1)[-1])
 })
 
-test_that("nrp_upload_mysid works", {
+test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
 
   path <- system.file("extdata", "mysid/KLFmys20.xlsx",
                       package = "nrp", mustWork = TRUE)
@@ -175,14 +185,10 @@ test_that("nrp_upload_mysid works", {
                "UNIQUE constraint failed: MysidSample.Date, MysidSample.SiteID, MysidSample.Replicate")
 })
 
-test_that("nrp_download_mysid_visit works", {
-
-  sample <- nrp_download_mysid_sample(db_path = conn)
-  expect_identical(nrow(sample), 60L)
-
-})
-
 test_that("nrp_download_mysid works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
 
   db_data <- nrp_download_mysid(start_date = "2020-04-01",
                                       end_date = "2020-04-25", db_path = conn)
