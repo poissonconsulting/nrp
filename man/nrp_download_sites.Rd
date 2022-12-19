@@ -10,7 +10,7 @@ nrp_download_sites(db_path = getOption("nrp.db_path", file.choose()))
 \item{db_path}{The SQLite connection object or path to the SQLite database}
 }
 \value{
-CTD site table
+site table
 }
 \description{
 Download CTD site table

@@ -134,7 +134,7 @@ nrp_read_ctd <- function(path = ".", db_path = getOption("nrp.db_path", file.cho
 
 #' Download CTD site table
 #' @param db_path The SQLite connection object or path to the SQLite database
-#' @return CTD site table
+#' @return site table
 #' @export
 #'
 nrp_download_sites <- function(db_path = getOption("nrp.db_path", file.choose())) {

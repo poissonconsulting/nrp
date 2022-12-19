@@ -462,7 +462,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   zoo_init <- initialize_zoo()
   readwritesqlite::rws_write(zoo_init, exists = TRUE, conn = conn, x_name = "Zooplankton")
 
-  phyto_species <- initialize_phyto_species()
+  phyto_species <- nrp::phyto_species
   readwritesqlite::rws_write(phyto_species, exists = TRUE, conn = conn, x_name = "PhytoplanktonSpecies")
 
   phyto_sample_init <- initialize_phyto_sample()
