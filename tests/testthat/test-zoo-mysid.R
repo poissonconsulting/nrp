@@ -73,13 +73,6 @@ test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
 
   expect_error(nrp_upload_zooplankton(data = data, db_path = conn),
                "UNIQUE constraint failed: ZooplanktonSample.Date, ZooplanktonSample.SiteID, ZooplanktonSample.Replicate, ZooplanktonSample.FileName")
-})
-
-test_that("nrp_download_zooplankton works", {
-
-  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-  teardown(DBI::dbDisconnect(conn))
-
   db_data <- nrp_download_zooplankton(start_date = "2020-04-01",
                                       end_date = "2020-04-25", db_path = conn)
 
@@ -87,18 +80,18 @@ test_that("nrp_download_zooplankton works", {
   expect_identical(nrow(db_data), 12L)
 
   db_data <- nrp_download_zooplankton(start_date = "2020-04-01",
-                                end_date = "2020-04-25",
-                                counts = TRUE,
-                                db_path = conn)
+                                      end_date = "2020-04-25",
+                                      counts = TRUE,
+                                      db_path = conn)
 
   expect_identical(length(db_data), 150L)
   expect_identical(nrow(db_data), 12L)
   expect_true(all(is.na(db_data$BBosm)))
 
   expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
-                                          end_date = "2020-04-25", db_path = conn,
-                                          sites = "wrong"),
-                 "1 or more invalid site names")
+                                        end_date = "2020-04-25", db_path = conn,
+                                        sites = "wrong"),
+               "1 or more invalid site names")
 
   expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
                                         end_date = "2020-04-25", db_path = conn,
@@ -106,6 +99,8 @@ test_that("nrp_download_zooplankton works", {
                "1 or more invalid parameter names")
 
 })
+
+# mysid
 
 test_that("nrp_read_mysid_file works", {
 
@@ -183,15 +178,9 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
 
   expect_error(nrp_upload_mysid(data = data, db_path = conn),
                "UNIQUE constraint failed: MysidSample.Date, MysidSample.SiteID, MysidSample.Replicate")
-})
-
-test_that("nrp_download_mysid works", {
-
-  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-  teardown(DBI::dbDisconnect(conn))
 
   db_data <- nrp_download_mysid(start_date = "2020-04-01",
-                                      end_date = "2020-04-25", db_path = conn)
+                                end_date = "2020-04-25", db_path = conn)
 
   expect_identical(length(db_data), 37L)
   expect_identical(nrow(db_data), 24L)
@@ -205,5 +194,5 @@ test_that("nrp_download_mysid works", {
                                         end_date = "2020-04-25", db_path = conn,
                                         parameters = "wrong"),
                "1 or more invalid parameter names")
-
 })
+
