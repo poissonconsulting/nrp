@@ -100,3 +100,5 @@ nrp_install_unit <- function(x) {
     err("Unit", x, " could not be installed.")
   }
 }
+
+paste_vec <- function(x) paste0("'", unique(x), "'", collapse = ", ")
