@@ -343,7 +343,7 @@ phyto_input_cols <- c(
   "Edibility" = "character"
 )
 
-phyto_species <- read_csv("data-raw/Phytoplankton_Classification2022_v4.csv")
+phyto_species <- read_csv("data-raw/phyto_species.csv")
 
 use_data(phyto_species, overwrite = TRUE)
 use_data(zoo_input_cols, overwrite = TRUE)
