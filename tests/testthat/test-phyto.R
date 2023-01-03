@@ -34,21 +34,55 @@ test_that("nrp_read_plytoplankton_file works", {
   data <- nrp_read_phyto_file(path = path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(nrow(data), 15L)
+  expect_identical(nrow(data), 5L)
 
   expect_error(nrp_read_phyto_file(path = wrong_path, db_path = conn),
                "Please ensure input data is a valid excel spreadsheet \\(.xlsx\\).")
 
-  path2 <- system.file("extdata", "phyto/more/phyto2.xlsx",
+  path2 <- system.file("extdata", "phyto/bad/phyto2.xlsx",
                       package = "nrp", mustWork = TRUE)
 
   expect_warning(nrp_read_phyto_file(path = path2, db_path = conn),
                "Sites in input data not present in 'Sites' table in database: 'AR12'.")
 
-  path3 <- system.file("extdata", "phyto/more/phyto3.xlsx",
+  path3 <- system.file("extdata", "phyto/bad/phyto3.xlsx",
                        package = "nrp", mustWork = TRUE)
 
   expect_warning(nrp_read_phyto_file(path = path3, db_path = conn),
                  "Taxa in input data not present in 'PhytoplanktonSpecies' table in database: 'New Species'.")
 
+})
+
+test_that("nrp_read_phyto works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  path <- system.file(
+    "extdata", "phyto", package = "nrp", mustWork = TRUE
+    )
+
+  data <- nrp_read_phyto(path, db_path = conn)
+
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 6L)
+  expect_identical(nrow(data), 5L)
+
+  path <- system.file(
+    "extdata", "phyto", "multiple", package = "nrp", mustWork = TRUE
+    )
+
+  data <- nrp_read_phyto(path, db_path = conn, recursive = TRUE)
+
+  expect_is(data, "tbl_df")
+  expect_identical(length(data), 6L)
+  expect_identical(nrow(data), 15L)
+
+  expect_error(
+    nrp_read_phyto("not-a-path", db_path = conn), "path 'not-a-path' must exist"
+    )
+
+  path <- system.file("extdata", package = "nrp", mustWork = TRUE)
+  data <- nrp_read_phyto(path, db_path = conn)
+  expect_identical(data,  list(x = 1)[-1])
 })
