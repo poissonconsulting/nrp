@@ -80,30 +80,29 @@ nrp_read_phyto_file <- function(path, db_path = getOption("nrp.db_path",
    data
 
 }
+
+#' Read phytoplankton raw data files
 #'
-#' #' Read mysid raw data files
-#' #'
-#' #' @param path A string of the path to the directory.
-#' #' @param db_path The SQLite connection object or path to the nrp SQLite database.
-#' #' @inheritParams fs::dir_ls
-#' #' @return A tibble.
-#' #' @export
-#' #'
-#' nrp_read_mysid <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
-#'                            recursive = FALSE, regexp = "[.]xlsx$", fail = TRUE) {
+#' @param path A string of the path to the directory.
+#' @param db_path The SQLite connection object or path to the nrp SQLite database.
+#' @inheritParams fs::dir_ls
+#' @return A tibble.
+#' @export
 #'
-#'   check_dir_exists(path)
-#'   chk::chk_null_or(system, chk = chk::chk_character)
-#'   chk::chk_chr(regexp)
-#'   chk::chk_flag(recursive)
-#'   chk::chk_flag(fail)
-#'
-#'   paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
-#'                   fail = fail)
-#'   if(!length(paths)) return(named_list())
-#'
-#'   datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_mysid_file(., db_path = db_path, system = system))))
-#'   rownames(datas) <- NULL
-#'
-#'   datas
-#' }
+nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
+                           recursive = FALSE, regexp = "[.]xlsx$", fail = TRUE) {
+
+  check_dir_exists(path)
+  chk::chk_chr(regexp)
+  chk::chk_flag(recursive)
+  chk::chk_flag(fail)
+
+  paths <- dir_ls(path, type = "file", recurse = recursive, regexp = regexp,
+                  fail = fail)
+  if(!length(paths)) return(named_list())
+
+  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_phyto_file(., db_path = db_path))))
+  rownames(datas) <- NULL
+
+  datas
+}
