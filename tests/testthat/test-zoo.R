@@ -35,12 +35,12 @@ test_that("nrp_read_zooplankton works", {
   expect_identical(length(data), 164L)
   expect_identical(nrow(data), 132L)
 
-  expect_error(nrp_read_mysid("not-a-path", db_path = conn),
+  expect_error(nrp_read_zooplankton("not-a-path", db_path = conn),
                "path 'not-a-path' must exist")
 
   path <- system.file("extdata",
                       package = "nrp", mustWork = TRUE)
-  data <- nrp_read_mysid(path, db_path = conn)
+  data <- nrp_read_zooplankton(path, db_path = conn)
   expect_identical(data,  list(x = 1)[-1])
 })
 
