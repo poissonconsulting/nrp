@@ -410,11 +410,11 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    SiteID TEXT NOT NULL,
                                    Depth TEXT NOT NULL,
                                    Taxa TEXT NOT NULL,
-                                   SpeciesBvol REAL,
-                                   Biomass REAL,
-                                   Abundance REAL NOT NULL,
-                                   Biovolume REAL,
                                    CellCount REAL,
+                                   Abundance REAL NOT NULL,
+                                   SpeciesBvol REAL,
+                                   Biovolume REAL,
+                                   Biomass REAL,
                                    CHECK(
                                    Date >= '1992-04-29' AND
                                    SpeciesBvol >= 0 AND
