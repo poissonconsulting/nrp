@@ -363,6 +363,20 @@ check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE){
   invisible(data)
 }
 
+check_phyto_raw_data <- function(data, exclusive = TRUE, order = TRUE){
+  chk_data(data)
+  data <- try(check_names(
+    data,
+    names = names(nrp::phyto_input_cols),
+    exclusive = exclusive, order = order),
+    silent = TRUE)
+
+  if(inherits(data, "try-error")){
+    err("Columns in data do not match template for phytoplankton raw data. see `nrp::phyto_input_cols` for correct column names and order.")
+  }
+  invisible(data)
+}
+
 check_new_phyto_species <- function(data) {
   check_data(
     data,
