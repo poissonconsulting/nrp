@@ -58,8 +58,7 @@ kl_lookup <- read.csv("data-raw/KL-site-lookup.csv")
 ar_lookup <- read.csv("data-raw/AR-site-lookup.csv")
 site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
-path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
-ems <- readRDS(path)
+
 conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
 
 # ems_standard <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard") %>%
@@ -354,8 +353,6 @@ use_data(mysid_params, overwrite = TRUE)
 use_data(basinArm, overwrite = TRUE)
 use_data(ctdSites, overwrite = TRUE)
 use_data(lakes, overwrite = TRUE)
-use_data(emsSites, overwrite = TRUE)
-use_data(ems_param_lookup, overwrite = TRUE)
 use_data(site_date_lookup, overwrite = TRUE, internal = TRUE)
 # use_data(ems_standard_init, overwrite = TRUE)
 # use_data(ems_metals_init, overwrite = TRUE)
