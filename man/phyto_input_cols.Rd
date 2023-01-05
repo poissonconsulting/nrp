@@ -6,6 +6,9 @@
 \title{A named character vector with the correct column names, data types, and order for raw phytoplankton data}
 \format{
 A character vector:
+\describe{
+  \item{FileName}{This column is added automatically when data is read in with `nrp_read_phyto_file`}
+}
 }
 \usage{
 phyto_input_cols
