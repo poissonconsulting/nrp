@@ -83,7 +83,6 @@ initialize_phyto_sample <- function(){
   tibble(Date = as.Date(as.character()),
          SiteID = as.character(),
          Depth = as.character(),
-         Discrete = as.logical(),
          FileName = as.character())
 }
 

@@ -384,7 +384,6 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    Date TEXT NOT NULL,
                                    SiteID TEXT NOT NULL,
                                    Depth TEXT NOT NULL,
-                                   Discrete BOOLEAN NOT NULL,
                                    FileName TEXT NOT NULL,
                                    CHECK(
                                    Date >= '1992-04-29' AND
