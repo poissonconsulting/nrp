@@ -546,6 +546,7 @@ Peridinium sp4,Peridinium,Dinophyte,Dinoflagellates
 Peridinium spp,Peridinium,Dinophyte,Dinoflagellates
 Peridinium umbonatum,Peridinium,Dinophyte,Dinoflagellates
 Aphanothece sp,Aphanothece,"Cyanobacteria, Cyanophyte",Blue-greens
+Aulacoseira sp,Aulacoseira,"Bacillariophyta, Bacillariophyte",Diatoms
 Bicoeca cylindrica,Bicoeca,Chrysophyta,NA
 Chlamydomonas snowiae,Chlamydomonas,"Chlorophyta, Chrysophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
 Chlamydomonas sp8,Chlamydomonas,"Chlorophyta, Chrysophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
@@ -565,7 +566,9 @@ Dinobyron sertularia,Dinobyron,"Chrysophyta, Bacillariophyta, Chlorophyta, Eugle
 Euglena cf hemichromata,Euglena,"Euglenophyta, Bacillariophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
 Eunotia exigua,Eunotia,"Bacillariophyta, Chrysophyta, Bacillariophyte",Diatoms
 Eutetramorus sp,Eutetramorus,Chlorophyta,NA
+Fragilaria intermedia,Fragilaria,"Bacillariophyta, Bacillariophyte",Diatoms
 Gomphonemas sp girdle view,Gomphonemas,Bacillariophyta,NA
+Gomphosphaeria sp (cells),Gomphosphaeria,Cyanophyte,Blue-greens
 Gymnodinium sp 9,Gymnodinium,"Pyrrophyta, Pyrrhophyta, Cryptophyta, Chrysophyta, Dinophyte",Dinoflagellates
 Hannea sp,Hannea,"Bacillariophyta, Bacillariophyte",Diatoms
 Kirchneriella irregularis,Kirchneriella,"Bacillariophyta, Chlorophyta, Cyanobacteria",NA
@@ -583,7 +586,9 @@ Nitzschia frustulum,Nitzschia,"Bacillariophyta, Bacillariophyte",Diatoms
 "Nitzschia palea, large",Nitzschia,"Bacillariophyta, Bacillariophyte",Diatoms
 Oocystis cf elliptica,Oocystis,"Chlorophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
 Oocystis lacustris,Oocystis,"Chlorophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
+Pediastrum sp (medium),Pediastrum,"Cyanobacteria, Chlorophyte","Coccoid Greens, Desmids, etc."
 Phacus sp 1,Phacus,"Euglenophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
+Pinnularia sp (large),Pinnularia,Bacillariophyte,Diatoms
 Rhizololenia monad,Rhizololenia,Bacillariophyta,NA
 Scenedesmus acutum,Scenedesmus,"Chlorophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
 Scenedesmus linearis,Scenedesmus,"Chlorophyta, Chlorophyte","Coccoid Greens, Desmids, etc."
