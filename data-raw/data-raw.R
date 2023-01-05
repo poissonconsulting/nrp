@@ -337,8 +337,11 @@ phyto_input_cols <- c(
   "Class_Name" = "character",
   "Class_Alias" = "character",
   "Species_Name" = "character",
+  "Count_Number" = "numeric",
   "NCU/mL" = "numeric",
+  "Species_Bvol" = "numeric",
   "Biovolume (mm3/L)" = "numeric",
+  "Biomass" = "numeric",
   "Edibility" = "character"
 )
 

@@ -31,10 +31,17 @@ test_that("nrp_read_plytoplankton_file works", {
 
   wrong_path <- system.file("extdata", "ar-empty.rtf", package = "nrp", mustWork = TRUE)
 
-  data <- nrp_read_phyto_file(path = path, db_path = conn)
+  data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
+    suppressWarnings()
+
+  expect_warning(
+    nrp_read_phyto_file(path = path, db_path = conn),
+    "The input data is missing the following columns which will be assigned NA:  Count_Number, Species_Bvol, Biomass"
+    )
 
   expect_is(data, "tbl_df")
   expect_identical(nrow(data), 5L)
+  expect_identical(length(data), 12L)
 
   expect_error(nrp_read_phyto_file(path = wrong_path, db_path = conn),
                "Please ensure input data is a valid excel spreadsheet \\(.xlsx\\).")
@@ -65,7 +72,7 @@ test_that("nrp_read_phyto works", {
   data <- nrp_read_phyto(path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 6L)
+  expect_identical(length(data), 12L)
   expect_identical(nrow(data), 5L)
 
   path <- system.file(
@@ -75,7 +82,7 @@ test_that("nrp_read_phyto works", {
   data <- nrp_read_phyto(path, db_path = conn, recursive = TRUE)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 6L)
+  expect_identical(length(data), 12L)
   expect_identical(nrow(data), 15L)
 
   expect_error(
