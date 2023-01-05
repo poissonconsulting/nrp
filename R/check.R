@@ -344,7 +344,7 @@ check_mysid_raw_data <- function(data, exclusive = TRUE, order = TRUE){
     silent = TRUE)
 
   if(inherits(data, "try-error")){
-    err("Columns in data do not match template for zooplankton raw data. see `nrp::mysid_cols` for correct column names and order.")
+    err("Columns in data do not match template for zooplankton raw data. see `nrp::mysid_input_cols` for correct column names and order.")
   }
   invisible(data)
 }
@@ -358,7 +358,7 @@ check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE){
     silent = TRUE)
 
   if(inherits(data, "try-error")){
-    err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_cols` for correct column names and order.")
+    err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order.")
   }
   invisible(data)
 }
