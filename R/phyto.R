@@ -140,7 +140,12 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   if(!all(data$Species_Name %in% species$Taxa)) {
 
-    spp_add <- yesno::yesno("New species present in input data. Do you want to add this species to the species table?")
+    msg <- paste(
+      "New species present in input data. Do you want to add the following species to the species table? ",
+      data$Species_Name[!data$Species_Name %in% species$Taxa], collapse = ", "
+      )
+
+    spp_add <- yesno::yesno(msg)
 
     if(!spp_add) err("Upload aborted.")
 
@@ -181,4 +186,78 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
   readwritesqlite::rws_write(x = phyto_data, commit = commit, strict = strict,
                              silent = silent,
                              x_name = "Phytoplankton", conn = conn, replace = replace)
+}
+
+#' Download Phytoplankton data table from database
+#'
+#' @param start_date The start date
+#' @param end_date The end date
+#' @param sites A character vector of the Site IDs
+#' @param species A character vector of the species to include. Defaults to 'all'
+#' Permissible values can be found in the PhytoplanktonSpecies table.
+#' @param db_path The SQLite connection object or path to the SQLite database
+#'
+#' @return Phytoplankton data table
+#' @export
+#'
+nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
+                               sites = NULL, species = "all",
+                               db_path = getOption("nrp.db_path", file.choose())){
+
+  chk::chk_null_or(sites, chk = chk::chk_character)
+  chk::chk_character(species)
+  chk::chk_null_or(start_date, chk = check_chr_date)
+  if(!is.null(start_date)) {
+    check_chr_date(end_date)
+  }
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  site_table <- nrp_download_sites(db_path = conn)
+  if(is.null(sites)){
+    sites <- site_table$SiteID
+  }
+  if(!all(sites %in% site_table$SiteID)){
+    err(paste("1 or more invalid site names"))
+  }
+
+  species_db <- readwritesqlite::rws_read_table("PhytoplanktonSpecies", conn = conn)
+
+  if(identical(species, "all")){
+    species <- species_db$Taxa
+  } else if(!all(species %in% species_db$Taxa)){
+     wrong_spp <- species[!species %in% species_db$Taxa]
+     err(paste("Unrecognized species in query: ", wrong_spp, collapse = ", "))
+  }
+
+  dates <- fill_date_query(
+    table = "Phytoplankton", col = "Date", end = end_date, start = start_date,
+    connection = conn
+    )
+
+  start_date <- dates["start_date"][[1]]
+  end_date <- dates["end_date"][[1]]
+
+  if(start_date > end_date){
+    err("start date is later than end date")
+  }
+
+  Date <- NULL
+  SiteID <- NULL
+  speciesSql <- cc(species, ellipsis = 1000)
+  sitesSql <- cc(sites, ellipsis = 1000)
+  start_dateSql <- paste0("'", start_date, "'")
+  end_dateSql <- paste0("'", end_date, "'")
+
+  query <- paste0("SELECT * FROM Phytoplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
+                  end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Taxa` IN (", speciesSql,")))")
+
+  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+
+  if(nrow(result) == 0) warning("no data available for query provided.")
+  result
 }

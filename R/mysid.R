@@ -150,7 +150,6 @@ nrp_download_mysid_sample <- function(db_path = getOption("nrp.db_path", file.ch
   readwritesqlite::rws_read_table("MysidSample", conn = conn)
 }
 
-
 #' Download Mysid data table from database
 #'
 #' @param start_date The start date
@@ -173,7 +172,7 @@ nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
   if(!is.null(start_date)) {
     check_chr_date(end_date)
   }
-   conn <- db_path
+  conn <- db_path
   if(!inherits(conn, "SQLiteConnection")){
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
