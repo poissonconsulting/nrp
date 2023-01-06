@@ -61,7 +61,8 @@ nrp_read_phyto_file <- function(path, db_path = getOption("nrp.db_path",
     transmute(
       Samp_Date = .data$Samp_Date, .data$Site_Name,
       SiteLoc_LocName = str_replace(.data$SiteLoc_LocName, "-", ""),
-      Samp_Depth = .data$Samp_Depth, .data$Class_Name, .data$Class_Alias,
+      Samp_Depth = str_replace(tolower(.data$Samp_Depth), "m", ""),
+      .data$Class_Name, .data$Class_Alias,
       Species_Name = str_replace_all(.data$Species_Name, "\\.", ""),
       .data$Count_Number, .data$`NCU/mL`, .data$Species_Bvol,
       .data$`Biovolume (mm3/L)`, .data$Biomass, .data$Edibility, .data$FileName
@@ -108,3 +109,4 @@ nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.c
 
   datas
 }
+
