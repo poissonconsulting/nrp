@@ -117,15 +117,6 @@ nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.c
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
-path <- system.file(
-  "extdata", "phyto", package = "nrp", mustWork = TRUE
-)
-data <- nrp_read_phyto(path, db_path = db_path)
-commit = TRUE; strict = TRUE; silent = TRUE;
-replace = FALSE
-
-
 nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choose()),
                              commit = TRUE, strict = TRUE, silent = TRUE,
                              replace = FALSE){
