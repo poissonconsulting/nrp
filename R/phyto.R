@@ -110,3 +110,58 @@ nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.c
   datas
 }
 
+#' Upload phyto data to the nrp database
+#'
+#' @param data the object name of the data to be uploaded
+#' @param db_path An SQLite Database Connection, or path to an SQLite Database
+#' @inheritParams readwritesqlite::rws_write
+#' @export
+#'
+db_path <- nrp_create_db(path = ":memory:", ask = FALSE)
+path <- system.file(
+  "extdata", "phyto", package = "nrp", mustWork = TRUE
+)
+data <- nrp_read_phyto(path, db_path = db_path)
+commit = TRUE; strict = TRUE; silent = TRUE;
+replace = FALSE
+
+
+nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choose()),
+                             commit = TRUE, strict = TRUE, silent = TRUE,
+                             replace = FALSE){
+  chk::chk_flag(replace)
+  chk::chk_flag(commit)
+  chk::chk_flag(strict)
+  chk::chk_flag(silent)
+
+  conn <- db_path
+  if(!inherits(conn, "SQLiteConnection")){
+    conn <- connect_if_valid_path(path = conn)
+    on.exit(readwritesqlite::rws_disconnect(conn = conn))
+  }
+
+  check_phyto_raw_data(data, exclusive = FALSE, order = FALSE)
+  chk::check_key(data, key = c("Samp_Date", "SiteLoc_LocName", "Samp_Depth", "Species_Name"))
+
+  phyto_sample <- select(
+    data, Date = .data$Samp_Date, SiteID = .data$SiteLoc_LocName,
+    Depth = .data$Samp_Depth, .data$FileName
+  ) %>%
+    distinct()
+
+  readwritesqlite::rws_write(x = phyto_sample, commit = commit,
+                             strict = strict, silent = silent,
+                             x_name = "PhytoplanktonSample", conn = conn, replace = replace)
+
+  phyto_data <- select(
+    data, Date = .data$Samp_Date, SiteID = .data$SiteLoc_LocName,
+    Depth = .data$Samp_Depth, Taxa = .data$Species_Name,
+    CellCount = .data$Count_Number, Abundance = .data$`NCU/mL`,
+    SpeciesBvol = .data$Species_Bvol, Biovolume = .data$`Biovolume (mm3/L)`,
+    .data$Biomass
+  )
+
+  readwritesqlite::rws_write(x = phyto_data, commit = commit, strict = strict,
+                             silent = silent,
+                             x_name = "Phytoplankton", conn = conn, replace = replace)
+}

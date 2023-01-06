@@ -87,9 +87,9 @@ initialize_phyto_sample <- function(){
 }
 
 initialize_phyto <- function(){
-  tibble(Date = as.character(),
+  tibble(Date = as.Date(as.character()),
          SiteID = as.character(),
-         Depth = units::set_units(numeric(), "m"),
+         Depth = as.character(),
          Taxa = as.character(),
          SpeciesBvol = as.numeric(),
          Biomass = as.numeric(),
