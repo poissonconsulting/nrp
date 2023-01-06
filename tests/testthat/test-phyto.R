@@ -41,7 +41,7 @@ test_that("nrp_read_plytoplankton_file works", {
 
   expect_is(data, "tbl_df")
   expect_identical(nrow(data), 5L)
-  expect_identical(length(data), 12L)
+  expect_identical(length(data), 13L)
 
   expect_error(nrp_read_phyto_file(path = wrong_path, db_path = conn),
                "Please ensure input data is a valid excel spreadsheet \\(.xlsx\\).")
@@ -72,7 +72,7 @@ test_that("nrp_read_phyto works", {
   data <- nrp_read_phyto(path, db_path = conn)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 12L)
+  expect_identical(length(data), 13L)
   expect_identical(nrow(data), 5L)
 
   path <- system.file(
@@ -82,7 +82,7 @@ test_that("nrp_read_phyto works", {
   data <- nrp_read_phyto(path, db_path = conn, recursive = TRUE)
 
   expect_is(data, "tbl_df")
-  expect_identical(length(data), 12L)
+  expect_identical(length(data), 13L)
   expect_identical(nrow(data), 15L)
 
   expect_error(
