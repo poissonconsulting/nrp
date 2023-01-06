@@ -145,7 +145,7 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
     if(!spp_add) err("Upload aborted.")
 
     new_species <- data %>%
-      filter(!Species_Name %in% species$Taxa)
+      filter(!.data$Species_Name %in% species$Taxa)
 
     if(!"Genus" %in% names(new_species)) new_species$Genus <- NA_character_
 
