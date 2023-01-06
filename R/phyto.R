@@ -64,7 +64,7 @@ nrp_read_phyto_file <- function(path, db_path = getOption("nrp.db_path",
       Samp_Depth = .data$Samp_Depth, .data$Class_Name, .data$Class_Alias,
       Species_Name = str_replace_all(.data$Species_Name, "\\.", ""),
       .data$Count_Number, .data$`NCU/mL`, .data$Species_Bvol,
-      .data$`Biovolume (mm3/L)`, .data$Biomass, .data$FileName
+      .data$`Biovolume (mm3/L)`, .data$Biomass, .data$Edibility, .data$FileName
     )
 
   sites <- nrp_download_sites(db_path = db_path)
