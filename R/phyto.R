@@ -134,6 +134,32 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
   check_phyto_raw_data(data, exclusive = FALSE, order = FALSE)
   chk::check_key(data, key = c("Samp_Date", "SiteLoc_LocName", "Samp_Depth", "Species_Name"))
 
+  species <- readwritesqlite::rws_read_table("PhytoplanktonSpecies", conn = conn)
+
+  data$Species_Name[1] <- "New"
+
+  if(!all(data$Species_Name %in% species$Taxa)) {
+
+    spp_add <- yesno::yesno("New species present in input data. Do you want to add this species to the species table?")
+
+    if(!spp_add) err("Upload aborted.")
+
+    new_species <- data %>%
+      filter(!Species_Name %in% species$Taxa)
+
+    if(!"Genus" %in% names(new_species)) new_species$Genus <- NA_character_
+
+    new_species %<>%
+      transmute(
+        Taxa = .data$Species_Name, .data$Genus,
+        ClassName = .data$Class_Name, ClassAlias = .data$Class_Alias
+      ) %>%
+      distinct()
+
+    nrp_add_phyto_species(new_species, db_path = conn)
+
+  }
+
   phyto_sample <- select(
     data, Date = .data$Samp_Date, SiteID = .data$SiteLoc_LocName,
     Depth = .data$Samp_Depth, .data$FileName
