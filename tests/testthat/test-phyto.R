@@ -93,3 +93,60 @@ test_that("nrp_read_phyto works", {
   data <- nrp_read_phyto(path, db_path = conn)
   expect_identical(data,  list(x = 1)[-1])
 })
+
+test_that("nrp_upload_phyto works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  path <- system.file("extdata", "phyto/phyto1.xlsx",
+                      package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
+    suppressWarnings()
+
+  options(nrp.ask_user.auto_yes = TRUE)
+
+  nrp_upload_phyto(data = data, db_path = conn)
+
+  spp <- nrp_download_phyto_species(db_path = conn)
+  expect_identical(last(spp$Taxa), "New")
+
+  db_data <- readwritesqlite::rws_read_table("Phytoplankton", conn = conn)
+  expect_identical(length(db_data), 9L)
+  expect_identical(nrow(db_data), 5L)
+
+  nrp_upload_phyto(data = data, db_path = conn, replace = TRUE)
+
+  db_data <- readwritesqlite::rws_read_table("Phytoplankton", conn = conn)
+  expect_identical(length(db_data), 9L)
+  expect_identical(nrow(db_data), 5L)
+
+  expect_error(
+    nrp_upload_phyto(data = data, db_path = conn),
+    "UNIQUE constraint failed: PhytoplanktonSample.Date, PhytoplanktonSample.SiteID, PhytoplanktonSample.Depth"
+  )
+
+  data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
+    suppressWarnings()
+
+  data %<>%
+    rename(Wrong_Name = Samp_Date)
+
+  expect_error(
+    nrp_upload_phyto(data = data, db_path = conn),
+    "Columns in data do not match template for phytoplankton raw data. see `nrp::phyto_input_cols` for correct column names and order."
+  )
+
+  data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
+    suppressWarnings()
+
+  data %<>%
+    mutate(Species_Name = "same")
+
+  expect_error(
+    nrp_upload_phyto(data = data, db_path = conn),
+    "Columns 'Samp_Date', 'SiteLoc_LocName', 'Samp_Depth' and 'Species_Name' in `data` must be a unique key."
+  )
+
+})
