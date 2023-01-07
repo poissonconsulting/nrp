@@ -102,3 +102,16 @@ nrp_install_unit <- function(x) {
 }
 
 paste_vec <- function(x) paste0("'", unique(x), "'", collapse = ", ")
+
+ask_user <- function(msg, auto_yes = getOption("nrp.ask_user.auto_yes", FALSE)) {
+  chk::chk_chr(msg)
+  chk::chk_flag(auto_yes)
+
+  if(auto_yes){
+    return(TRUE)
+  } else {
+    yesno::yesno(msg)
+  }
+}
+
+
