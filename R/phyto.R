@@ -145,7 +145,7 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
       data$Species_Name[!data$Species_Name %in% species$Taxa], collapse = ", "
       )
 
-    spp_add <- yesno::yesno(msg)
+    spp_add <- ask_user(msg)
 
     if(!spp_add) err("Upload aborted.")
 
