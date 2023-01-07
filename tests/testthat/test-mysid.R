@@ -81,12 +81,12 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
   expect_identical(length(db_data), 37L)
   expect_identical(nrow(db_data), 24L)
 
-  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+  expect_error(nrp_download_mysid(start_date = "2020-04-01",
                                         end_date = "2020-04-25", db_path = conn,
                                         sites = "wrong"),
                "1 or more invalid site names")
 
-  expect_error(nrp_download_zooplankton(start_date = "2020-04-01",
+  expect_error(nrp_download_mysid(start_date = "2020-04-01",
                                         end_date = "2020-04-25", db_path = conn,
                                         parameters = "wrong"),
                "1 or more invalid parameter names")
