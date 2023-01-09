@@ -150,3 +150,58 @@ test_that("nrp_upload_phyto works", {
   )
 
 })
+
+test_that("nrp_download_phyto works", {
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  path <- system.file("extdata", "phyto/phyto1.xlsx",
+                      package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
+    suppressWarnings()
+  data$SiteLoc_LocName[1] <- "KL1"
+  data$Samp_Date[2] <- "2022-01-02"
+  data$Samp_Date[3] <- "2022-01-03"
+
+  options(nrp.ask_user.auto_yes = TRUE)
+  nrp_upload_phyto(data = data, db_path = conn)
+
+  db_data <- nrp_download_phyto(db_path = conn)
+  expect_identical(length(db_data), 9L)
+  expect_identical(nrow(db_data), 5L)
+
+  db_data <- nrp_download_phyto(start_date = "2022-01-01", end_date = "2022-01-03", db_path = conn)
+  expect_identical(nrow(db_data), 2L)
+  expect_identical(db_data$Date, dttr2::dtt_date(c("2022-01-02", "2022-01-03")))
+
+  db_data <- nrp_download_phyto(sites = "KL1", db_path = conn)
+  expect_identical(nrow(db_data), 1L)
+  expect_identical(db_data$SiteID, "KL1")
+
+  db_data <- nrp_download_phyto(species = "Gymnodinium sp (medium)", db_path = conn)
+  expect_identical(nrow(db_data), 1L)
+  expect_identical(db_data$Taxa, "Gymnodinium sp (medium)")
+
+  expect_error(
+    nrp_download_phyto(sites = "wrong", db_path = conn),
+    "1 or more invalid site names"
+  )
+
+  expect_warning(
+    nrp_download_phyto(sites = "AR6", db_path = conn),
+    "no data available for query provided."
+  )
+
+  expect_error(
+    nrp_download_phyto(species = "wrong", db_path = conn),
+    "Unrecognized species in query:  wrong"
+  )
+
+  expect_error(
+    nrp_download_phyto(start_date = "2022-01-03", end_date = "2022-01-02", db_path = conn),
+    "start date is later than end date"
+  )
+
+})
