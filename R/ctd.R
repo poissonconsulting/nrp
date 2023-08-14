@@ -74,7 +74,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     message(paste(n_dups, "negative depths removed from data"))
   }
 
-  #####
+  ##### ('Depth')
   data %<>% mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE),
                    FileID = 1:nrow(data), File = basename(path))
 
@@ -209,9 +209,9 @@ nrp_add_sites <- function(data, db_path = getOption("nrp.db_path", file.choose()
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
   check_new_site(data)
   data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326) %>%
+##### ('MaxDepth')
     mutate(MaxDepth = units::set_units(MaxDepth, "m"))
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
@@ -240,10 +240,10 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
   }
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-
+##### ('SiteID', 'Date', 'Time'. also 'Retain')
   visit <- group_by(data, SiteID, Date, Time) %>%
     summarise(DepthDuplicates = length(which(Retain == FALSE)),
-              File = first(File)) %>%
+              File = first("File")) %>%
     ungroup()
 
   visit_db <- nrp_download_ctd_visit(db_path = conn)
@@ -258,7 +258,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
   n_dups <- n_pre_filt - nrow(data)
   message(paste(n_dups, "duplicate depths removed from data"))
 
-  data %<>% select(-File, -Retain)
+  data %<>% select(-"File", -"Retain")
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict,
                              silent = silent,
