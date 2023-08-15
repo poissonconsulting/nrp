@@ -244,11 +244,13 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
   }
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-##### ('SiteID', 'Date', 'Time'. also 'Retain')
-  visit <- group_by(data, SiteID, Date, Time) %>%
-    summarise(DepthDuplicates = length(which(Retain == FALSE)),
-              File = first("File")) %>%
-    ungroup()
+
+  dup <- aggregate(Retain ~ Date + Time + SiteID, data = data, function(x) length(which(x == FALSE)))
+  first_file <- data[!duplicated(data[c('Date', 'Time', 'SiteID')]), c('Date', 'Time', 'SiteID', 'File')]
+  visit <- left_join(dup, first_file, by = c('Date', 'Time', 'SiteID'))
+  names(visit)[names(visit) == "Retain"] <- "DepthDuplicates"
+  visit %<>% select("SiteID", "Date", "Time", "DepthDuplicates", "File") %>%
+    as_tibble()
 
   visit_db <- nrp_download_ctd_visit(db_path = conn)
   visit_upload <- setdiff(visit, visit_db)
