@@ -75,8 +75,13 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   }
 
   ##### ('Depth')
-  data %<>% mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE),
-                   FileID = 1:nrow(data), File = basename(path))
+  #data %<>% mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE),
+  #               FileID = 1:nrow(data), File = basename(path))
+  data %<>% mutate(
+    FileID = 1:nrow(data),
+    File = basename(path))
+
+  data$Retain<-if_else(duplicated(data$Depth, fromLast = TRUE), FALSE, TRUE)
 
   data %<>% select(
     "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
@@ -212,7 +217,9 @@ nrp_add_sites <- function(data, db_path = getOption("nrp.db_path", file.choose()
   check_new_site(data)
   data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326) %>%
 ##### ('MaxDepth')
-    mutate(MaxDepth = units::set_units(MaxDepth, "m"))
+  mutate(MaxDepth = units::set_units(MaxDepth, "m"))
+# data$MaxDepth <- units::set_units(data$MaxDepth,"m")
+
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
                              x_name = "Sites", conn = conn)
