@@ -48,8 +48,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     data$DateTime <- ctd@metadata$startTime
     data$DateTime %<>% dttr2::dtt_set_tz("Etc/GMT+8")
 
-    data %<>% rename(SiteID = Siteid) %>%
-      select(SiteID, DateTime, everything())
+    data %<>% rename("SiteID" = "Siteid") %>%
+      select("SiteID", "DateTime", everything())
 
   } else {
 
@@ -67,23 +67,24 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   }
 
   n_pre_filt <- nrow(data)
-  data %<>% filter(as.numeric(Depth) >= 0)
+  data <- data[as.numeric(data$Depth) >= 0, ]
   n_dups <- n_pre_filt - nrow(data)
 
   if(n_dups > 0){
     message(paste(n_dups, "negative depths removed from data"))
   }
 
-  data %<>% mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE),
-                   FileID = 1:nrow(data), File = basename(path))
+  data %<>% mutate(
+    FileID = 1:nrow(data),
+    File = basename(path))
 
-  data %<>% select(FileID, SiteID, DateTime, Depth,
-                   Temperature, Oxygen,
-                   Oxygen2, Conductivity, Conductivity2,
-                   Salinity,
-                   Backscatter, Fluorescence, Frequency,
-                   Flag, Pressure,
-                   Retain, File)
+  data$Retain<-if_else(duplicated(data$Depth, fromLast = TRUE), FALSE, TRUE)
+
+  data %<>% select(
+    "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
+    "Conductivity", "Conductivity2", "Salinity", "Backscatter", "Fluorescence",
+    "Frequency", "Flag", "Pressure", "Retain", "File"
+                   )
 
   default_units <- c(NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm",
                      "mu * S/cm", "PSU",
@@ -97,8 +98,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   data$Time[data$Time == 00:00:00] <- NA_real_
   data$Date <- dttr2::dtt_date(data$DateTime)
 
-  data %<>% select(FileID, SiteID, Date, Time,
-                   everything(), -DateTime)
+  data %<>% select("FileID", "SiteID", "Date", "Time",
+                   everything(), -"DateTime")
   data
 }
 
@@ -210,10 +211,9 @@ nrp_add_sites <- function(data, db_path = getOption("nrp.db_path", file.choose()
     conn <- connect_if_valid_path(path = conn)
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
-
   check_new_site(data)
-  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326) %>%
-    mutate(MaxDepth = units::set_units(MaxDepth, "m"))
+  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326)
+  data$MaxDepth <- units::set_units(data$MaxDepth,"m")
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
                              x_name = "Sites", conn = conn)
@@ -242,10 +242,12 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
-  visit <- group_by(data, SiteID, Date, Time) %>%
-    summarise(DepthDuplicates = length(which(Retain == FALSE)),
-              File = first(File)) %>%
-    ungroup()
+  dup <- stats::aggregate(Retain ~ Date + Time + SiteID, data = data, function(x) length(which(x == FALSE)))
+  first_file <- data[!duplicated(data[c('Date', 'Time', 'SiteID')]), c('Date', 'Time', 'SiteID', 'File')]
+  visit <- left_join(dup, first_file, by = c('Date', 'Time', 'SiteID'))
+  names(visit)[names(visit) == "Retain"] <- "DepthDuplicates"
+  visit %<>% select("SiteID", "Date", "Time", "DepthDuplicates", "File") %>%
+    as_tibble()
 
   visit_db <- nrp_download_ctd_visit(db_path = conn)
   visit_upload <- setdiff(visit, visit_db)
@@ -255,11 +257,11 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
                              x_name = "visitCTD", conn = conn)
 
   n_pre_filt <- nrow(data)
-  data %<>% filter(Retain == TRUE)
+  data <- data[data$Retain, ]
   n_dups <- n_pre_filt - nrow(data)
   message(paste(n_dups, "duplicate depths removed from data"))
 
-  data %<>% select(-File, -Retain)
+  data %<>% select(-"File", -"Retain")
 
   readwritesqlite::rws_write(x = data, commit = commit, strict = strict,
                              silent = silent,
