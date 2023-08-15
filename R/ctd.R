@@ -74,9 +74,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     message(paste(n_dups, "negative depths removed from data"))
   }
 
-  ##### ('Depth')
-  #data %<>% mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE),
-  #               FileID = 1:nrow(data), File = basename(path))
   data %<>% mutate(
     FileID = 1:nrow(data),
     File = basename(path))
