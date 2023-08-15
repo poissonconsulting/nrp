@@ -245,7 +245,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
 
-  dup <- aggregate(Retain ~ Date + Time + SiteID, data = data, function(x) length(which(x == FALSE)))
+  dup <- stats::aggregate(Retain ~ Date + Time + SiteID, data = data, function(x) length(which(x == FALSE)))
   first_file <- data[!duplicated(data[c('Date', 'Time', 'SiteID')]), c('Date', 'Time', 'SiteID', 'File')]
   visit <- left_join(dup, first_file, by = c('Date', 'Time', 'SiteID'))
   names(visit)[names(visit) == "Retain"] <- "DepthDuplicates"
@@ -260,7 +260,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
                              x_name = "visitCTD", conn = conn)
 
   n_pre_filt <- nrow(data)
-  data %<>% filter(Retain == TRUE)
+  data %<>% filter(data$Retain == TRUE)
   n_dups <- n_pre_filt - nrow(data)
   message(paste(n_dups, "duplicate depths removed from data"))
 
