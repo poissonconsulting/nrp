@@ -215,11 +215,8 @@ nrp_add_sites <- function(data, db_path = getOption("nrp.db_path", file.choose()
     on.exit(readwritesqlite::rws_disconnect(conn = conn))
   }
   check_new_site(data)
-  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326) %>%
-##### ('MaxDepth')
-  mutate(MaxDepth = units::set_units(MaxDepth, "m"))
-# data$MaxDepth <- units::set_units(data$MaxDepth,"m")
-
+  data %<>% sf::st_as_sf(coords = c("Easting", "Northing"), crs = 4326)
+  data$MaxDepth <- units::set_units(data$MaxDepth,"m")
 
   readwritesqlite::rws_write(x = data, commit = TRUE, strict = TRUE, silent = TRUE,
                              x_name = "Sites", conn = conn)
