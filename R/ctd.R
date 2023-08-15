@@ -260,7 +260,7 @@ nrp_upload_ctd <- function(data, db_path = getOption("nrp.db_path", file.choose(
                              x_name = "visitCTD", conn = conn)
 
   n_pre_filt <- nrow(data)
-  data %<>% filter(data$Retain == TRUE)
+  data <- data[data$Retain, ]
   n_dups <- n_pre_filt - nrow(data)
   message(paste(n_dups, "duplicate depths removed from data"))
 
