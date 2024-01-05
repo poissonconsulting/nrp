@@ -17,7 +17,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   }
 
 
-  ctd <- try(read.ctd.sbe(path, type="SBE19plus"), silent = TRUE) %>%
+  ctd <- try(read.ctd.sbe(path, type = "SBE19plus"), silent = TRUE) %>%
     suppressWarnings()
 
   if(!inherits(ctd, "try-error")){
@@ -34,7 +34,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     sites <- nrp_download_sites(db_path = db_path)
 
     siteIDs <- sites$SiteID
-    match <- which(sapply(siteIDs, grepl, path, ignore.case = TRUE))
+    match <- which(sapply(siteIDs, grepl, basename(path), ignore.case = TRUE))
 
     if(length(match) == 1){
       data$SiteID <- siteIDs[match]
