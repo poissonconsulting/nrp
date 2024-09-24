@@ -22,42 +22,42 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
   check_ems_raw_data(data, exclusive = TRUE, order = TRUE)
 
   sites <- nrp_download_sites(db_path = conn) %>%
-    filter(!is.na(.data$EmsSiteNumber)) %>%
-    filter(!is.na(.data$EmsSiteName))
+    filter(!is.na(EmsSiteNumber)) %>%
+    filter(!is.na(EmsSiteName))
   sf::st_geometry(sites) <- NULL
 
   params <- nrp::ems_param_lookup
 
-  data %<>% filter(.data$EMS_ID %in% sites$EmsSiteNumber) %>%
-    mutate(COLLECTION_START = lubridate::ymd_hms(.data$COLLECTION_START, tz = "Etc/GMT+8"),
-           COLLECTION_END = lubridate::ymd_hms(.data$COLLECTION_END, tz = "Etc/GMT+8")) %>%
-    select(.data$EMS_ID, .data$MONITORING_LOCATION, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
-           .data$PARAMETER, .data$RESULT, .data$ANALYZING_AGENCY, .data$RESULT_LETTER, .data$UPPER_DEPTH,
-           .data$LOWER_DEPTH, .data$ANALYTICAL_METHOD, .data$UNIT) %>%
-    mutate(PARAMETER = ifelse(.data$PARAMETER %in% c("Phosphorus Total Dissolved") &
-                                .data$ANALYTICAL_METHOD == "ICP",
-                              "Phosphorus Total Dissolved metals", .data$PARAMETER)) %>%
-    mutate(PARAMETER = ifelse(.data$PARAMETER == "Phosphorus Total" &
-                                .data$ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
-                              "Phosphorus Total metals", .data$PARAMETER)) %>%
-    mutate(RESULT_LETTER = gsub("M", NA, .data$RESULT_LETTER),
-           RESULT = paste0(.data$RESULT, "/", .data$RESULT_LETTER),
-           RESULT = gsub(c("NA"), "", .data$RESULT)) %>%
-    select(-.data$ANALYTICAL_METHOD, -.data$RESULT_LETTER, -.data$EMS_ID) %>%
-    left_join(select(sites, .data$SiteID, .data$EmsSiteName), by = c("MONITORING_LOCATION" = "EmsSiteName")) %>%
-    select(-.data$MONITORING_LOCATION)
+  data %<>% filter(EMS_ID %in% sites$EmsSiteNumber) %>%
+    mutate(COLLECTION_START = lubridate::ymd_hms(COLLECTION_START, tz = "Etc/GMT+8"),
+           COLLECTION_END = lubridate::ymd_hms(COLLECTION_END, tz = "Etc/GMT+8")) %>%
+    select(EMS_ID, MONITORING_LOCATION, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+           PARAMETER, RESULT, ANALYZING_AGENCY, RESULT_LETTER, UPPER_DEPTH,
+           LOWER_DEPTH, ANALYTICAL_METHOD, UNIT) %>%
+    mutate(PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total Dissolved") &
+                                ANALYTICAL_METHOD == "ICP",
+                              "Phosphorus Total Dissolved metals", PARAMETER)) %>%
+    mutate(PARAMETER = ifelse(PARAMETER == "Phosphorus Total" &
+                                ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
+                              "Phosphorus Total metals", PARAMETER)) %>%
+    mutate(RESULT_LETTER = gsub("M", NA, RESULT_LETTER),
+           RESULT = paste0(RESULT, "/", RESULT_LETTER),
+           RESULT = gsub(c("NA"), "", RESULT)) %>%
+    select(-ANALYTICAL_METHOD, -RESULT_LETTER, -EMS_ID) %>%
+    left_join(select(sites, SiteID, EmsSiteName), by = c("MONITORING_LOCATION" = "EmsSiteName")) %>%
+    select(-MONITORING_LOCATION)
 
   if(analysis_type == "standard"){
     params_standard <- params$PARAMETER[params$Comment == "standard analysis"]
 
-    data %<>% filter(.data$PARAMETER %in% params_standard) %>%
-      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT),
-             REQUISITION_ID = as.numeric(.data$REQUISITION_ID)) %>%
-      select(-.data$UNIT) %>%
-      group_by_at(vars(-.data$RESULT)) %>%
+    data %<>% filter(PARAMETER %in% params_standard) %>%
+      mutate(PARAMETER = paste0(PARAMETER,"unit:", UNIT),
+             REQUISITION_ID = as.numeric(REQUISITION_ID)) %>%
+      select(-UNIT) %>%
+      group_by_at(vars(-RESULT)) %>%
       mutate(row_id = seq_len(n())) %>% ungroup() %>%
-      tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
-      arrange(.data$COLLECTION_START)
+      tidyr::spread(key = PARAMETER, value = RESULT, fill = NA) %>%
+      arrange(COLLECTION_START)
 
 
     key_cols <- c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
@@ -65,8 +65,8 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
 
     data %<>% clean_key_cols(key_cols)
 
-    data %<>% group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
-               .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
+    data %<>% group_by(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+               ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH) %>%
       mutate(ReplicateID = seq_len(n())) %>%
       ungroup()
 
@@ -74,32 +74,32 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
     standard_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(standard_units, fill_units) %>%
-      select(.data$`SiteID`, .data$`COLLECTION_START`, .data$`COLLECTION_END`, .data$`REQUISITION_ID`, .data$`ANALYZING_AGENCY`,
-             .data$`UPPER_DEPTH`, .data$`LOWER_DEPTH`, .data$`ReplicateID`, .data$`Alkalinity Total 4.5`,
-             .data$`Limit Alkalinity Total 4.5`, .data$`Carbon Total Inorganic`, .data$`Limit Carbon Total Inorganic`,
-             .data$`Carbon Total Organic`, .data$`Limit Carbon Total Organic`, .data$`Carbon Total`,
-             .data$`Limit Carbon Total`,.data$`Chlorophyll A`, .data$`Limit Chlorophyll A`, .data$`Nitrate (NO3) Dissolved`,
-             .data$`Limit Nitrate (NO3) Dissolved`, .data$`Nitrate(NO3) + Nitrite(NO2) Dissolved`,
-             .data$`Limit Nitrate(NO3) + Nitrite(NO2) Dissolved`, .data$`Nitrogen - Nitrite Dissolved (NO2)`,
-             .data$`Limit Nitrogen - Nitrite Dissolved (NO2)`, .data$`Nitrogen Ammonia Total`,
-             .data$`Limit Nitrogen Ammonia Total`, .data$`Nitrogen Total`,
-             .data$`Limit Nitrogen Total`, .data$`Phosphorus Ort.Dis-P`, .data$`Limit Phosphorus Ort.Dis-P`,
-             .data$`Phosphorus Total Dissolved`, .data$`Limit Phosphorus Total Dissolved`, .data$`Phosphorus Total`,
-             .data$`Limit Phosphorus Total`, .data$`pH`, .data$`Limit pH`, .data$`Silica Reactive Diss`,
-             .data$`Limit Silica Reactive Diss`, .data$`Turbidity`, .data$`Limit Turbidity`, .data$row_id)
+      select(`SiteID`, `COLLECTION_START`, `COLLECTION_END`, `REQUISITION_ID`, `ANALYZING_AGENCY`,
+             `UPPER_DEPTH`, `LOWER_DEPTH`, `ReplicateID`, `Alkalinity Total 4.5`,
+             `Limit Alkalinity Total 4.5`, `Carbon Total Inorganic`, `Limit Carbon Total Inorganic`,
+             `Carbon Total Organic`, `Limit Carbon Total Organic`, `Carbon Total`,
+             `Limit Carbon Total`,`Chlorophyll A`, `Limit Chlorophyll A`, `Nitrate (NO3) Dissolved`,
+             `Limit Nitrate (NO3) Dissolved`, `Nitrate(NO3) + Nitrite(NO2) Dissolved`,
+             `Limit Nitrate(NO3) + Nitrite(NO2) Dissolved`, `Nitrogen - Nitrite Dissolved (NO2)`,
+             `Limit Nitrogen - Nitrite Dissolved (NO2)`, `Nitrogen Ammonia Total`,
+             `Limit Nitrogen Ammonia Total`, `Nitrogen Total`,
+             `Limit Nitrogen Total`, `Phosphorus Ort.Dis-P`, `Limit Phosphorus Ort.Dis-P`,
+             `Phosphorus Total Dissolved`, `Limit Phosphorus Total Dissolved`, `Phosphorus Total`,
+             `Limit Phosphorus Total`, `pH`, `Limit pH`, `Silica Reactive Diss`,
+             `Limit Silica Reactive Diss`, `Turbidity`, `Limit Turbidity`, row_id)
 
 
   } else if(analysis_type == "metals"){
     params_metals <- params$PARAMETER[params$Comment == "metals"]
 
-    data %<>% filter(.data$PARAMETER %in% params_metals) %>%
-      mutate(PARAMETER = paste0(.data$PARAMETER,"unit:", .data$UNIT),
-             REQUISITION_ID = as.numeric(.data$REQUISITION_ID)) %>%
-      select(-.data$UNIT) %>%
-      group_by_at(vars(-.data$RESULT)) %>%
+    data %<>% filter(PARAMETER %in% params_metals) %>%
+      mutate(PARAMETER = paste0(PARAMETER,"unit:", UNIT),
+             REQUISITION_ID = as.numeric(REQUISITION_ID)) %>%
+      select(-UNIT) %>%
+      group_by_at(vars(-RESULT)) %>%
       mutate(row_id = seq_len(n())) %>% ungroup() %>%
-      tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
-      arrange(.data$COLLECTION_START)
+      tidyr::spread(key = PARAMETER, value = RESULT, fill = NA) %>%
+      arrange(COLLECTION_START)
 
     if(!"Hydroxide Alkalinityunit:mg/L" %in% names(data)){
       data$`Hydroxide Alkalinityunit:mg/L` <- NA_real_
@@ -109,8 +109,8 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
                   "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH")
 
     data %<>% clean_key_cols(key_cols) %>%
-      group_by(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
-               .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH) %>%
+      group_by(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+               ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH) %>%
       mutate(ReplicateID = seq_len(n())) %>%
       ungroup()
 
@@ -118,56 +118,56 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
     metals_units <- pull_ems_units(data)
     names(data) <- gsub('unit:.*', "", names(data))
     data %<>% map2_dfc(metals_units, fill_units)
-    data %<>% select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID, .data$ANALYZING_AGENCY,
-             .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID, .data$`Alkalinity Phen. 8.3`,
-             .data$`Limit Alkalinity Phen. 8.3`, .data$`Aluminum Dissolved`, .data$`Limit Aluminum Dissolved`,
-             .data$`Aluminum Total`, .data$`Limit Aluminum Total`, .data$`Antimony Dissolved`,
-             .data$`Limit Antimony Dissolved`, .data$`Antimony Total`, .data$`Limit Antimony Total`,
-             .data$`Arsenic Dissolved`, .data$`Limit Arsenic Dissolved`, .data$`Arsenic Total`, .data$`Limit Arsenic Total`,
-             .data$`Barium Dissolved`, .data$`Limit Barium Dissolved`, .data$`Barium Total`, .data$`Limit Barium Total`,
-             .data$`Beryllium Dissolved`, .data$`Limit Beryllium Dissolved`, .data$`Beryllium Total`,
-             .data$`Limit Beryllium Total`, .data$`Bicarbonate Alkalinity`, .data$`Limit Bicarbonate Alkalinity`,
-             .data$`Bismuth Dissolved`, .data$`Limit Bismuth Dissolved`, .data$`Bismuth Total`, .data$`Limit Bismuth Total`,
-             .data$`Boron Dissolved`, .data$`Limit Boron Dissolved`, .data$`Boron Total`, .data$`Limit Boron Total`,
-             .data$`Cadmium Dissolved`, .data$`Limit Cadmium Dissolved`, .data$`Cadmium Total`, .data$`Limit Cadmium Total`,
-             .data$`Calcium Dissolved`, .data$`Limit Calcium Dissolved`, .data$`Calcium Total`, .data$`Limit Calcium Total`,
-             .data$`Carbonate Alkalinity`, .data$`Limit Carbonate Alkalinity`, .data$`Chromium Dissolved`,
-             .data$`Limit Chromium Dissolved`, .data$`Chromium Total`, .data$`Limit Chromium Total`,
-             .data$`Cobalt Dissolved`, .data$`Limit Cobalt Dissolved`, .data$`Cobalt Total`, .data$`Limit Cobalt Total`,
-             .data$`Copper Dissolved`, .data$`Limit Copper Dissolved`, .data$`Copper Total`, .data$`Limit Copper Total`,
-             .data$`Hardness (Dissolved)`, .data$`Limit Hardness (Dissolved)`, .data$`Hardness Total (Total)`,
-             .data$`Limit Hardness Total (Total)`, .data$`Hydroxide Alkalinity`, .data$`Limit Hydroxide Alkalinity`,
-             .data$`Iron Dissolved`, .data$`Limit Iron Dissolved`, .data$`Iron Total`, .data$`Limit Iron Total`,
-             .data$`Lead Dissolved`, .data$`Limit Lead Dissolved`,.data$`Lead Total`, .data$`Limit Lead Total`,
-             .data$`Magnesium Dissolved`, .data$`Limit Magnesium Dissolved`, .data$`Magnesium Total`,
-             .data$`Limit Magnesium Total`, .data$`Manganese Dissolved`, .data$`Limit Manganese Dissolved`,
-             .data$`Manganese Total`, .data$`Limit Manganese Total`, .data$`Molybdenum Dissolved`,
-             .data$`Limit Molybdenum Dissolved`, .data$`Molybdenum Total`, .data$`Limit Molybdenum Total`,
-             .data$`Nickel Dissolved`, .data$`Limit Nickel Dissolved`, .data$`Nickel Total`, .data$`Limit Nickel Total`,
-             .data$`Phosphorus Total Dissolved metals`, .data$`Limit Phosphorus Total Dissolved metals`,
-             .data$`Phosphorus Total metals`, .data$`Limit Phosphorus Total metals`, .data$`Potassium Dissolved`,
-             .data$`Limit Potassium Dissolved`, .data$`Potassium Total`, .data$`Limit Potassium Total`,
-             .data$`Selenium Dissolved`, .data$`Limit Selenium Dissolved`, .data$`Selenium Total`,
-             .data$`Limit Selenium Total`, .data$`Silicon Dissolved`, .data$`Limit Silicon Dissolved`,
-             .data$`Silicon Total`, .data$`Limit Silicon Total`, .data$`Silver Dissolved`, .data$`Limit Silver Dissolved`,
-             .data$`Silver Total`, .data$`Limit Silver Total`, .data$`Sodium Dissolved`, .data$`Limit Sodium Dissolved`,
-             .data$`Sodium Total`, .data$`Limit Sodium Total`, .data$`Strontium Dissolved`, .data$`Limit Strontium Dissolved`,
-             .data$`Strontium Total`, .data$`Limit Strontium Total`, .data$`Sulfur Dissolved`,
-             .data$`Limit Sulfur Dissolved`, .data$`Sulfur Total`, .data$`Limit Sulfur Total`, .data$`Thallium Dissolved`,
-             .data$`Limit Thallium Dissolved`, .data$`Thallium Total`, .data$`Limit Thallium Total`, .data$`Tin Dissolved`,
-             .data$`Limit Tin Dissolved`, .data$`Tin Total`, .data$`Limit Tin Total`, .data$`Titanium Dissolved`,
-             .data$`Limit Titanium Dissolved`, .data$`Titanium Total`, .data$`Limit Titanium Total`,
-             .data$`Uranium Dissolved`, .data$`Limit Uranium Dissolved`, .data$`Uranium Total`, .data$`Limit Uranium Total`,
-             .data$`Vanadium Dissolved`, .data$`Limit Vanadium Dissolved`, .data$`Vanadium Total`,
-             .data$`Limit Vanadium Total`, .data$`Zinc Dissolved`, .data$`Limit Zinc Dissolved`, .data$`Zinc Total`,
-             .data$`Limit Zinc Total`, .data$row_id)
+    data %<>% select(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID, ANALYZING_AGENCY,
+             UPPER_DEPTH, LOWER_DEPTH, ReplicateID, `Alkalinity Phen. 8.3`,
+             `Limit Alkalinity Phen. 8.3`, `Aluminum Dissolved`, `Limit Aluminum Dissolved`,
+             `Aluminum Total`, `Limit Aluminum Total`, `Antimony Dissolved`,
+             `Limit Antimony Dissolved`, `Antimony Total`, `Limit Antimony Total`,
+             `Arsenic Dissolved`, `Limit Arsenic Dissolved`, `Arsenic Total`, `Limit Arsenic Total`,
+             `Barium Dissolved`, `Limit Barium Dissolved`, `Barium Total`, `Limit Barium Total`,
+             `Beryllium Dissolved`, `Limit Beryllium Dissolved`, `Beryllium Total`,
+             `Limit Beryllium Total`, `Bicarbonate Alkalinity`, `Limit Bicarbonate Alkalinity`,
+             `Bismuth Dissolved`, `Limit Bismuth Dissolved`, `Bismuth Total`, `Limit Bismuth Total`,
+             `Boron Dissolved`, `Limit Boron Dissolved`, `Boron Total`, `Limit Boron Total`,
+             `Cadmium Dissolved`, `Limit Cadmium Dissolved`, `Cadmium Total`, `Limit Cadmium Total`,
+             `Calcium Dissolved`, `Limit Calcium Dissolved`, `Calcium Total`, `Limit Calcium Total`,
+             `Carbonate Alkalinity`, `Limit Carbonate Alkalinity`, `Chromium Dissolved`,
+             `Limit Chromium Dissolved`, `Chromium Total`, `Limit Chromium Total`,
+             `Cobalt Dissolved`, `Limit Cobalt Dissolved`, `Cobalt Total`, `Limit Cobalt Total`,
+             `Copper Dissolved`, `Limit Copper Dissolved`, `Copper Total`, `Limit Copper Total`,
+             `Hardness (Dissolved)`, `Limit Hardness (Dissolved)`, `Hardness Total (Total)`,
+             `Limit Hardness Total (Total)`, `Hydroxide Alkalinity`, `Limit Hydroxide Alkalinity`,
+             `Iron Dissolved`, `Limit Iron Dissolved`, `Iron Total`, `Limit Iron Total`,
+             `Lead Dissolved`, `Limit Lead Dissolved`,`Lead Total`, `Limit Lead Total`,
+             `Magnesium Dissolved`, `Limit Magnesium Dissolved`, `Magnesium Total`,
+             `Limit Magnesium Total`, `Manganese Dissolved`, `Limit Manganese Dissolved`,
+             `Manganese Total`, `Limit Manganese Total`, `Molybdenum Dissolved`,
+             `Limit Molybdenum Dissolved`, `Molybdenum Total`, `Limit Molybdenum Total`,
+             `Nickel Dissolved`, `Limit Nickel Dissolved`, `Nickel Total`, `Limit Nickel Total`,
+             `Phosphorus Total Dissolved metals`, `Limit Phosphorus Total Dissolved metals`,
+             `Phosphorus Total metals`, `Limit Phosphorus Total metals`, `Potassium Dissolved`,
+             `Limit Potassium Dissolved`, `Potassium Total`, `Limit Potassium Total`,
+             `Selenium Dissolved`, `Limit Selenium Dissolved`, `Selenium Total`,
+             `Limit Selenium Total`, `Silicon Dissolved`, `Limit Silicon Dissolved`,
+             `Silicon Total`, `Limit Silicon Total`, `Silver Dissolved`, `Limit Silver Dissolved`,
+             `Silver Total`, `Limit Silver Total`, `Sodium Dissolved`, `Limit Sodium Dissolved`,
+             `Sodium Total`, `Limit Sodium Total`, `Strontium Dissolved`, `Limit Strontium Dissolved`,
+             `Strontium Total`, `Limit Strontium Total`, `Sulfur Dissolved`,
+             `Limit Sulfur Dissolved`, `Sulfur Total`, `Limit Sulfur Total`, `Thallium Dissolved`,
+             `Limit Thallium Dissolved`, `Thallium Total`, `Limit Thallium Total`, `Tin Dissolved`,
+             `Limit Tin Dissolved`, `Tin Total`, `Limit Tin Total`, `Titanium Dissolved`,
+             `Limit Titanium Dissolved`, `Titanium Total`, `Limit Titanium Total`,
+             `Uranium Dissolved`, `Limit Uranium Dissolved`, `Uranium Total`, `Limit Uranium Total`,
+             `Vanadium Dissolved`, `Limit Vanadium Dissolved`, `Vanadium Total`,
+             `Limit Vanadium Total`, `Zinc Dissolved`, `Limit Zinc Dissolved`, `Zinc Total`,
+             `Limit Zinc Total`, row_id)
   }
 
-  data %<>% mutate(LOWER_DEPTH = units::set_units(as.numeric(.data$LOWER_DEPTH), "m"),
-                   UPPER_DEPTH = units::set_units(as.numeric(.data$UPPER_DEPTH), "m")) %>%
-    select(.data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
-                   .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH, .data$ReplicateID,
-                   everything(), -.data$row_id)
+  data %<>% mutate(LOWER_DEPTH = units::set_units(as.numeric(LOWER_DEPTH), "m"),
+                   UPPER_DEPTH = units::set_units(as.numeric(UPPER_DEPTH), "m")) %>%
+    select(SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
+                   ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID,
+                   everything(), -row_id)
   data
 }
 
@@ -231,7 +231,7 @@ nrp_upload_ems_standard<- function(data, db_path = getOption("nrp.db_path", file
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
       data %<>% setdiff(ems_4year) %>%
-        filter(.data$COLLECTION_START > last_date)
+        filter(COLLECTION_START > last_date)
 
         if(nrow(data) == 0){
           err("The data you are attempting to upload is already in the database")
@@ -282,7 +282,7 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
       data %<>% setdiff(ems_4year) %>%
-        filter(.data$COLLECTION_START > last_date)
+        filter(COLLECTION_START > last_date)
 
       if(nrow(data) == 0){
         err("The data you are attempting to upload is already in the database")
@@ -356,8 +356,8 @@ nrp_download_ems <- function(db_path = getOption("nrp.db_path", file.choose()), 
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")))")
 
   result <- readwritesqlite::rws_query(query = query, conn = conn) %>%
-    dplyr::mutate(COLLECTION_START = dttr2::dtt_date_time(.data$COLLECTION_START),
-                  COLLECTION_END = dttr2::dtt_date_time(.data$COLLECTION_END))
+    dplyr::mutate(COLLECTION_START = dttr2::dtt_date_time(COLLECTION_START),
+                  COLLECTION_END = dttr2::dtt_date_time(COLLECTION_END))
 
   if(show_detection_limits == FALSE){
     result %<>% select(-c(grep("Limit", names(result))))
