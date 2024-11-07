@@ -7,9 +7,9 @@
 \format{
 A tbl data frame:
 \describe{
-  \item{File}{File name}
-  \item{Date}{Date data was collected}
-  \item{SiteID}{Site ID}
+\item{File}{File name}
+\item{Date}{Date data was collected}
+\item{SiteID}{Site ID}
 }
 }
 \usage{

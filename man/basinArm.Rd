@@ -7,8 +7,8 @@
 \format{
 A tbl data frame:
 \describe{
-  \item{Lake}{The name of the lake}
-  \item{BasinArm}{What arms or basins are within each lake}
+\item{Lake}{The name of the lake}
+\item{BasinArm}{What arms or basins are within each lake}
 }
 }
 \usage{

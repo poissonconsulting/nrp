@@ -7,7 +7,7 @@
 \format{
 A character vector:
 \describe{
-  \item{FileName}{This column is added automatically when data is read in with `nrp_read_phyto_file`}
+\item{FileName}{This column is added automatically when data is read in with \code{nrp_read_phyto_file}}
 }
 }
 \usage{

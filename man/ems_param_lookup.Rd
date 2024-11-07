@@ -7,12 +7,12 @@
 \format{
 A tbl data frame:
 \describe{
-  \item{PARAMETER_CODE}{PARAMETER_CODE}
-  \item{PARAMETER}{PARAMETER}
-  \item{ANALYTICAL_METHOD}{ANALYTICAL_METHOD}
-  \item{chem.make.names}{chem.make.names}
-  \item{chem.names}{chem.names}
-  \item{Comment}{Comment}
+\item{PARAMETER_CODE}{PARAMETER_CODE}
+\item{PARAMETER}{PARAMETER}
+\item{ANALYTICAL_METHOD}{ANALYTICAL_METHOD}
+\item{chem.make.names}{chem.make.names}
+\item{chem.names}{chem.names}
+\item{Comment}{Comment}
 }
 }
 \usage{
