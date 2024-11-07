@@ -5,7 +5,7 @@ check_chr_date <- function(x) {
 
   date <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
 
-  if (inherits(date, "error") | inherits(date, "warning")) {
+  if (inherits(date, "error") || inherits(date, "warning")) {
     err("Invalid date for ", x_name, ". Please use format: yyyy-mm-dd.")
   } else if (date > Sys.Date()) {
     err(x_name, " is beyond current date.")
@@ -20,7 +20,7 @@ check_chr_datetime <- function(x) {
 
   datetime <- tryCatch(dttr2::dtt_date_time(x), error = function(e) e, warning = function(w) w)
 
-  if (inherits(datetime, "error") | inherits(datetime, "warning")) {
+  if (inherits(datetime, "error") || inherits(datetime, "warning")) {
     err("Invalid date-time for ", x_name, ". Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
   } else if (datetime > dttr2::dtt_date_time(Sys.Date())) {
     err(x_name, " is beyond current date.")

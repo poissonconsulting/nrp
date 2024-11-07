@@ -64,7 +64,7 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
       ) %>%
       select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
-      mutate(row_id = 1:n()) %>%
+      mutate(row_id = seq_len(n())) %>%
       ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START)
@@ -81,7 +81,7 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
       .data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
       .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH
     ) %>%
-      mutate(ReplicateID = 1:n()) %>%
+      mutate(ReplicateID = seq_len(n())) %>%
       ungroup()
 
     data %<>% add_ems_detection_limit_cols(params = params_standard)
@@ -113,7 +113,7 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
       ) %>%
       select(-.data$UNIT) %>%
       group_by_at(vars(-.data$RESULT)) %>%
-      mutate(row_id = 1:n()) %>%
+      mutate(row_id = seq_len(n())) %>%
       ungroup() %>%
       tidyr::spread(key = .data$PARAMETER, value = .data$RESULT, fill = NA) %>%
       arrange(.data$COLLECTION_START)
@@ -132,7 +132,7 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
         .data$SiteID, .data$COLLECTION_START, .data$COLLECTION_END, .data$REQUISITION_ID,
         .data$ANALYZING_AGENCY, .data$UPPER_DEPTH, .data$LOWER_DEPTH
       ) %>%
-      mutate(ReplicateID = 1:n()) %>%
+      mutate(ReplicateID = seq_len(n())) %>%
       ungroup()
 
     data %<>% add_ems_detection_limit_cols(params = params_metals)

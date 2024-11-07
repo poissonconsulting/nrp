@@ -75,7 +75,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   }
 
   data %<>% mutate(
-    FileID = 1:nrow(data),
+    FileID = seq_len(nrow(data)),
     File = basename(path)
   )
 
