@@ -40,9 +40,9 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption("nrp.db_path",
   chk::check_key(data, key = c("Date", "Station", "Replicate", "FileName"))
 
   data %<>%
-    mutate(Station = as.integer(str_extract(.data$Station, "\\d"))) %>%
+    mutate(Station = as.integer(str_extract(Station, "\\d"))) %>%
     clean_input_cols(lookup = nrp::zoo_input_cols) %>%
-    mutate(Station = paste0(system, .data$Station))
+    mutate(Station = paste0(system, Station))
 
   sites <- nrp_download_sites(db_path = db_path)
 
@@ -102,48 +102,48 @@ nrp_upload_zooplankton<- function(data, db_path = getOption("nrp.db_path", file.
 
   check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  zoo_sample <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate,
-                               .data$FileName, .data$MonthCat, EndRev = .data$ENDREV,
-                               StartRev = .data$STARTREV, SplMade = .data$SPLmade,
-                               SplCount = .data$SPLcount, .data$FundingSource, .data$FieldCollection,
-                               .data$Analyst))
+  zoo_sample <- select(data, c(Date, SiteID = Station, Replicate,
+                               FileName, MonthCat, EndRev = ENDREV,
+                               StartRev = STARTREV, SplMade = SPLmade,
+                               SplCount = SPLcount, FundingSource, FieldCollection,
+                               Analyst))
 
   readwritesqlite::rws_write(x = zoo_sample, commit = commit,
                              strict = strict, silent = silent,
                              x_name = "ZooplanktonSample", conn = conn, replace = replace)
 
-  zoo_data <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$FileName,
-                             .data$DenTotal, .data$DCopep, .data$DClad, .data$`DClad other than Daph`,
-                             .data$DDash, .data$DDkenai, .data$DEpi, .data$DCycl, .data$DNaup,
-                             .data$DDaph, .data$DDiaph, .data$DBosm, .data$DScap, .data$DLepto,
-                             .data$DCerio, .data$DChyd, .data$DOtherCopep, .data$DOtherClad,
-                             .data$DDashM, .data$DDashF, .data$DDash5, .data$DDash4, .data$DDash3,
-                             .data$DDash2, .data$DDash1, .data$DDashC, .data$DDkenaiM, .data$DDkenaiF,
-                             .data$DDkenaiC, .data$DEpiM, .data$DEpiF, .data$DEpiC, .data$DCyclM,
-                             .data$DCyclF, .data$DCycl5, .data$DCycl4, .data$DCycl3, .data$DCycl2,
-                             .data$DCycl1, .data$DCyclC, .data$BiomTotal, .data$BCopep, .data$BClad,
-                             .data$`BClad other than Daph`, .data$BDash, .data$BDkenai, .data$BEpi,
-                             .data$BCycl, .data$BNaup, .data$BDaph, .data$BDiaph, .data$BBosm,
-                             .data$BScap, .data$BLepto, .data$BCerio, .data$BChyd, .data$BOtherCopep,
-                             .data$BOtherClad, .data$BDashM, .data$BDashF, .data$BDash5, .data$BDash4,
-                             .data$BDash3, .data$BDash2, .data$BDash1, .data$BDashC, .data$BDkenaiM,
-                             .data$BDkenaiF, .data$BDkenaiC, .data$BEpiM, .data$BEpiF, .data$BEpiC,
-                             .data$BCyclM, .data$BCyclF, .data$BCycl5, .data$BCycl4, .data$BCycl3,
-                             .data$BCycl2, .data$BCycl1, .data$BCyclC, .data$F1Dash, .data$F1Dkenai,
-                             .data$F1Epi, .data$F1Cycl, .data$F1Daph, .data$F1Diaph, .data$F1Bosm,
-                             .data$F1Scap, .data$F1Lepto, .data$F1Cerio, .data$F1Chyd, .data$F2Dash,
-                             .data$F2Dkenai, .data$F2Epi, .data$F2Cycl, .data$F2Daph, .data$F2Diaph,
-                             .data$F2Bosm, .data$F2Scap, .data$F2Lepto, .data$F2Cerio, .data$F2Chyd,
-                             .data$F3Dash, .data$F3Dkenai, .data$F3Epi, .data$F3Cycl, .data$F3Daph,
-                             .data$F3Diaph, .data$F3Bosm, .data$F3Scap, .data$F3Lepto, .data$F3Cerio,
-                             .data$F3Chyd, .data$F4Dash, .data$F4Dkenai, .data$F4Epi, .data$F4Cycl,
-                             .data$F4Daph, .data$F4Diaph, .data$F4Bosm, .data$F4Scap, .data$F4Lepto,
-                             .data$F4Cerio, .data$F4Chyd, .data$F5Dash, .data$F5Dkenai, .data$F5Epi,
-                             .data$F5Cycl, .data$F5Daph, .data$F5Diaph, .data$F5Bosm, .data$F5Scap,
-                             .data$F5Lepto, .data$F5Cerio, .data$F5Chyd, .data$F6Dash, .data$F6Dkenai,
-                             .data$F6Epi, .data$F6Cycl, .data$F6Daph, .data$F6Diaph, .data$F6Bosm,
-                             .data$F6Scap, .data$F6Lepto, .data$F6Cerio, .data$F6Chyd)) %>%
-    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate, .data$FileName),
+  zoo_data <- select(data, c(Date, SiteID = Station, Replicate, FileName,
+                             DenTotal, DCopep, DClad, `DClad other than Daph`,
+                             DDash, DDkenai, DEpi, DCycl, DNaup,
+                             DDaph, DDiaph, DBosm, DScap, DLepto,
+                             DCerio, DChyd, DOtherCopep, DOtherClad,
+                             DDashM, DDashF, DDash5, DDash4, DDash3,
+                             DDash2, DDash1, DDashC, DDkenaiM, DDkenaiF,
+                             DDkenaiC, DEpiM, DEpiF, DEpiC, DCyclM,
+                             DCyclF, DCycl5, DCycl4, DCycl3, DCycl2,
+                             DCycl1, DCyclC, BiomTotal, BCopep, BClad,
+                             `BClad other than Daph`, BDash, BDkenai, BEpi,
+                             BCycl, BNaup, BDaph, BDiaph, BBosm,
+                             BScap, BLepto, BCerio, BChyd, BOtherCopep,
+                             BOtherClad, BDashM, BDashF, BDash5, BDash4,
+                             BDash3, BDash2, BDash1, BDashC, BDkenaiM,
+                             BDkenaiF, BDkenaiC, BEpiM, BEpiF, BEpiC,
+                             BCyclM, BCyclF, BCycl5, BCycl4, BCycl3,
+                             BCycl2, BCycl1, BCyclC, F1Dash, F1Dkenai,
+                             F1Epi, F1Cycl, F1Daph, F1Diaph, F1Bosm,
+                             F1Scap, F1Lepto, F1Cerio, F1Chyd, F2Dash,
+                             F2Dkenai, F2Epi, F2Cycl, F2Daph, F2Diaph,
+                             F2Bosm, F2Scap, F2Lepto, F2Cerio, F2Chyd,
+                             F3Dash, F3Dkenai, F3Epi, F3Cycl, F3Daph,
+                             F3Diaph, F3Bosm, F3Scap, F3Lepto, F3Cerio,
+                             F3Chyd, F4Dash, F4Dkenai, F4Epi, F4Cycl,
+                             F4Daph, F4Diaph, F4Bosm, F4Scap, F4Lepto,
+                             F4Cerio, F4Chyd, F5Dash, F5Dkenai, F5Epi,
+                             F5Cycl, F5Daph, F5Diaph, F5Bosm, F5Scap,
+                             F5Lepto, F5Cerio, F5Chyd, F6Dash, F6Dkenai,
+                             F6Epi, F6Cycl, F6Daph, F6Diaph, F6Bosm,
+                             F6Scap, F6Lepto, F6Cerio, F6Chyd)) %>%
+    tidyr::pivot_longer(cols = -c(Date, SiteID, Replicate, FileName),
                         names_to = "Parameter", values_to = "Value") %>%
     mutate(RawCount = NA_integer_)
 
@@ -235,7 +235,7 @@ nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Parameter` IN (", paramsSql,")))")
 
   result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+    dplyr::mutate(Date = dttr2::dtt_date(Date))
 
   if(nrow(result) == 0) warning("no data available for query provided.")
 

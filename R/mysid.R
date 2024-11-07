@@ -41,9 +41,9 @@ nrp_read_mysid_file <- function(path, db_path = getOption("nrp.db_path",
   chk::check_key(data, key = c("Date", "Station", "Replicate"))
 
   data %<>%
-    mutate(Station = as.integer(str_extract(.data$Station, "\\d"))) %>%
+    mutate(Station = as.integer(str_extract(Station, "\\d"))) %>%
     clean_input_cols(lookup = nrp::mysid_input_cols) %>%
-    mutate(Station = paste0(system, .data$Station))
+    mutate(Station = paste0(system, Station))
 
   sites <- nrp_download_sites(db_path = db_path)
 
@@ -104,31 +104,31 @@ nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   check_mysid_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  data %<>% mutate(Date = dttr2::dtt_date(.data$Date),
-                   Depth = units::as_units(.data$Depth, "m"),
-                   DepthCat = factor(.data$DepthCat, levels = c("Shallow", "Deep")))
+  data %<>% mutate(Date = dttr2::dtt_date(Date),
+                   Depth = units::as_units(Depth, "m"),
+                   DepthCat = factor(DepthCat, levels = c("Shallow", "Deep")))
 
-  mysid_sample <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$FileName,
-                                 .data$MonthCat, .data$Time, .data$Depth, .data$DepthCat,
-                                 .data$SideLake, SplMade = .data$`#splitsMade`,
-                                 SplCount = .data$`#splitsCounted`, .data$FundingSource,
-                                 .data$FieldCollection, .data$Analyst, .data$Comment))
+  mysid_sample <- select(data, c(Date, SiteID = Station, Replicate, FileName,
+                                 MonthCat, Time, Depth, DepthCat,
+                                 SideLake, SplMade = `#splitsMade`,
+                                 SplCount = `#splitsCounted`, FundingSource,
+                                 FieldCollection, Analyst, Comment))
 
   readwritesqlite::rws_write(x = mysid_sample, commit = commit,
                              strict = strict, silent = silent,
                              x_name = "MysidSample", conn = conn, replace = replace)
 
-  mysid_data <- select(data, c(.data$Date, SiteID = .data$Station, .data$Replicate, .data$DenTotal,
-                               .data$Djuv, .data$DimmM, .data$DmatM, .data$DbreedM,
-                               .data$DimmF, .data$DmatF, .data$DbroodF, .data$DspentF,
-                               .data$DdistBrF, .data$BiomTotal, .data$Bjuv, .data$BimmM,
-                               .data$BmatM, .data$BbreedM, .data$BimmF, .data$BmatF,
-                               .data$BbroodF, .data$BspentF, .data$BdistBrF, .data$VolDenTotal,
-                               .data$VolDjuv, .data$VolDimmM, .data$VolDmatM, .data$VolDbreedM,
-                               .data$VolDimmF, .data$VolDmatF, .data$VolDbroodF, .data$VolDspentF,
-                               .data$VolDdisBrF, .data$`Eggs/BroodF`, .data$`Eggs/DistBrF`,
-                               .data$`Eggs/Total#Mysids`, .data$PropFemGravid)) %>%
-    tidyr::pivot_longer(cols = -c(.data$Date, .data$SiteID, .data$Replicate), names_to = "Parameter", values_to = "Value")
+  mysid_data <- select(data, c(Date, SiteID = Station, Replicate, DenTotal,
+                               Djuv, DimmM, DmatM, DbreedM,
+                               DimmF, DmatF, DbroodF, DspentF,
+                               DdistBrF, BiomTotal, Bjuv, BimmM,
+                               BmatM, BbreedM, BimmF, BmatF,
+                               BbroodF, BspentF, BdistBrF, VolDenTotal,
+                               VolDjuv, VolDimmM, VolDmatM, VolDbreedM,
+                               VolDimmF, VolDmatF, VolDbroodF, VolDspentF,
+                               VolDdisBrF, `Eggs/BroodF`, `Eggs/DistBrF`,
+                               `Eggs/Total#Mysids`, PropFemGravid)) %>%
+    tidyr::pivot_longer(cols = -c(Date, SiteID, Replicate), names_to = "Parameter", values_to = "Value")
 
   readwritesqlite::rws_write(x = mysid_data, commit = commit, strict = strict,
                              silent = silent,
@@ -214,7 +214,7 @@ nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
                   end_dateSql, ") AND (`SiteID` IN (", sitesSql,")) AND (`Parameter` IN (", paramsSql,")))")
 
   result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+    dplyr::mutate(Date = dttr2::dtt_date(Date))
 
   if(nrow(result) == 0) warning("no data available for query provided.")
 
