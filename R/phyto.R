@@ -62,13 +62,13 @@ nrp_read_phyto_file <- function(path, db_path = getOption(
     mutate(FileName = basename(path)) %>%
     clean_input_cols(lookup = nrp::phyto_input_cols) %>%
     transmute(
-      Samp_Date = .data$Samp_Date, .data$Site_Name,
-      SiteLoc_LocName = str_replace(.data$SiteLoc_LocName, "-", ""),
-      Samp_Depth = str_replace(tolower(.data$Samp_Depth), "m", ""),
-      .data$Class_Name, .data$Class_Alias,
-      Species_Name = str_replace_all(.data$Species_Name, "\\.", ""),
-      .data$Count_Number, .data$`NCU/mL`, .data$Species_Bvol,
-      .data$`Biovolume (mm3/L)`, .data$Biomass, .data$Edibility, .data$FileName
+      Samp_Date = Samp_Date, Site_Name,
+      SiteLoc_LocName = str_replace(SiteLoc_LocName, "-", ""),
+      Samp_Depth = str_replace(tolower(Samp_Depth), "m", ""),
+      Class_Name, Class_Alias,
+      Species_Name = str_replace_all(Species_Name, "\\.", ""),
+      Count_Number, `NCU/mL`, Species_Bvol,
+      `Biovolume (mm3/L)`, Biomass, Edibility, FileName
     )
 
   sites <- nrp_download_sites(db_path = db_path)
@@ -155,14 +155,14 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
     if (!spp_add) err("Upload aborted.")
 
     new_species <- data %>%
-      filter(!.data$Species_Name %in% species$Taxa)
+      filter(!Species_Name %in% species$Taxa)
 
     if (!"Genus" %in% names(new_species)) new_species$Genus <- NA_character_
 
     new_species %<>%
       transmute(
-        Taxa = .data$Species_Name, .data$Genus,
-        ClassName = .data$Class_Name, ClassAlias = .data$Class_Alias
+        Taxa = Species_Name, Genus,
+        ClassName = Class_Name, ClassAlias = Class_Alias
       ) %>%
       distinct()
 
@@ -267,7 +267,7 @@ nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
   )
 
   result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+    dplyr::mutate(Date = dttr2::dtt_date(Date))
 
   if (nrow(result) == 0) warning("no data available for query provided.")
   result

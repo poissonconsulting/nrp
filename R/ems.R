@@ -21,8 +21,8 @@ nrp_extract_ems <- function(data, db_path = getOption("nrp.db_path", file.choose
   check_ems_raw_data(data, exclusive = TRUE, order = TRUE)
 
   sites <- nrp_download_sites(db_path = conn) %>%
-    filter(!is.na(.data$EmsSiteNumber)) %>%
-    filter(!is.na(.data$EmsSiteName))
+    filter(!is.na(EmsSiteNumber)) %>%
+    filter(!is.na(EmsSiteName))
   sf::st_geometry(sites) <- NULL
 
   params <- nrp::ems_param_lookup
@@ -264,7 +264,7 @@ nrp_upload_ems_standard <- function(data, db_path = getOption("nrp.db_path", fil
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
       data %<>% setdiff(ems_4year) %>%
-        filter(.data$COLLECTION_START > last_date)
+        filter(COLLECTION_START > last_date)
 
       if (nrow(data) == 0) {
         err("The data you are attempting to upload is already in the database")
@@ -320,7 +320,7 @@ nrp_upload_ems_metals <- function(data, db_path = getOption("nrp.db_path", file.
       ems_4year <- readwritesqlite::rws_query(query = query, conn = conn)
 
       data %<>% setdiff(ems_4year) %>%
-        filter(.data$COLLECTION_START > last_date)
+        filter(COLLECTION_START > last_date)
 
       if (nrow(data) == 0) {
         err("The data you are attempting to upload is already in the database")

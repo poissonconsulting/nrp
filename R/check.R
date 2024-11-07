@@ -20,6 +20,7 @@ check_chr_datetime <- function(x) {
 
   datetime <- tryCatch(dttr2::dtt_date_time(x), error = function(e) e, warning = function(w) w)
 
+
   if (inherits(datetime, "error") || inherits(datetime, "warning")) {
     err("Invalid date-time for ", x_name, ". Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
   } else if (datetime > dttr2::dtt_date_time(Sys.Date())) {

@@ -43,9 +43,9 @@ nrp_read_mysid_file <- function(path, db_path = getOption(
   chk::check_key(data, key = c("Date", "Station", "Replicate"))
 
   data %<>%
-    mutate(Station = as.integer(str_extract(.data$Station, "\\d"))) %>%
+    mutate(Station = as.integer(str_extract(Station, "\\d"))) %>%
     clean_input_cols(lookup = nrp::mysid_input_cols) %>%
-    mutate(Station = paste0(system, .data$Station))
+    mutate(Station = paste0(system, Station))
 
   sites <- nrp_download_sites(db_path = db_path)
 
@@ -233,7 +233,7 @@ nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
   )
 
   result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
-    dplyr::mutate(Date = dttr2::dtt_date(.data$Date))
+    dplyr::mutate(Date = dttr2::dtt_date(Date))
 
   if (nrow(result) == 0) warning("no data available for query provided.")
 
