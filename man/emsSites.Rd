@@ -7,9 +7,9 @@
 \format{
 A tbl data frame:
 \describe{
-  \item{SiteID}{Site ID}
-  \item{EmsSite}{EMS database site name}
-  \item{SiteName}{Site name}
+\item{SiteID}{Site ID}
+\item{EmsSite}{EMS database site name}
+\item{SiteName}{Site name}
 }
 }
 \usage{

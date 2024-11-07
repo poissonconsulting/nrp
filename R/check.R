@@ -1,16 +1,16 @@
 check_chr_date <- function(x) {
- x_name <- chk::deparse_backtick_chk((substitute(x)))
- chk::chk_character(x, x_name = x_name)
- chk::chk_scalar(x, x_name = x_name)
+  x_name <- chk::deparse_backtick_chk((substitute(x)))
+  chk::chk_character(x, x_name = x_name)
+  chk::chk_scalar(x, x_name = x_name)
 
- date <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
+  date <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
 
- if(inherits(date, "error") || inherits(date, "warning")) {
-   err("Invalid date for ", x_name, ". Please use format: yyyy-mm-dd.")
- } else if(date > Sys.Date()) {
-   err(x_name, " is beyond current date.")
- }
- invisible(x)
+  if (inherits(date, "error") || inherits(date, "warning")) {
+    err("Invalid date for ", x_name, ". Please use format: yyyy-mm-dd.")
+  } else if (date > Sys.Date()) {
+    err(x_name, " is beyond current date.")
+  }
+  invisible(x)
 }
 
 check_chr_datetime <- function(x) {
@@ -20,9 +20,10 @@ check_chr_datetime <- function(x) {
 
   datetime <- tryCatch(dttr2::dtt_date_time(x), error = function(e) e, warning = function(w) w)
 
-  if(inherits(datetime, "error") || inherits(datetime, "warning")) {
+
+  if (inherits(datetime, "error") || inherits(datetime, "warning")) {
     err("Invalid date-time for ", x_name, ". Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
-  } else if(datetime > dttr2::dtt_date_time(Sys.Date())) {
+  } else if (datetime > dttr2::dtt_date_time(Sys.Date())) {
     err(x_name, " is beyond current date.")
   }
   invisible(x)
@@ -35,22 +36,23 @@ check_path <- function(path) {
 
 check_ext <- function(path, ext = "sqlite") {
   check_path(path)
-  if(!identical(path_ext(path), ext))
+  if (!identical(path_ext(path), ext)) {
     err("path '", path, "' extension must be '", ext, "',")
+  }
   path
 }
 
 check_file_exists <- function(path) {
   check_path(path)
-  if(!file_exists(path)) err("path '", path, "' must exist")
-  if(!is_file(path)) err("path '", path, "' must be a file")
+  if (!file_exists(path)) err("path '", path, "' must exist")
+  if (!is_file(path)) err("path '", path, "' must be a file")
   path
 }
 
 check_dir_exists <- function(path) {
   check_path(path)
-  if(!file_exists(path)) err("path '", path, "' must exist")
-  if(!is_dir(path)) err("path '", path, "' must be a directory")
+  if (!file_exists(path)) err("path '", path, "' must exist")
+  if (!is_dir(path)) err("path '", path, "' must be a directory")
   path
 }
 
@@ -75,16 +77,17 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Flag = 1,
       Pressure = units::as_units(c(NA, 1), "dbar"),
       Retain = TRUE,
-      File = as.character()),
+      File = as.character()
+    ),
     exclusive = exclusive, order = order
   )
 }
 
-check_ems_metals_data <- function(data, exclusive = FALSE, order = FALSE){
+check_ems_metals_data <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
     data,
     values = list(
-      SiteID = "character" ,
+      SiteID = "character",
       COLLECTION_START = Sys.time(),
       COLLECTION_END = Sys.time(),
       REQUISITION_ID = 1,
@@ -231,19 +234,22 @@ check_ems_metals_data <- function(data, exclusive = FALSE, order = FALSE){
       `Zinc Dissolved` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Zinc Dissolved` = units::as_units(c(NA, 1), "mg/l"),
       `Zinc Total` = units::as_units(c(NA, 1), "mg/l"),
-      `Limit Zinc Total` = units::as_units(c(NA, 1), "mg/l")),
-      key = c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
-                       "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"),
+      `Limit Zinc Total` = units::as_units(c(NA, 1), "mg/l")
+    ),
+    key = c(
+      "SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
+      "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"
+    ),
     exclusive = exclusive, order = order
   )
 }
 
 
-check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE){
+check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE) {
   check_data(
     data,
     values = list(
-      SiteID = "character" ,
+      SiteID = "character",
       COLLECTION_START = Sys.time(),
       COLLECTION_END = Sys.time(),
       REQUISITION_ID = 1,
@@ -282,14 +288,17 @@ check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE){
       `Silica Reactive Diss` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Silica Reactive Diss` = units::as_units(c(NA, 1), "mg/l"),
       `Turbidity` = units::as_units(c(NA, 1), "NTU"),
-      `Limit Turbidity` = units::as_units(c(NA, 1), "NTU")),
-      key = c("SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
-          "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"),
+      `Limit Turbidity` = units::as_units(c(NA, 1), "NTU")
+    ),
+    key = c(
+      "SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
+      "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"
+    ),
     exclusive = exclusive, order = order
   )
 }
 
-check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE){
+check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE) {
   chk_data(data)
   check_names(
     data,
@@ -317,7 +326,8 @@ check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE){
       "MDL_UNIT",
       "QA_INDEX_CODE",
       "UPPER_DEPTH",
-      "LOWER_DEPTH"),
+      "LOWER_DEPTH"
+    ),
     exclusive = exclusive, order = order
   )
   data
@@ -329,49 +339,59 @@ check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
     values = list(
       File = "character",
       Date = "character",
-      SiteID = "character"),
+      SiteID = "character"
+    ),
     key = c("File"),
     exclusive = exclusive, order = order
   )
 }
 
-check_mysid_raw_data <- function(data, exclusive = TRUE, order = TRUE){
+check_mysid_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
   chk_data(data)
-  data <- try(check_names(
-    data,
-    names = names(nrp::mysid_input_cols),
-    exclusive = exclusive, order = order),
-    silent = TRUE)
+  data <- try(
+    check_names(
+      data,
+      names = names(nrp::mysid_input_cols),
+      exclusive = exclusive, order = order
+    ),
+    silent = TRUE
+  )
 
-  if(inherits(data, "try-error")){
+  if (inherits(data, "try-error")) {
     err("Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
   }
   invisible(data)
 }
 
-check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE){
+check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
   chk_data(data)
-  data <- try(check_names(
-    data,
-    names = names(nrp::zoo_input_cols),
-    exclusive = exclusive, order = order),
-    silent = TRUE)
+  data <- try(
+    check_names(
+      data,
+      names = names(nrp::zoo_input_cols),
+      exclusive = exclusive, order = order
+    ),
+    silent = TRUE
+  )
 
-  if(inherits(data, "try-error")){
+  if (inherits(data, "try-error")) {
     err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order.")
   }
   invisible(data)
 }
 
-check_phyto_raw_data <- function(data, exclusive = TRUE, order = TRUE){
+check_phyto_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
   chk_data(data)
-  data <- try(check_names(
-    data,
-    names = names(nrp::phyto_input_cols),
-    exclusive = exclusive, order = order),
-    silent = TRUE)
+  data <- try(
+    check_names(
+      data,
+      names = names(nrp::phyto_input_cols),
+      exclusive = exclusive, order = order
+    ),
+    silent = TRUE
+  )
 
-  if(inherits(data, "try-error")){
+  if (inherits(data, "try-error")) {
     err("Columns in data do not match template for phytoplankton raw data. see `nrp::phyto_input_cols` for correct column names and order.")
   }
   invisible(data)
@@ -410,4 +430,3 @@ check_new_site <- function(data) {
     order = TRUE
   )
 }
-

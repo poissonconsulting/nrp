@@ -7,10 +7,10 @@
 \format{
 A tbl data frame:
 \describe{
-  \item{Taxa}{The species or sub-species}
-  \item{Genus}{The genus}
-  \item{ClassName}{The formal class name(s)}
-  \item{ClassAlias}{The informal class name(s)}
+\item{Taxa}{The species or sub-species}
+\item{Genus}{The genus}
+\item{ClassName}{The formal class name(s)}
+\item{ClassAlias}{The informal class name(s)}
 }
 }
 \usage{

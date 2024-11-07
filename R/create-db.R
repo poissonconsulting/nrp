@@ -10,18 +10,19 @@
 #' nrp_create_db("new_database.sqlite", TRUE)
 #' }
 nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
-
   chk_string(path)
   chk_flag(ask)
-  if(file_exists(path)) {
-    if(ask && !yesno("Really delete file '", path, "'?"))
+  if (file_exists(path)) {
+    if (ask && !yesno("Really delete file '", path, "'?")) {
       return(path)
+    }
     file_delete(path)
   }
   conn <- suppressWarnings(readwritesqlite::rws_open_connection(path))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE CTD  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE CTD  (
                                     FileID INTEGER NOT NULL,
                                     SiteID TEXT NOT NULL,
                                     Date TEXT NOT NULL,
@@ -40,20 +41,24 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     Pressure INTEGER,
                                     FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
                                     FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
-                                    PRIMARY KEY (SiteID, Date, Time, Depth))"))
+                                    PRIMARY KEY (SiteID, Date, Time, Depth))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE VisitCTD  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE VisitCTD  (
                                    SiteID TEXT NOT NULL,
                                    Date TEXT NOT NULL,
                                    Time TEXT NOT NULL,
                                    DepthDuplicates INTEGER NOT NULL,
                                    File TEXT NOT NULL,
                                    FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
-                                   PRIMARY KEY (SiteID, Date, Time))"))
+                                   PRIMARY KEY (SiteID, Date, Time))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE Sites  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE Sites  (
                                     SiteID TEXT NOT NULL,
                                     EmsSiteNumber REAL,
                                     SiteName TEXT,
@@ -62,24 +67,30 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     MaxDepth REAL,
                                     geometry BLOB,
                                     FOREIGN KEY (BasinArm) REFERENCES BasinArm (BasinArm),
-                                    PRIMARY KEY (SiteID))"))
+                                    PRIMARY KEY (SiteID))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE BasinArm  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE BasinArm  (
                                     Lake TEXT NOT NULL,
                                     BasinArm TEXT NOT NULL,
                                     FOREIGN KEY (Lake) REFERENCES Lake (Lake)
-                                    PRIMARY KEY (BasinArm))"))
+                                    PRIMARY KEY (BasinArm))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE Lake  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE Lake  (
                                    Lake TEXT NOT NULL,
                                    Area REAL NOT NULL,
                                    geometry BLOB NOT NULL,
-                                   PRIMARY KEY (Lake))"))
+                                   PRIMARY KEY (Lake))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE standardEMS  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE standardEMS  (
                                    SiteID TEXT NOT NULL,
                                    COLLECTION_START TEXT NOT NULL,
                                    COLLECTION_END TEXT NOT NULL,
@@ -121,10 +132,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    [Turbidity] REAL,
                                    [Limit Turbidity] REAL,
                                    PRIMARY KEY (SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
-                                   ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
+                                   ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE metalsEMS  (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE metalsEMS  (
                                    SiteID TEXT NOT NULL,
                                    COLLECTION_START TEXT NOT NULL,
                                    COLLECTION_END TEXT NOT NULL,
@@ -274,10 +287,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    [Zinc Total] REAL,
                                    [Limit Zinc Total] REAL,
                                    PRIMARY KEY (SiteID, COLLECTION_START, COLLECTION_END, REQUISITION_ID,
-                                   ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"))
+                                   ANALYZING_AGENCY, UPPER_DEPTH, LOWER_DEPTH, ReplicateID))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE MysidSample (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE MysidSample (
                                     Date TEXT NOT NULL,
                                     SiteID TEXT NOT NULL,
                                     Replicate INTEGER NOT NULL,
@@ -305,10 +320,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     Replicate <= 10
                                     ),
                                     FOREIGN KEY(SiteID) REFERENCES Sites (SiteID),
-                                    PRIMARY KEY (Date, SiteID, Replicate))"))
+                                    PRIMARY KEY (Date, SiteID, Replicate))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE Mysid (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE Mysid (
                                     Date TEXT NOT NULL,
                                     SiteID TEXT NOT NULL,
                                     Replicate INTEGER NOT NULL,
@@ -323,10 +340,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     ),
                                     FOREIGN KEY(SiteID) REFERENCES Sites (SiteID),
                                     FOREIGN KEY (Date, SiteID, Replicate) REFERENCES MysidSample (Date, SiteID, Replicate),
-                                    PRIMARY KEY (Date, SiteID, Replicate, Parameter))"))
+                                    PRIMARY KEY (Date, SiteID, Replicate, Parameter))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE ZooplanktonSample (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE ZooplanktonSample (
                                     Date TEXT NOT NULL,
                                     SiteID TEXT NOT NULL,
                                     Replicate INTEGER NOT NULL,
@@ -355,10 +374,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     Replicate <= 10
                                     ),
                                     FOREIGN KEY(SiteID) REFERENCES Sites (SiteID),
-                                    PRIMARY KEY (Date, SiteID, Replicate, FileName))"))
+                                    PRIMARY KEY (Date, SiteID, Replicate, FileName))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE Zooplankton (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE Zooplankton (
                                     Date TEXT NOT NULL,
                                     SiteID TEXT NOT NULL,
                                     Replicate INTEGER NOT NULL,
@@ -377,10 +398,12 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     ),
                                     FOREIGN KEY(SiteID) REFERENCES Sites (SiteID),
                                     FOREIGN KEY (Date, SiteID, Replicate, FileName) REFERENCES ZooplanktonSample (Date, SiteID, Replicate, FileName),
-                                    PRIMARY KEY (Date, SiteID, Replicate, FileName, Parameter))"))
+                                    PRIMARY KEY (Date, SiteID, Replicate, FileName, Parameter))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE PhytoplanktonSample (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE PhytoplanktonSample (
                                    Date TEXT NOT NULL,
                                    SiteID TEXT NOT NULL,
                                    Depth TEXT NOT NULL,
@@ -393,18 +416,22 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     )
                                    ),
                                    FOREIGN KEY(SiteID) REFERENCES Sites (SiteID)
-                                   PRIMARY KEY (Date, SiteID, Depth))"))
+                                   PRIMARY KEY (Date, SiteID, Depth))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE PhytoplanktonSpecies (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE PhytoplanktonSpecies (
                                    Taxa TEXT NOT NULL,
                                    Genus TEXT,
                                    ClassName TEXT NOT NULL,
                                    ClassAlias TEXT,
-                                   PRIMARY KEY (Taxa))"))
+                                   PRIMARY KEY (Taxa))"
+  ))
 
-  suppressWarnings(DBI::dbGetQuery(conn,
-                                   "CREATE TABLE Phytoplankton (
+  suppressWarnings(DBI::dbGetQuery(
+    conn,
+    "CREATE TABLE Phytoplankton (
                                    Date TEXT NOT NULL,
                                    SiteID TEXT NOT NULL,
                                    Depth TEXT NOT NULL,
@@ -424,7 +451,8 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                    ),
                                    FOREIGN KEY (Date, SiteID, Depth) REFERENCES PhytoplanktonSample(Date, SiteID, Depth),
                                    FOREIGN KEY (Taxa) REFERENCES PhytoplanktonSpecies (Taxa),
-                                   PRIMARY KEY (Date, SiteID, Depth, Taxa))"))
+                                   PRIMARY KEY (Date, SiteID, Depth, Taxa))"
+  ))
 
   lakes <- nrp::lakes %>%
     sf::st_make_valid()

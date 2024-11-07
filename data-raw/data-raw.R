@@ -29,13 +29,17 @@ emsSites %<>%
 ems_param_lookup <- read_excel("data-raw/Chem_parameter_lookup.xlsx")
 
 ems_param_lookup %<>%
-  mutate(PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total") &
-                              ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
-                            "Phosphorus Total metals", PARAMETER),
-         PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total Dissolved") &
-                              ANALYTICAL_METHOD %in% c("ICP"), "Phosphorus Total Dissolved metals", PARAMETER),
-         Comment = ifelse(Comment == "metals; note that this parameter name is the same as the standard analysis - needs re-naming",
-                          "metals", Comment))
+  mutate(
+    PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total") &
+      ANALYTICAL_METHOD == "Total Metals in Water by ICPMS (Ultra)",
+    "Phosphorus Total metals", PARAMETER
+    ),
+    PARAMETER = ifelse(PARAMETER %in% c("Phosphorus Total Dissolved") &
+      ANALYTICAL_METHOD %in% c("ICP"), "Phosphorus Total Dissolved metals", PARAMETER),
+    Comment = ifelse(Comment == "metals; note that this parameter name is the same as the standard analysis - needs re-naming",
+      "metals", Comment
+    )
+  )
 
 basinArm <- as_tibble(ctdSites) %>%
   select(SiteID, BasinArm)
@@ -59,7 +63,7 @@ ar_lookup <- read.csv("data-raw/AR-site-lookup.csv")
 site_date_lookup <- rbind(kl_lookup, ar_lookup)
 
 
-conn <- nrp_create_db(path  = ":memory:", ask = FALSE)
+conn <- nrp_create_db(path = ":memory:", ask = FALSE)
 
 # ems_standard <- nrp_extract_ems(data = ems, db_path = conn, analysis_type = "standard") %>%
 #   mutate(ReplicateID = as.numeric(1), LOWER_DEPTH = units::set_units(LOWER_DEPTH, "m"),
@@ -241,7 +245,7 @@ zoo_input_cols <- c(
   "FundingSource" = "character",
   "FieldCollection" = "character",
   "Analyst" = "character"
-  )
+)
 
 zoo_params <- c(
   "SexFecCode", "CopStageCode",
@@ -269,7 +273,7 @@ zoo_params <- c(
   "F5Scap", "F5Lepto", "F5Cerio", "F5Chyd", "F6Dash", "F6Dkenai",
   "F6Epi", "F6Cycl", "F6Daph", "F6Diaph", "F6Bosm", "F6Scap", "F6Lepto",
   "F6Cerio", "F6Chyd"
-  )
+)
 
 
 mysid_input_cols <- c(
@@ -322,7 +326,8 @@ mysid_input_cols <- c(
   "FundingSource" = "character",
   "FieldCollection" = "character",
   "Analyst" = "character",
-  "Comment" = "character")
+  "Comment" = "character"
+)
 
 mysid_params <- c(
   "DenTotal", "Djuv", "DimmM", "DmatM", "DbreedM", "DimmF", "DmatF",
@@ -331,7 +336,7 @@ mysid_params <- c(
   "VolDenTotal", "VolDjuv", "VolDimmM", "VolDmatM", "VolDbreedM",
   "VolDimmF", "VolDmatF", "VolDbroodF", "VolDspentF", "VolDdisBrF",
   "Eggs/BroodF", "Eggs/DistBrF", "Eggs/Total#Mysids", "PropFemGravid"
-  )
+)
 
 phyto_input_cols <- c(
   "Samp_Date" = "date",

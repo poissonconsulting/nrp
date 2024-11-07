@@ -88,7 +88,7 @@
 #' @format A character vector:
 #' \describe{
 #'   \item{FileName}{This column is added automatically when data is read in with `nrp_read_phyto_file`}
-#'}
+#' }
 "phyto_input_cols"
 
 #' A character vector of all parameters for the zooplankton data in the database
