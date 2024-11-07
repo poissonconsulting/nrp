@@ -56,11 +56,12 @@ library(nrp)
 
 # create empty database
 # path = ":memory:" creates a temporary, in memory database
-conn <- nrp_create_db(path = ":memory:") 
+conn <- nrp_create_db(path = ":memory:")
 
 # provide a path to a .cnv file
-path <-  system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-                       package = "nrp", mustWork = TRUE)
+path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+  package = "nrp", mustWork = TRUE
+)
 
 # read in file
 ctd_data <- nrp_read_ctd_file(path, db_path = conn)
@@ -69,11 +70,13 @@ ctd_data <- nrp_read_ctd_file(path, db_path = conn)
 nrp_upload_ctd(data = ctd_data, db_path = conn)
 
 # download data from database, filtering by Date and SiteID and parameter
-db_ctd_data <- nrp_download_ctd(start_date = "2018-08-27",
-                            end_date = "2018-08-27",
-                            sites = "KL1",
-                            parameters = "all",
-                            db_path = conn)
+db_ctd_data <- nrp_download_ctd(
+  start_date = "2018-08-27",
+  end_date = "2018-08-27",
+  sites = "KL1",
+  parameters = "all",
+  db_path = conn
+)
 ```
 
 When updating EMS data, the user must supply their own data set which can be easily obtained using a function from the `rems` package: `get_ems_data(which = "4yr")`.
@@ -81,7 +84,7 @@ The four year data set must be used as the two year data has different structure
 
 ```{r}
 # read in raw ems data
-path <-  system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
+path <- system.file("extdata", "ems/test_ems.rds", package = "nrp", mustWork = TRUE)
 ems_raw <- readRDS(path)
 
 # extract into wide fromat that fits the nrp database, chooing either the
@@ -91,14 +94,16 @@ ems_data <- nrp_extract_ems(data = ems_raw, db_path = conn, analysis_type = "sta
 # upload data to database
 nrp_upload_ems_standard(data = ems_data, db_path = conn)
 
-# download data from database, filtering by Date, SiteID, and analysis_type. 
+# download data from database, filtering by Date, SiteID, and analysis_type.
 # You can also choose to exlude detection limit columns
-db_ems_data_standard <- nrp_download_ems(start_date_time = "2018-07-03 13:48:00",
-                                     end_date_time = "2018-07-31 13:28:00",
-                                     sites = NULL,
-                                     db_path = conn,
-                                     analysis_type = "standard",
-                                     show_detection_limits = TRUE)
+db_ems_data_standard <- nrp_download_ems(
+  start_date_time = "2018-07-03 13:48:00",
+  end_date_time = "2018-07-31 13:28:00",
+  sites = NULL,
+  db_path = conn,
+  analysis_type = "standard",
+  show_detection_limits = TRUE
+)
 ```
 
 There are additional functions in the nrp package that allow for easy downloading of other tables in the database.
