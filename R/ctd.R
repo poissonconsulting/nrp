@@ -16,7 +16,6 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     on.exit(readwritesqlite::rws_disconnect(conn = db_path))
   }
 
-
   ctd <- try(read.ctd.sbe(path, type = "SBE19plus"), silent = TRUE) %>%
     suppressWarnings()
 
@@ -53,7 +52,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   } else {
     col_names <- c(
       "Depth", "Temperature", "Oxygen", "Oxygen2",
-      "Conductivity", "Conductivity2", "Salinity", "Backscatter",
+      "Specificconductance", "Conductivity", "Salinity", "Backscatter",
       "Fluorescence", "Flag"
     )
 
@@ -83,7 +82,8 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
 
   data %<>% select(
     "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
-    "Conductivity", "Conductivity2", "Salinity", "Backscatter", "Fluorescence",
+    "Conductivity" = "Specificconductance", "Conductivity2" = "Conductivity",
+    "Salinity", "Backscatter", "Fluorescence",
     "Frequency", "Flag", "Pressure", "Retain", "File"
   )
 

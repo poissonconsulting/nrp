@@ -42,7 +42,6 @@ test_that("nrp_read_ctd works", {
   expect_identical(length(data), 18L)
   expect_identical(nrow(data), 1413L)
 
-
   path <- system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
   data <- nrp_read_ctd(path, db_path = conn, recursive = TRUE)
 
