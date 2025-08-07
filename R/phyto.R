@@ -171,8 +171,8 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   phyto_sample <- select(
     data,
-    Date = .data$Samp_Date, SiteID = .data$SiteLoc_LocName,
-    Depth = .data$Samp_Depth, .data$FileName
+    Date = Samp_Date, SiteID = SiteLoc_LocName,
+    Depth = Samp_Depth, FileName
   ) %>%
     distinct()
 
@@ -184,11 +184,11 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   phyto_data <- select(
     data,
-    Date = .data$Samp_Date, SiteID = .data$SiteLoc_LocName,
-    Depth = .data$Samp_Depth, Taxa = .data$Species_Name,
-    CellCount = .data$Count_Number, Abundance = .data$`NCU/mL`,
-    SpeciesBvol = .data$Species_Bvol, Biovolume = .data$`Biovolume (mm3/L)`,
-    .data$Biomass
+    Date = Samp_Date, SiteID = SiteLoc_LocName,
+    Depth = Samp_Depth, Taxa = Species_Name,
+    CellCount = Count_Number, Abundance = `NCU/mL`,
+    SpeciesBvol = Species_Bvol, Biovolume = `Biovolume (mm3/L)`,
+    Biomass
   )
 
   readwritesqlite::rws_write(
