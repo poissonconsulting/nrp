@@ -9,7 +9,7 @@
 Imports CTD, EMS, Zooplankton, and Mysid data for the Kootenay Lake Nutrient Restoration Program (NRP) and provides functionality for uploading and downloading with an SQLite database.
 }
 \author{
-\strong{Maintainer}: Evan Amies-Galonski \email{evan@poissonconsulting.ca} (-3188)
+\strong{Maintainer}: Evan Amies-Galonski \email{evan@poissonconsulting.ca} (\href{https://orcid.org/0000-0003-1096-2089}{ORCID})
 
 Authors:
 \itemize{
