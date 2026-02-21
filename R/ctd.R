@@ -73,24 +73,27 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     message(paste(n_neg, "negative depths removed from data"))
   }
 
-  data %<>% mutate(
-    FileID = seq_len(nrow(data)),
-    File = basename(path)
-  )
+  data %<>%
+    mutate(FileID = seq_len(nrow(data)), File = basename(path))
 
-  data$Retain <- if_else(duplicated(data$Depth, fromLast = TRUE), FALSE, TRUE)
+  bottom <- data$FileID[data$Depth == max(data$Depth)]
+
+  data %<>%
+    mutate(Cast = if_else(FileID <= bottom, "down", "up")) %>%
+    group_by(Cast) %>%
+    mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE))
 
   data %<>% select(
     "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
     "Conductivity" = "Specificconductance", "Conductivity2" = "Conductivity",
     "Salinity", "Backscatter", "Fluorescence",
-    "Frequency", "Flag", "Pressure", "Retain", "File"
+    "Frequency", "Flag", "Pressure", "Cast", "Retain", "File"
   )
 
   default_units <- c(
     NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm",
     "mu * S/cm", "PSU",
-    "NTU", "ug/L", "Hz", NA, "dbar", NA, NA
+    "NTU", "ug/L", "Hz", NA, "dbar", NA, NA, NA
   )
   data %<>% map2_dfc(default_units, fill_units)
   units(data$Temperature) <- NULL
