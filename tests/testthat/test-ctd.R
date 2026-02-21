@@ -30,6 +30,20 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
   expect_identical(nrow(data), 1943L)
 })
 
+test_that("nrp_read_ctd_file delineates up and down casts", {
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+  path <- system.file("extdata", "ctd/2025/KL6_02Sep2025001downcast&upcast.cnv", package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_ctd_file(path, db_path = conn)
+
+  expect_is(data, "tbl_df")
+  check_ctd_data(data, exclusive = TRUE, order = TRUE)
+  expect_identical(length(data), 19L)
+  expect_identical(nrow(data), 4271L)
+  expect_identical(sum(data$Cast == "up"), 2373L)
+})
+
 test_that("nrp_read_ctd works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
