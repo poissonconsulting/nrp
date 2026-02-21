@@ -26,7 +26,7 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 1943L)
 })
 
@@ -39,7 +39,7 @@ test_that("nrp_read_ctd works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 1413L)
 
   path <- system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
@@ -47,7 +47,7 @@ test_that("nrp_read_ctd works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 3549L)
 
   path <- system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
