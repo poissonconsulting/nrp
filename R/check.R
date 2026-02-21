@@ -76,6 +76,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Frequency = units::as_units(c(NA, 1), "Hz"),
       Flag = 1,
       Pressure = units::as_units(c(NA, 1), "dbar"),
+      Cast = c("up", "down"),
       Retain = TRUE,
       File = as.character()
     ),
