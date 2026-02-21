@@ -65,12 +65,12 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
   }
 
-  n_pre_filt <- nrow(data)
+  n <- nrow(data)
   data <- data[as.numeric(data$Depth) >= 0, ]
-  n_dups <- n_pre_filt - nrow(data)
+  n_neg <- n - nrow(data)
 
-  if (n_dups > 0) {
-    message(paste(n_dups, "negative depths removed from data"))
+  if (n_neg > 0) {
+    message(paste(n_neg, "negative depths removed from data"))
   }
 
   data %<>% mutate(
