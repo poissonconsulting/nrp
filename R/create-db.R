@@ -28,6 +28,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     Date TEXT NOT NULL,
                                     Time TEXT NOT NULL,
                                     Depth REAL NOT NULL,
+                                    'Cast' TEXT NOT NULL,
                                     Temperature REAL,
                                     Oxygen REAL,
                                     Oxygen2 REAL,
@@ -41,7 +42,7 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
                                     Pressure INTEGER,
                                     FOREIGN KEY (SiteID, Date, Time) REFERENCES VisitCTD (SiteID, Date, Time),
                                     FOREIGN KEY (SiteID) REFERENCES Sites (SiteID),
-                                    PRIMARY KEY (SiteID, Date, Time, Depth))"
+                                    PRIMARY KEY (SiteID, Date, Time, Depth, 'Cast'))"
   ))
 
   suppressWarnings(DBI::dbGetQuery(
