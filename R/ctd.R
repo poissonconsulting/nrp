@@ -84,16 +84,16 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE))
 
   data %<>% select(
-    "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
+    "FileID", "SiteID", "DateTime", "Depth", "Cast", "Temperature", "Oxygen", "Oxygen2",
     "Conductivity" = "Specificconductance", "Conductivity2" = "Conductivity",
     "Salinity", "Backscatter", "Fluorescence",
-    "Frequency", "Flag", "Pressure", "Cast", "Retain", "File"
+    "Frequency", "Flag", "Pressure", "Retain", "File"
   )
 
   default_units <- c(
-    NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm",
+    NA, NA, NA, "m", NA, "degC", "mg/l", "percent", "uS/cm",
     "mu * S/cm", "PSU",
-    "NTU", "ug/L", "Hz", NA, "dbar", NA, NA, NA
+    "NTU", "ug/L", "Hz", NA, "dbar", NA, NA
   )
   data %<>% map2_dfc(default_units, fill_units)
   units(data$Temperature) <- NULL
