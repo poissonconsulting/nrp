@@ -321,7 +321,7 @@ nrp_download_ctd <- function(start_date = NULL, end_date = NULL,
   }
 
   default_parameters <- c(
-    "Depth", "Temperature", "Oxygen", "Oxygen2",
+    "Depth", "Cast", "Temperature", "Oxygen", "Oxygen2",
     "Conductivity", "Conductivity2",
     "Salinity", "Backscatter", "Fluorescence",
     "Frequency", "Flag", "Pressure"
