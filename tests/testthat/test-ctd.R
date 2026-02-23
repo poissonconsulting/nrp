@@ -119,40 +119,37 @@ test_that("nrp_add_sites works", {
   expect_equal(nrow(old_sites) + 1, nrow(updated_sites))
 })
 
-warning("more semantic errors present, test more! ")
-#
-# test_that("nrp_upload_ctd works", {
-#   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-#   path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-#     package = "nrp", mustWork = TRUE
-#   )
-#   data <- nrp_read_ctd_file(path = path, db_path = conn)
-#
-#   nrp_upload_ctd(data = data, db_path = conn)
-#   db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
-#   readwritesqlite::rws_disconnect(conn = conn)
-#
-#   expect_identical(length(db_data), 16L)
-#   expect_identical(nrow(db_data), 1282L)
-#
-#   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-#
-#   expect_error(
-#     nrp_upload_ctd(data = data, db_path = "wrong_path.sqlite"),
-#     "path 'wrong_path.sqlite' must exist"
-#   )
-#   readwritesqlite::rws_disconnect(conn = conn)
-#
-#   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-#   teardown(DBI::dbDisconnect(conn))
-#
-#   wrong_file <- path
-#   expect_error(
-#     nrp_upload_ctd(data = data, db_path = wrong_file),
-#     "File provided is not an SQLite database"
-#   )
-# })
+test_that("nrp_upload_ctd works", {
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+    package = "nrp", mustWork = TRUE
+  )
+  data <- nrp_read_ctd_file(path = path, db_path = conn)
 
+  nrp_upload_ctd(data = data, db_path = conn)
+  db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
+  readwritesqlite::rws_disconnect(conn = conn)
+
+  expect_identical(length(db_data), 17L)
+  expect_identical(nrow(db_data), 1282L)
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+
+  expect_error(
+    nrp_upload_ctd(data = data, db_path = "wrong_path.sqlite"),
+    "path 'wrong_path.sqlite' must exist"
+  )
+  readwritesqlite::rws_disconnect(conn = conn)
+
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+
+  wrong_file <- path
+  expect_error(
+    nrp_upload_ctd(data = data, db_path = wrong_file),
+    "File provided is not an SQLite database"
+  )
+})
 
 test_that("nrp_upload_ctd(replace = TRUE) works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -192,7 +189,7 @@ test_that("nrp_download_ctd works", {
   )
 
   expect_is(data, "tbl_df")
-  expect_identical(length(db_data), 16L)
+  expect_identical(length(db_data), 17L)
   expect_identical(nrow(db_data), 3076L)
 })
 
