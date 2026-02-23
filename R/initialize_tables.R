@@ -8,6 +8,7 @@ initialize_ctd <- function() {
     Date = as.Date(character()),
     Time = dttr2::dtt_time(character()),
     Depth = units::set_units(numeric(), "m"),
+    Cast = character(),
     Temperature = units::set_units(numeric(), "degC"),
     Oxygen = units::set_units(numeric(), "mg/l"),
     Oxygen2 = units::set_units(numeric(), "percent"),
@@ -18,7 +19,7 @@ initialize_ctd <- function() {
     Fluorescence = units::set_units(numeric(), "ug/L"),
     Frequency = units::set_units(numeric(), "Hz"),
     Flag = numeric(),
-    Pressure = units::set_units(numeric(), "dbar")
+    Pressure = units::set_units(numeric(), "dbar"),
   )
 }
 

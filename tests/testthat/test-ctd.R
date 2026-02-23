@@ -26,8 +26,22 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 1943L)
+})
+
+test_that("nrp_read_ctd_file delineates up and down casts", {
+  conn <- nrp_create_db(path = ":memory:", ask = FALSE)
+  teardown(DBI::dbDisconnect(conn))
+  path <- system.file("extdata", "ctd/2025/KL6_02Sep2025001downcast&upcast.cnv", package = "nrp", mustWork = TRUE)
+
+  data <- nrp_read_ctd_file(path, db_path = conn)
+
+  expect_is(data, "tbl_df")
+  check_ctd_data(data, exclusive = TRUE, order = TRUE)
+  expect_identical(length(data), 19L)
+  expect_identical(nrow(data), 4271L)
+  expect_identical(sum(data$Cast == "up"), 2373L)
 })
 
 test_that("nrp_read_ctd works", {
@@ -39,7 +53,7 @@ test_that("nrp_read_ctd works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 1413L)
 
   path <- system.file("extdata", "ctd/2018", package = "nrp", mustWork = TRUE)
@@ -47,7 +61,7 @@ test_that("nrp_read_ctd works", {
 
   expect_is(data, "tbl_df")
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
-  expect_identical(length(data), 18L)
+  expect_identical(length(data), 19L)
   expect_identical(nrow(data), 3549L)
 
   path <- system.file("extdata", "ctd", package = "nrp", mustWork = TRUE)
@@ -116,7 +130,7 @@ test_that("nrp_upload_ctd works", {
   db_data <- readwritesqlite::rws_read_table("CTD", conn = conn)
   readwritesqlite::rws_disconnect(conn = conn)
 
-  expect_identical(length(db_data), 16L)
+  expect_identical(length(db_data), 17L)
   expect_identical(nrow(db_data), 1282L)
 
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -136,7 +150,6 @@ test_that("nrp_upload_ctd works", {
     "File provided is not an SQLite database"
   )
 })
-
 
 test_that("nrp_upload_ctd(replace = TRUE) works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
@@ -176,7 +189,7 @@ test_that("nrp_download_ctd works", {
   )
 
   expect_is(data, "tbl_df")
-  expect_identical(length(db_data), 16L)
+  expect_identical(length(db_data), 17L)
   expect_identical(nrow(db_data), 3076L)
 })
 

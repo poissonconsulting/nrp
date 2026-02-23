@@ -65,30 +65,33 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
     data$SiteID <- lookup$SiteID[lookup$File == basename(path)]
   }
 
-  n_pre_filt <- nrow(data)
+  n <- nrow(data)
   data <- data[as.numeric(data$Depth) >= 0, ]
-  n_dups <- n_pre_filt - nrow(data)
+  n_neg <- n - nrow(data)
 
-  if (n_dups > 0) {
-    message(paste(n_dups, "negative depths removed from data"))
+  if (n_neg > 0) {
+    message(paste(n_neg, "negative depths removed from data"))
   }
 
-  data %<>% mutate(
-    FileID = seq_len(nrow(data)),
-    File = basename(path)
-  )
+  data %<>%
+    mutate(FileID = seq_len(nrow(data)), File = basename(path))
 
-  data$Retain <- if_else(duplicated(data$Depth, fromLast = TRUE), FALSE, TRUE)
+  bottom <- data$FileID[data$Depth == max(data$Depth)]
+
+  data %<>%
+    mutate(Cast = if_else(FileID <= bottom, "down", "up")) %>%
+    group_by(Cast) %>%
+    mutate(Retain = if_else(duplicated(Depth, fromLast = TRUE), FALSE, TRUE))
 
   data %<>% select(
-    "FileID", "SiteID", "DateTime", "Depth", "Temperature", "Oxygen", "Oxygen2",
+    "FileID", "SiteID", "DateTime", "Depth", "Cast", "Temperature", "Oxygen", "Oxygen2",
     "Conductivity" = "Specificconductance", "Conductivity2" = "Conductivity",
     "Salinity", "Backscatter", "Fluorescence",
     "Frequency", "Flag", "Pressure", "Retain", "File"
   )
 
   default_units <- c(
-    NA, NA, NA, "m", "degC", "mg/l", "percent", "uS/cm",
+    NA, NA, NA, "m", NA, "degC", "mg/l", "percent", "uS/cm",
     "mu * S/cm", "PSU",
     "NTU", "ug/L", "Hz", NA, "dbar", NA, NA
   )
@@ -318,7 +321,7 @@ nrp_download_ctd <- function(start_date = NULL, end_date = NULL,
   }
 
   default_parameters <- c(
-    "Depth", "Temperature", "Oxygen", "Oxygen2",
+    "Depth", "Cast", "Temperature", "Oxygen", "Oxygen2",
     "Conductivity", "Conductivity2",
     "Salinity", "Backscatter", "Fluorescence",
     "Frequency", "Flag", "Pressure"

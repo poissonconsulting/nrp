@@ -65,6 +65,7 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Date = as.Date("2018-01-01"),
       Time = dttr2::dtt_time(c(NA_real_, "00:00:00")),
       Depth = units::as_units(c(NA, 1), "m"),
+      Cast = c("up", "down"),
       Temperature = units::as_units(c(NA, 1), "degC"),
       Oxygen = units::as_units(c(NA, 1), "mg/l"),
       Oxygen2 = units::as_units(c(NA, 1), "percent"),
