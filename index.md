@@ -1,0 +1,140 @@
+# nrp
+
+`nrp` is an R package developed for the Nutrient Restoration Program
+(NRP). It currently provides the following functionality for CTD and EMS
+data:
+
+**Read in raw data files**  
+The package checks the validity of input data and does some cleaning and
+manipulation to make the data more informative and useful to the user.
+
+For CTD data, the date and parameter units are extracted from the file
+meta data. The SiteID is pulled from the raw data filename, and
+validated by cross referencing it to known sites in the database.
+
+**Upload data to the NRP SQLite database**  
+When uploading new data to the database, the package checks to ensure
+that no duplicate data is present, and numerous checks are performed to
+ensure that the data’s structure is correct and compatible with the
+database.
+
+**Download CTD data**  
+Data can then be downloaded from the database with optional filtering by
+SiteID, date range, etc.
+
+## Installation
+
+To install the latest version from
+[GitHub](https://github.com/poissonconsulting/nrp)
+
+``` R
+# install.packages("remotes")
+remotes::install_github("poissonconsulting/nrp")
+```
+
+## Demonstration
+
+For simplicity, this demonstration uses the function `nrp_create_db` to
+create an empty, temporary database to read and write to, and uses some
+test data that travels with the package. When connecting to a proper
+database, just provide the file path to the database for the argument
+`db_path` in all function calls and the connection will be made
+automatically. Alternatively you can connect to a database in R and then
+supply that connection object for the argument `db_path`.
+
+``` R
+library(nrp)
+
+# create empty database
+# path = ":memory:" creates a temporary, in memory database
+conn <- nrp_create_db(path = ":memory:")
+
+# provide a path to a .cnv file
+path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+  package = "nrp", mustWork = TRUE
+)
+
+# read in file
+ctd_data <- nrp_read_ctd_file(path, db_path = conn)
+#> 32 negative depths removed from data
+
+# upload data to the database
+nrp_upload_ctd(data = ctd_data, db_path = conn)
+#> 131 duplicate depths removed from data
+
+# download data from database, filtering by Date and SiteID and parameter
+db_ctd_data <- nrp_download_ctd(
+  start_date = "2018-08-27",
+  end_date = "2018-08-27",
+  sites = "KL1",
+  parameters = "all",
+  db_path = conn
+)
+```
+
+There are additional functions in the nrp package that allow for easy
+downloading of other tables in the database.
+
+``` R
+# Lakes and BasinArm tables
+lakes <- nrp_download_lakes(db_path = conn)
+basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
+
+# site table
+sites <- nrp_download_sites(db_path = conn)
+
+# ctd visit table
+ctd_visit <- nrp_download_ctd_visit(db_path = conn)
+
+# Tip: the nrp functions can also use global options to automatically know
+# what database to connect to. Once you've set the global option "nrp.db_path"
+# for the database you want to connect to, you don't have to provide
+# the db_path argument any more within that R session
+
+options(nrp.db_path = conn) # "conn" can also be a file path to a database
+
+# now we can do things like:
+lakes <- nrp_download_lakes()
+
+
+# we conclude the demo by closing the database connection
+# If you are providing a file path to the database, you do not need to do this
+readwritesqlite::rws_disconnect(conn)
+```
+
+## Getting Help or Reporting an Issue
+
+To report bugs/issues/feature requests, please file an
+[issue](https://github.com/poissonconsulting/nrp/issues/).
+
+## How to Contribute
+
+If you would like to contribute to the package, please see our
+[CONTRIBUTING](https://poissonconsulting.github.io/nrp/CONTRIBUTING.md)
+guidelines.
+
+## Code of Conduct
+
+Please note that the nrp project is released with a [Contributor Code of
+Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
+
+## License
+
+The code is released under the Apache License 2.0
+
+``` R
+Copyright 2019 Province of British Columbia
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at 
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
