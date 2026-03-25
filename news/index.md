@@ -1,5 +1,10 @@
 # Changelog
 
+## nrp 0.2.1 (2026-03-24)
+
+- Fix edge case in delineation of up/down casts with multiple max
+  depths.
+
 ## nrp 0.2.0 (2026-02-22)
 
 - Accommodate cast direction in CTD data

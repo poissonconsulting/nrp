@@ -15,11 +15,11 @@
 ## Citation
 
 Amies-Galonski E, Thorley J (2026). *nrp: Kootenay Lake Nutrient
-Restoration Program Data Loading*. R package version 0.2.0.
+Restoration Program Data Loading*. R package version 0.2.1.
 
     @Manual{,
       title = {nrp: Kootenay Lake Nutrient Restoration Program Data Loading},
       author = {Evan Amies-Galonski and Joe Thorley},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.2.1},
     }
