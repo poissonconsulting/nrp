@@ -76,7 +76,7 @@ nrp_read_ctd_file <- function(path, db_path = getOption("nrp.db_path", file.choo
   data %<>%
     mutate(FileID = seq_len(nrow(data)), File = basename(path))
 
-  bottom <- data$FileID[data$Depth == max(data$Depth)]
+  bottom <- max(data$FileID[data$Depth == max(data$Depth)])
 
   data %<>%
     mutate(Cast = if_else(FileID <= bottom, "down", "up")) %>%
