@@ -4,7 +4,10 @@
 #' @param db_path The SQLite connection object or path to the SQLite database
 #' @export
 #'
-nrp_add_phyto_species <- function(data, db_path = getOption("nrp.db_path", file.choose())) {
+nrp_add_phyto_species <- function(
+  data,
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   conn <- db_path
   if (!inherits(conn, "SQLiteConnection")) {
     conn <- connect_if_valid_path(path = conn)
@@ -14,8 +17,12 @@ nrp_add_phyto_species <- function(data, db_path = getOption("nrp.db_path", file.
   check_new_phyto_species(data)
 
   readwritesqlite::rws_write(
-    x = data, commit = TRUE, strict = TRUE, silent = TRUE,
-    x_name = "PhytoplanktonSpecies", conn = conn
+    x = data,
+    commit = TRUE,
+    strict = TRUE,
+    silent = TRUE,
+    x_name = "PhytoplanktonSpecies",
+    conn = conn
   )
 }
 
@@ -24,7 +31,9 @@ nrp_add_phyto_species <- function(data, db_path = getOption("nrp.db_path", file.
 #' @return The phytoplankton species table
 #' @export
 #'
-nrp_download_phyto_species <- function(db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_phyto_species <- function(
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   conn <- db_path
 
   if (!inherits(conn, "SQLiteConnection")) {
@@ -41,10 +50,13 @@ nrp_download_phyto_species <- function(db_path = getOption("nrp.db_path", file.c
 #' @return A tibble
 #' @export
 #'
-nrp_read_phyto_file <- function(path, db_path = getOption(
-                                  "nrp.db_path",
-                                  file.choose()
-                                )) {
+nrp_read_phyto_file <- function(
+  path,
+  db_path = getOption(
+    "nrp.db_path",
+    file.choose()
+  )
+) {
   check_file_exists(path)
 
   if (!inherits(db_path, "SQLiteConnection")) {
@@ -58,29 +70,49 @@ nrp_read_phyto_file <- function(path, db_path = getOption(
     err("Please ensure input data is a valid excel spreadsheet (.xlsx).")
   }
 
-  data %<>% filter(!all_na(data)) %>%
+  data %<>%
+    filter(!all_na(data)) %>%
     mutate(FileName = basename(path)) %>%
     clean_input_cols(lookup = nrp::phyto_input_cols) %>%
     transmute(
-      Samp_Date = Samp_Date, Site_Name,
+      Samp_Date = Samp_Date,
+      Site_Name,
       SiteLoc_LocName = str_replace(SiteLoc_LocName, "-", ""),
       Samp_Depth = str_replace(tolower(Samp_Depth), "m", ""),
-      Class_Name, Class_Alias,
+      Class_Name,
+      Class_Alias,
       Species_Name = str_replace_all(Species_Name, "\\.", ""),
-      Count_Number, `NCU/mL`, Species_Bvol,
-      `Biovolume (mm3/L)`, Biomass, Edibility, FileName
+      Count_Number,
+      `NCU/mL`,
+      Species_Bvol,
+      `Biovolume (mm3/L)`,
+      Biomass,
+      Edibility,
+      FileName
     )
 
   sites <- nrp_download_sites(db_path = db_path)
   if (!all(unique(data$SiteLoc_LocName) %in% sites$SiteID)) {
-    unknown <- unique(data$SiteLoc_LocName)[!unique(data$SiteLoc_LocName) %in% sites$SiteID]
-    warning("Sites in input data not present in 'Sites' table in database: ", paste_vec(unknown), ".")
+    unknown <- unique(data$SiteLoc_LocName)[
+      !unique(data$SiteLoc_LocName) %in% sites$SiteID
+    ]
+    warning(
+      "Sites in input data not present in 'Sites' table in database: ",
+      paste_vec(unknown),
+      "."
+    )
   }
 
   species <- nrp_download_phyto_species(db_path = db_path)
   if (!all(unique(data$Species_Name) %in% species$Taxa)) {
-    unknown <- unique(data$Species_Name)[!unique(data$Species_Name) %in% species$Taxa]
-    warning("Taxa in input data not present in 'PhytoplanktonSpecies' table in database: ", paste_vec(unknown), ".")
+    unknown <- unique(data$Species_Name)[
+      !unique(data$Species_Name) %in% species$Taxa
+    ]
+    warning(
+      "Taxa in input data not present in 'PhytoplanktonSpecies' table in database: ",
+      paste_vec(unknown),
+      "."
+    )
   }
 
   data
@@ -94,22 +126,33 @@ nrp_read_phyto_file <- function(path, db_path = getOption(
 #' @return A tibble.
 #' @export
 #'
-nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
-                           recursive = FALSE, regexp = "[.]xlsx$", fail = TRUE) {
+nrp_read_phyto <- function(
+  path = ".",
+  db_path = getOption("nrp.db_path", file.choose()),
+  recursive = FALSE,
+  regexp = "[.]xlsx$",
+  fail = TRUE
+) {
   check_dir_exists(path)
   chk::chk_chr(regexp)
   chk::chk_flag(recursive)
   chk::chk_flag(fail)
 
-  paths <- dir_ls(path,
-    type = "file", recurse = recursive, regexp = regexp,
+  paths <- dir_ls(
+    path,
+    type = "file",
+    recurse = recursive,
+    regexp = regexp,
     fail = fail
   )
   if (!length(paths)) {
     return(named_list())
   }
 
-  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_phyto_file(., db_path = db_path))))
+  datas <- suppressWarnings(do.call(
+    "rbind",
+    map(paths, ~ nrp_read_phyto_file(., db_path = db_path))
+  ))
   rownames(datas) <- NULL
 
   datas
@@ -122,9 +165,14 @@ nrp_read_phyto <- function(path = ".", db_path = getOption("nrp.db_path", file.c
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choose()),
-                             commit = TRUE, strict = TRUE, silent = TRUE,
-                             replace = FALSE) {
+nrp_upload_phyto <- function(
+  data,
+  db_path = getOption("nrp.db_path", file.choose()),
+  commit = TRUE,
+  strict = TRUE,
+  silent = TRUE,
+  replace = FALSE
+) {
   chk::chk_flag(replace)
   chk::chk_flag(commit)
   chk::chk_flag(strict)
@@ -137,9 +185,15 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
   }
 
   check_phyto_raw_data(data, exclusive = FALSE, order = FALSE)
-  chk::check_key(data, key = c("Samp_Date", "SiteLoc_LocName", "Samp_Depth", "Species_Name"))
+  chk::check_key(
+    data,
+    key = c("Samp_Date", "SiteLoc_LocName", "Samp_Depth", "Species_Name")
+  )
 
-  species <- readwritesqlite::rws_read_table("PhytoplanktonSpecies", conn = conn)
+  species <- readwritesqlite::rws_read_table(
+    "PhytoplanktonSpecies",
+    conn = conn
+  )
 
   data$Species_Name[1] <- "New"
 
@@ -152,17 +206,23 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 
     spp_add <- ask_user(msg)
 
-    if (!spp_add) err("Upload aborted.")
+    if (!spp_add) {
+      err("Upload aborted.")
+    }
 
     new_species <- data %>%
       filter(!Species_Name %in% species$Taxa)
 
-    if (!"Genus" %in% names(new_species)) new_species$Genus <- NA_character_
+    if (!"Genus" %in% names(new_species)) {
+      new_species$Genus <- NA_character_
+    }
 
     new_species %<>%
       transmute(
-        Taxa = Species_Name, Genus,
-        ClassName = Class_Name, ClassAlias = Class_Alias
+        Taxa = Species_Name,
+        Genus,
+        ClassName = Class_Name,
+        ClassAlias = Class_Alias
       ) %>%
       distinct()
 
@@ -171,30 +231,44 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   phyto_sample <- select(
     data,
-    Date = Samp_Date, SiteID = SiteLoc_LocName,
-    Depth = Samp_Depth, FileName
+    Date = Samp_Date,
+    SiteID = SiteLoc_LocName,
+    Depth = Samp_Depth,
+    FileName
   ) %>%
     distinct()
 
   readwritesqlite::rws_write(
-    x = phyto_sample, commit = commit,
-    strict = strict, silent = silent,
-    x_name = "PhytoplanktonSample", conn = conn, replace = replace
+    x = phyto_sample,
+    commit = commit,
+    strict = strict,
+    silent = silent,
+    x_name = "PhytoplanktonSample",
+    conn = conn,
+    replace = replace
   )
 
   phyto_data <- select(
     data,
-    Date = Samp_Date, SiteID = SiteLoc_LocName,
-    Depth = Samp_Depth, Taxa = Species_Name,
-    CellCount = Count_Number, Abundance = `NCU/mL`,
-    SpeciesBvol = Species_Bvol, Biovolume = `Biovolume (mm3/L)`,
+    Date = Samp_Date,
+    SiteID = SiteLoc_LocName,
+    Depth = Samp_Depth,
+    Taxa = Species_Name,
+    CellCount = Count_Number,
+    Abundance = `NCU/mL`,
+    SpeciesBvol = Species_Bvol,
+    Biovolume = `Biovolume (mm3/L)`,
     Biomass
   )
 
   readwritesqlite::rws_write(
-    x = phyto_data, commit = commit, strict = strict,
+    x = phyto_data,
+    commit = commit,
+    strict = strict,
     silent = silent,
-    x_name = "Phytoplankton", conn = conn, replace = replace
+    x_name = "Phytoplankton",
+    conn = conn,
+    replace = replace
   )
 }
 
@@ -210,9 +284,13 @@ nrp_upload_phyto <- function(data, db_path = getOption("nrp.db_path", file.choos
 #' @return Phytoplankton data table
 #' @export
 #'
-nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
-                               sites = NULL, species = "all",
-                               db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_phyto <- function(
+  start_date = NULL,
+  end_date = NULL,
+  sites = NULL,
+  species = "all",
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   chk::chk_null_or(sites, chk = chk::chk_character)
   chk::chk_character(species)
   chk::chk_null_or(start_date, chk = check_chr_date)
@@ -233,7 +311,10 @@ nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
     err(paste("1 or more invalid site names"))
   }
 
-  species_db <- readwritesqlite::rws_read_table("PhytoplanktonSpecies", conn = conn)
+  species_db <- readwritesqlite::rws_read_table(
+    "PhytoplanktonSpecies",
+    conn = conn
+  )
 
   if (identical(species, "all")) {
     species <- species_db$Taxa
@@ -243,7 +324,10 @@ nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
   }
 
   dates <- fill_date_query(
-    table = "Phytoplankton", col = "Date", end = end_date, start = start_date,
+    table = "Phytoplankton",
+    col = "Date",
+    end = end_date,
+    start = start_date,
     connection = conn
   )
 
@@ -262,13 +346,26 @@ nrp_download_phyto <- function(start_date = NULL, end_date = NULL,
   end_dateSql <- paste0("'", end_date, "'")
 
   query <- paste0(
-    "SELECT * FROM Phytoplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
-    end_dateSql, ") AND (`SiteID` IN (", sitesSql, ")) AND (`Taxa` IN (", speciesSql, ")))"
+    "SELECT * FROM Phytoplankton WHERE ((`Date` >= ",
+    start_dateSql,
+    ") AND (`Date` <= ",
+    end_dateSql,
+    ") AND (`SiteID` IN (",
+    sitesSql,
+    ")) AND (`Taxa` IN (",
+    speciesSql,
+    ")))"
   )
 
-  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+  result <- readwritesqlite::rws_query(
+    query = query,
+    conn = conn,
+    meta = TRUE
+  ) %>%
     dplyr::mutate(Date = dttr2::dtt_date(Date))
 
-  if (nrow(result) == 0) warning("no data available for query provided.")
+  if (nrow(result) == 0) {
+    warning("no data available for query provided.")
+  }
   result
 }

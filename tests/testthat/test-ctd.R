@@ -2,14 +2,24 @@ test_that("nrp_read_ctd_file works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv", package = "nrp", mustWork = TRUE)
+  path <- system.file(
+    "extdata",
+    "ctd/2018/KL1_27Aug2018008downcast.cnv",
+    package = "nrp",
+    mustWork = TRUE
+  )
   data <- nrp_read_ctd_file(path, db_path = conn)
 
   check_ctd_data(data, exclusive = TRUE, order = TRUE)
   expect_is(data, "tbl_df")
   expect_identical(nrow(data), 1413L)
 
-  path <- system.file("extdata", "bad ctd/2018/KL_badly_named_file.cnv", package = "nrp", mustWork = TRUE)
+  path <- system.file(
+    "extdata",
+    "bad ctd/2018/KL_badly_named_file.cnv",
+    package = "nrp",
+    mustWork = TRUE
+  )
 
   expect_error(
     data <- nrp_read_ctd_file(path, db_path = conn),
@@ -20,7 +30,12 @@ test_that("nrp_read_ctd_file works", {
 test_that("nrp_read_ctd_file w/ read.table alternative works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
-  path <- system.file("extdata", "bad ctd/2018/AR6_Apr_26_2011.cnv", package = "nrp", mustWork = TRUE)
+  path <- system.file(
+    "extdata",
+    "bad ctd/2018/AR6_Apr_26_2011.cnv",
+    package = "nrp",
+    mustWork = TRUE
+  )
 
   data <- nrp_read_ctd_file(path, db_path = conn)
 
@@ -33,7 +48,12 @@ test_that("nrp_read_ctd_file w/ read.table alternative works", {
 test_that("nrp_read_ctd_file delineates up and down casts", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
-  path <- system.file("extdata", "ctd/2025/KL6_02Sep2025001downcast&upcast.cnv", package = "nrp", mustWork = TRUE)
+  path <- system.file(
+    "extdata",
+    "ctd/2025/KL6_02Sep2025001downcast&upcast.cnv",
+    package = "nrp",
+    mustWork = TRUE
+  )
 
   data <- nrp_read_ctd_file(path, db_path = conn)
 
@@ -101,8 +121,13 @@ test_that("nrp_download_ctd_basin_arm works", {
 
 test_that("nrp_add_sites works", {
   new_data <- tibble(
-    SiteID = "NewID", EmsSiteNumber = "NewNumber", SiteName = "New Site Name",
-    EmsSiteName = "name ems", BasinArm = "Upper", MaxDepth = 100, Easting = -75.32016,
+    SiteID = "NewID",
+    EmsSiteNumber = "NewNumber",
+    SiteName = "New Site Name",
+    EmsSiteName = "name ems",
+    BasinArm = "Upper",
+    MaxDepth = 100,
+    Easting = -75.32016,
     Northing = 2.932139
   )
 
@@ -121,8 +146,11 @@ test_that("nrp_add_sites works", {
 
 test_that("nrp_upload_ctd works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-  path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "ctd/2018/KL1_27Aug2018008downcast.cnv",
+    package = "nrp",
+    mustWork = TRUE
   )
   data <- nrp_read_ctd_file(path = path, db_path = conn)
 
@@ -153,8 +181,11 @@ test_that("nrp_upload_ctd works", {
 
 test_that("nrp_upload_ctd(replace = TRUE) works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
-  path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "ctd/2018/KL1_27Aug2018008downcast.cnv",
+    package = "nrp",
+    mustWork = TRUE
   )
   data <- nrp_read_ctd_file(path = path, db_path = conn)
   data %<>% mutate(Flag = 1)
@@ -185,7 +216,8 @@ test_that("nrp_download_ctd works", {
   db_data <- nrp_download_ctd(
     start_date = "2018-08-26",
     end_date = "2018-08-28",
-    sites = NULL, db_path = conn
+    sites = NULL,
+    db_path = conn
   )
 
   expect_is(data, "tbl_df")

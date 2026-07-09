@@ -23,11 +23,19 @@ test_that("nrp_read_plytoplankton_file works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "phyto/phyto1.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "phyto/phyto1.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
-  wrong_path <- system.file("extdata", "ar-empty.rtf", package = "nrp", mustWork = TRUE)
+  wrong_path <- system.file(
+    "extdata",
+    "ar-empty.rtf",
+    package = "nrp",
+    mustWork = TRUE
+  )
 
   data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
     suppressWarnings()
@@ -46,8 +54,11 @@ test_that("nrp_read_plytoplankton_file works", {
     "Please ensure input data is a valid excel spreadsheet \\(.xlsx\\)."
   )
 
-  path2 <- system.file("extdata", "phyto/bad/phyto2.xlsx",
-    package = "nrp", mustWork = TRUE
+  path2 <- system.file(
+    "extdata",
+    "phyto/bad/phyto2.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   expect_warning(
@@ -55,8 +66,11 @@ test_that("nrp_read_plytoplankton_file works", {
     "Sites in input data not present in 'Sites' table in database: 'AR12'."
   )
 
-  path3 <- system.file("extdata", "phyto/bad/phyto3.xlsx",
-    package = "nrp", mustWork = TRUE
+  path3 <- system.file(
+    "extdata",
+    "phyto/bad/phyto3.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   expect_warning(
@@ -70,8 +84,10 @@ test_that("nrp_read_phyto works", {
   teardown(DBI::dbDisconnect(conn))
 
   path <- system.file(
-    "extdata", "phyto",
-    package = "nrp", mustWork = TRUE
+    "extdata",
+    "phyto",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_phyto(path, db_path = conn)
@@ -81,8 +97,11 @@ test_that("nrp_read_phyto works", {
   expect_identical(nrow(data), 5L)
 
   path <- system.file(
-    "extdata", "phyto", "multiple",
-    package = "nrp", mustWork = TRUE
+    "extdata",
+    "phyto",
+    "multiple",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_phyto(path, db_path = conn, recursive = TRUE)
@@ -92,7 +111,8 @@ test_that("nrp_read_phyto works", {
   expect_identical(nrow(data), 15L)
 
   expect_error(
-    nrp_read_phyto("not-a-path", db_path = conn), "path 'not-a-path' must exist"
+    nrp_read_phyto("not-a-path", db_path = conn),
+    "path 'not-a-path' must exist"
   )
 
   path <- system.file("extdata", package = "nrp", mustWork = TRUE)
@@ -104,8 +124,11 @@ test_that("nrp_upload_phyto works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "phyto/phyto1.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "phyto/phyto1.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
@@ -160,8 +183,11 @@ test_that("nrp_download_phyto works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "phyto/phyto1.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "phyto/phyto1.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_phyto_file(path = path, db_path = conn) %>%
@@ -177,7 +203,11 @@ test_that("nrp_download_phyto works", {
   expect_identical(length(db_data), 9L)
   expect_identical(nrow(db_data), 5L)
 
-  db_data <- nrp_download_phyto(start_date = "2022-01-01", end_date = "2022-01-03", db_path = conn)
+  db_data <- nrp_download_phyto(
+    start_date = "2022-01-01",
+    end_date = "2022-01-03",
+    db_path = conn
+  )
   expect_identical(nrow(db_data), 2L)
   expect_identical(db_data$Date, dttr2::dtt_date(c("2022-01-02", "2022-01-03")))
 
@@ -185,7 +215,10 @@ test_that("nrp_download_phyto works", {
   expect_identical(nrow(db_data), 1L)
   expect_identical(db_data$SiteID, "KL1")
 
-  db_data <- nrp_download_phyto(species = "Gymnodinium sp (medium)", db_path = conn)
+  db_data <- nrp_download_phyto(
+    species = "Gymnodinium sp (medium)",
+    db_path = conn
+  )
   expect_identical(nrow(db_data), 1L)
   expect_identical(db_data$Taxa, "Gymnodinium sp (medium)")
 
@@ -205,7 +238,11 @@ test_that("nrp_download_phyto works", {
   )
 
   expect_error(
-    nrp_download_phyto(start_date = "2022-01-03", end_date = "2022-01-02", db_path = conn),
+    nrp_download_phyto(
+      start_date = "2022-01-03",
+      end_date = "2022-01-02",
+      db_path = conn
+    ),
     "start date is later than end date"
   )
 })

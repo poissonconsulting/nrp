@@ -3,7 +3,11 @@ check_chr_date <- function(x) {
   chk::chk_character(x, x_name = x_name)
   chk::chk_scalar(x, x_name = x_name)
 
-  date <- tryCatch(dttr2::dtt_date(x), error = function(e) e, warning = function(w) w)
+  date <- tryCatch(
+    dttr2::dtt_date(x),
+    error = function(e) e,
+    warning = function(w) w
+  )
 
   if (inherits(date, "error") || inherits(date, "warning")) {
     err("Invalid date for ", x_name, ". Please use format: yyyy-mm-dd.")
@@ -18,11 +22,18 @@ check_chr_datetime <- function(x) {
   chk::chk_character(x, x_name = x_name)
   chk::chk_scalar(x, x_name = x_name)
 
-  datetime <- tryCatch(dttr2::dtt_date_time(x), error = function(e) e, warning = function(w) w)
-
+  datetime <- tryCatch(
+    dttr2::dtt_date_time(x),
+    error = function(e) e,
+    warning = function(w) w
+  )
 
   if (inherits(datetime, "error") || inherits(datetime, "warning")) {
-    err("Invalid date-time for ", x_name, ". Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time.")
+    err(
+      "Invalid date-time for ",
+      x_name,
+      ". Please use format: yyyy-mm-dd hh:mm:ss with 24 hour time."
+    )
   } else if (datetime > dttr2::dtt_date_time(Sys.Date())) {
     err(x_name, " is beyond current date.")
   }
@@ -44,15 +55,23 @@ check_ext <- function(path, ext = "sqlite") {
 
 check_file_exists <- function(path) {
   check_path(path)
-  if (!file_exists(path)) err("path '", path, "' must exist")
-  if (!is_file(path)) err("path '", path, "' must be a file")
+  if (!file_exists(path)) {
+    err("path '", path, "' must exist")
+  }
+  if (!is_file(path)) {
+    err("path '", path, "' must be a file")
+  }
   path
 }
 
 check_dir_exists <- function(path) {
   check_path(path)
-  if (!file_exists(path)) err("path '", path, "' must exist")
-  if (!is_dir(path)) err("path '", path, "' must be a directory")
+  if (!file_exists(path)) {
+    err("path '", path, "' must exist")
+  }
+  if (!is_dir(path)) {
+    err("path '", path, "' must be a directory")
+  }
   path
 }
 
@@ -80,7 +99,8 @@ check_ctd_data <- function(data, exclusive = FALSE, order = FALSE) {
       Retain = TRUE,
       File = as.character()
     ),
-    exclusive = exclusive, order = order
+    exclusive = exclusive,
+    order = order
   )
 }
 
@@ -181,7 +201,10 @@ check_ems_metals_data <- function(data, exclusive = FALSE, order = FALSE) {
       `Nickel Total` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Nickel Total` = units::as_units(c(NA, 1), "mg/l"),
       `Phosphorus Total Dissolved metals` = units::as_units(c(NA, 1), "mg/l"),
-      `Limit Phosphorus Total Dissolved metals` = units::as_units(c(NA, 1), "mg/l"),
+      `Limit Phosphorus Total Dissolved metals` = units::as_units(
+        c(NA, 1),
+        "mg/l"
+      ),
       `Phosphorus Total metals` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Phosphorus Total metals` = units::as_units(c(NA, 1), "mg/l"),
       `Potassium Dissolved` = units::as_units(c(NA, 1), "mg/l"),
@@ -238,10 +261,17 @@ check_ems_metals_data <- function(data, exclusive = FALSE, order = FALSE) {
       `Limit Zinc Total` = units::as_units(c(NA, 1), "mg/l")
     ),
     key = c(
-      "SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
-      "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"
+      "SiteID",
+      "COLLECTION_START",
+      "COLLECTION_END",
+      "REQUISITION_ID",
+      "ANALYZING_AGENCY",
+      "UPPER_DEPTH",
+      "LOWER_DEPTH",
+      "ReplicateID"
     ),
-    exclusive = exclusive, order = order
+    exclusive = exclusive,
+    order = order
   )
 }
 
@@ -270,10 +300,19 @@ check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE) {
       `Limit Chlorophyll A` = units::as_units(c(NA, 1), "mg/l"),
       `Nitrate (NO3) Dissolved` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Nitrate (NO3) Dissolved` = units::as_units(c(NA, 1), "mg/l"),
-      `Nitrate(NO3) + Nitrite(NO2) Dissolved` = units::as_units(c(NA, 1), "mg/l"),
-      `Limit Nitrate(NO3) + Nitrite(NO2) Dissolved` = units::as_units(c(NA, 1), "mg/l"),
+      `Nitrate(NO3) + Nitrite(NO2) Dissolved` = units::as_units(
+        c(NA, 1),
+        "mg/l"
+      ),
+      `Limit Nitrate(NO3) + Nitrite(NO2) Dissolved` = units::as_units(
+        c(NA, 1),
+        "mg/l"
+      ),
       `Nitrogen - Nitrite Dissolved (NO2)` = units::as_units(c(NA, 1), "mg/l"),
-      `Limit Nitrogen - Nitrite Dissolved (NO2)` = units::as_units(c(NA, 1), "mg/l"),
+      `Limit Nitrogen - Nitrite Dissolved (NO2)` = units::as_units(
+        c(NA, 1),
+        "mg/l"
+      ),
       `Nitrogen Ammonia Total` = units::as_units(c(NA, 1), "mg/l"),
       `Limit Nitrogen Ammonia Total` = units::as_units(c(NA, 1), "mg/l"),
       `Nitrogen Total` = units::as_units(c(NA, 1), "mg/l"),
@@ -292,10 +331,17 @@ check_ems_standard_data <- function(data, exclusive = FALSE, order = FALSE) {
       `Limit Turbidity` = units::as_units(c(NA, 1), "NTU")
     ),
     key = c(
-      "SiteID", "COLLECTION_START", "COLLECTION_END", "REQUISITION_ID",
-      "ANALYZING_AGENCY", "UPPER_DEPTH", "LOWER_DEPTH", "ReplicateID"
+      "SiteID",
+      "COLLECTION_START",
+      "COLLECTION_END",
+      "REQUISITION_ID",
+      "ANALYZING_AGENCY",
+      "UPPER_DEPTH",
+      "LOWER_DEPTH",
+      "ReplicateID"
     ),
-    exclusive = exclusive, order = order
+    exclusive = exclusive,
+    order = order
   )
 }
 
@@ -329,7 +375,8 @@ check_ems_raw_data <- function(data, exclusive = FALSE, order = FALSE) {
       "UPPER_DEPTH",
       "LOWER_DEPTH"
     ),
-    exclusive = exclusive, order = order
+    exclusive = exclusive,
+    order = order
   )
   data
 }
@@ -343,7 +390,8 @@ check_site_date_lookup <- function(data, exclusive = FALSE, order = FALSE) {
       SiteID = "character"
     ),
     key = c("File"),
-    exclusive = exclusive, order = order
+    exclusive = exclusive,
+    order = order
   )
 }
 
@@ -353,13 +401,16 @@ check_mysid_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
     check_names(
       data,
       names = names(nrp::mysid_input_cols),
-      exclusive = exclusive, order = order
+      exclusive = exclusive,
+      order = order
     ),
     silent = TRUE
   )
 
   if (inherits(data, "try-error")) {
-    err("Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order.")
+    err(
+      "Columns in data do not match template for mysid raw data. see `nrp::mysid_input_cols` for correct column names and order."
+    )
   }
   invisible(data)
 }
@@ -370,13 +421,16 @@ check_zoo_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
     check_names(
       data,
       names = names(nrp::zoo_input_cols),
-      exclusive = exclusive, order = order
+      exclusive = exclusive,
+      order = order
     ),
     silent = TRUE
   )
 
   if (inherits(data, "try-error")) {
-    err("Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order.")
+    err(
+      "Columns in data do not match template for zooplankton raw data. see `nrp::zoo_input_cols` for correct column names and order."
+    )
   }
   invisible(data)
 }
@@ -387,13 +441,16 @@ check_phyto_raw_data <- function(data, exclusive = TRUE, order = TRUE) {
     check_names(
       data,
       names = names(nrp::phyto_input_cols),
-      exclusive = exclusive, order = order
+      exclusive = exclusive,
+      order = order
     ),
     silent = TRUE
   )
 
   if (inherits(data, "try-error")) {
-    err("Columns in data do not match template for phytoplankton raw data. see `nrp::phyto_input_cols` for correct column names and order.")
+    err(
+      "Columns in data do not match template for phytoplankton raw data. see `nrp::phyto_input_cols` for correct column names and order."
+    )
   }
   invisible(data)
 }

@@ -2,11 +2,19 @@ test_that("nrp_read_zooplankton_file works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "zooplankton/Arzp20.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "zooplankton/Arzp20.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
-  wrong_path <- system.file("extdata", "ar-empty.rtf", package = "nrp", mustWork = TRUE)
+  wrong_path <- system.file(
+    "extdata",
+    "ar-empty.rtf",
+    package = "nrp",
+    mustWork = TRUE
+  )
 
   data <- nrp_read_zooplankton_file(path = path, db_path = conn) %>%
     suppressWarnings()
@@ -30,8 +38,11 @@ test_that("nrp_read_zooplankton works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "zooplankton",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "zooplankton",
+    package = "nrp",
+    mustWork = TRUE
   )
   data <- nrp_read_zooplankton(path, db_path = conn)
 
@@ -44,9 +55,7 @@ test_that("nrp_read_zooplankton works", {
     "path 'not-a-path' must exist"
   )
 
-  path <- system.file("extdata",
-    package = "nrp", mustWork = TRUE
-  )
+  path <- system.file("extdata", package = "nrp", mustWork = TRUE)
   data <- nrp_read_zooplankton(path, db_path = conn)
   expect_identical(data, list(x = 1)[-1])
 })
@@ -55,8 +64,11 @@ test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "zooplankton/Arzp20.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "zooplankton/Arzp20.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_zooplankton_file(path = path, db_path = conn) %>%
@@ -84,7 +96,8 @@ test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
   )
   db_data <- nrp_download_zooplankton(
     start_date = "2020-04-01",
-    end_date = "2020-04-25", db_path = conn
+    end_date = "2020-04-25",
+    db_path = conn
   )
 
   expect_identical(length(db_data), 150L)
@@ -104,7 +117,8 @@ test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
   expect_error(
     nrp_download_zooplankton(
       start_date = "2020-04-01",
-      end_date = "2020-04-25", db_path = conn,
+      end_date = "2020-04-25",
+      db_path = conn,
       sites = "wrong"
     ),
     "1 or more invalid site names"
@@ -113,7 +127,8 @@ test_that("nrp_upload_zooplankton and nrp_download_zoo_sample works", {
   expect_error(
     nrp_download_zooplankton(
       start_date = "2020-04-01",
-      end_date = "2020-04-25", db_path = conn,
+      end_date = "2020-04-25",
+      db_path = conn,
       parameters = "wrong"
     ),
     "1 or more invalid parameter names"
