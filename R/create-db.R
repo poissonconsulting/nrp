@@ -461,43 +461,103 @@ nrp_create_db <- function(path, ask = getOption("nrp.ask", TRUE)) {
   readwritesqlite::rws_write(lakes, exists = TRUE, conn = conn, x_name = "Lake")
 
   basinArm <- nrp::basinArm
-  readwritesqlite::rws_write(basinArm, exists = TRUE, conn = conn, x_name = "BasinArm")
+  readwritesqlite::rws_write(
+    basinArm,
+    exists = TRUE,
+    conn = conn,
+    x_name = "BasinArm"
+  )
 
   ctdSites <- nrp::ctdSites
-  readwritesqlite::rws_write(ctdSites, exists = TRUE, conn = conn, x_name = "Sites")
+  readwritesqlite::rws_write(
+    ctdSites,
+    exists = TRUE,
+    conn = conn,
+    x_name = "Sites"
+  )
 
   visitCTD <- initialize_ctd_visit()
-  readwritesqlite::rws_write(visitCTD, exists = TRUE, conn = conn, x_name = "visitCTD")
+  readwritesqlite::rws_write(
+    visitCTD,
+    exists = TRUE,
+    conn = conn,
+    x_name = "visitCTD"
+  )
 
   ctd <- initialize_ctd()
   readwritesqlite::rws_write(ctd, exists = TRUE, conn = conn, x_name = "CTD")
 
   ems_metals <- nrp::ems_metals_init
-  readwritesqlite::rws_write(ems_metals, exists = TRUE, conn = conn, x_name = "metalsEMS")
+  readwritesqlite::rws_write(
+    ems_metals,
+    exists = TRUE,
+    conn = conn,
+    x_name = "metalsEMS"
+  )
 
   ems_standard <- nrp::ems_standard_init
-  readwritesqlite::rws_write(ems_standard, exists = TRUE, conn = conn, x_name = "standardEMS")
+  readwritesqlite::rws_write(
+    ems_standard,
+    exists = TRUE,
+    conn = conn,
+    x_name = "standardEMS"
+  )
 
   mysid_sample_init <- initialize_mysid_sample()
-  readwritesqlite::rws_write(mysid_sample_init, exists = TRUE, conn = conn, x_name = "MysidSample")
+  readwritesqlite::rws_write(
+    mysid_sample_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "MysidSample"
+  )
 
   mysid_init <- initialize_mysid()
-  readwritesqlite::rws_write(mysid_init, exists = TRUE, conn = conn, x_name = "Mysid")
+  readwritesqlite::rws_write(
+    mysid_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "Mysid"
+  )
 
   zoo_sample_init <- initialize_zoo_sample()
-  readwritesqlite::rws_write(zoo_sample_init, exists = TRUE, conn = conn, x_name = "ZooplanktonSample")
+  readwritesqlite::rws_write(
+    zoo_sample_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "ZooplanktonSample"
+  )
 
   zoo_init <- initialize_zoo()
-  readwritesqlite::rws_write(zoo_init, exists = TRUE, conn = conn, x_name = "Zooplankton")
+  readwritesqlite::rws_write(
+    zoo_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "Zooplankton"
+  )
 
   phyto_species <- nrp::phyto_species
-  readwritesqlite::rws_write(phyto_species, exists = TRUE, conn = conn, x_name = "PhytoplanktonSpecies")
+  readwritesqlite::rws_write(
+    phyto_species,
+    exists = TRUE,
+    conn = conn,
+    x_name = "PhytoplanktonSpecies"
+  )
 
   phyto_sample_init <- initialize_phyto_sample()
-  readwritesqlite::rws_write(phyto_sample_init, exists = TRUE, conn = conn, x_name = "PhytoplanktonSample")
+  readwritesqlite::rws_write(
+    phyto_sample_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "PhytoplanktonSample"
+  )
 
   phyto_init <- initialize_phyto()
-  readwritesqlite::rws_write(phyto_init, exists = TRUE, conn = conn, x_name = "Phytoplankton")
+  readwritesqlite::rws_write(
+    phyto_init,
+    exists = TRUE,
+    conn = conn,
+    x_name = "Phytoplankton"
+  )
 
   conn
 }

@@ -2,12 +2,18 @@ test_that("nrp_read_mysid_file works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "mysid/KLFmys20.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "mysid/KLFmys20.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
-  wrong_path <- system.file("extdata", "ar-empty.rtf",
-    package = "nrp", mustWork = TRUE
+  wrong_path <- system.file(
+    "extdata",
+    "ar-empty.rtf",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_mysid_file(path = path, db_path = conn) %>%
@@ -32,9 +38,7 @@ test_that("nrp_read_mysid works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "mysid",
-    package = "nrp", mustWork = TRUE
-  )
+  path <- system.file("extdata", "mysid", package = "nrp", mustWork = TRUE)
   data <- nrp_read_mysid(path, db_path = conn)
 
   expect_is(data, "tbl_df")
@@ -46,9 +50,7 @@ test_that("nrp_read_mysid works", {
     "path 'not-a-path' must exist"
   )
 
-  path <- system.file("extdata",
-    package = "nrp", mustWork = TRUE
-  )
+  path <- system.file("extdata", package = "nrp", mustWork = TRUE)
   data <- nrp_read_mysid(path, db_path = conn)
   expect_identical(data, list(x = 1)[-1])
 })
@@ -57,8 +59,11 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
   conn <- nrp_create_db(path = ":memory:", ask = FALSE)
   teardown(DBI::dbDisconnect(conn))
 
-  path <- system.file("extdata", "mysid/KLFmys20.xlsx",
-    package = "nrp", mustWork = TRUE
+  path <- system.file(
+    "extdata",
+    "mysid/KLFmys20.xlsx",
+    package = "nrp",
+    mustWork = TRUE
   )
 
   data <- nrp_read_mysid_file(path = path, db_path = conn) %>%
@@ -87,7 +92,8 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
 
   db_data <- nrp_download_mysid(
     start_date = "2020-04-01",
-    end_date = "2020-04-25", db_path = conn
+    end_date = "2020-04-25",
+    db_path = conn
   )
 
   expect_identical(length(db_data), 37L)
@@ -96,7 +102,8 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
   expect_error(
     nrp_download_mysid(
       start_date = "2020-04-01",
-      end_date = "2020-04-25", db_path = conn,
+      end_date = "2020-04-25",
+      db_path = conn,
       sites = "wrong"
     ),
     "1 or more invalid site names"
@@ -105,7 +112,8 @@ test_that("nrp_upload_mysid and nrp_download_mysid_visit works", {
   expect_error(
     nrp_download_mysid(
       start_date = "2020-04-01",
-      end_date = "2020-04-25", db_path = conn,
+      end_date = "2020-04-25",
+      db_path = conn,
       parameters = "wrong"
     ),
     "1 or more invalid parameter names"

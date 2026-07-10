@@ -5,9 +5,20 @@ test_that("nrp-create-db works", {
   readwritesqlite::rws_list_tables(conn)
 
   tables <- c(
-    "BasinArm", "CTD", "Lake", "metalsEMS", "Mysid", "MysidSample",
-    "Phytoplankton", "PhytoplanktonSample", "PhytoplanktonSpecies",
-    "Sites", "standardEMS", "VisitCTD", "Zooplankton", "ZooplanktonSample"
+    "BasinArm",
+    "CTD",
+    "Lake",
+    "metalsEMS",
+    "Mysid",
+    "MysidSample",
+    "Phytoplankton",
+    "PhytoplanktonSample",
+    "PhytoplanktonSpecies",
+    "Sites",
+    "standardEMS",
+    "VisitCTD",
+    "Zooplankton",
+    "ZooplanktonSample"
   )
 
   expect_identical(sort(readwritesqlite::rws_list_tables(conn)), sort(tables))

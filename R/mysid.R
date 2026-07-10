@@ -6,10 +6,14 @@
 #' @return A tibble
 #' @export
 #'
-nrp_read_mysid_file <- function(path, db_path = getOption(
-                                  "nrp.db_path",
-                                  file.choose()
-                                ), system = NULL) {
+nrp_read_mysid_file <- function(
+  path,
+  db_path = getOption(
+    "nrp.db_path",
+    file.choose()
+  ),
+  system = NULL
+) {
   check_file_exists(path)
   chk::chk_null_or(system, chk = chk::chk_chr)
 
@@ -19,11 +23,15 @@ nrp_read_mysid_file <- function(path, db_path = getOption(
     } else if (str_detect(tolower(basename(path)), "^kl")) {
       system <- "KL"
     } else {
-      err("'system' cannot be detected from file name. Please set system argument to 'arrow' or 'kootenay'.")
+      err(
+        "'system' cannot be detected from file name. Please set system argument to 'arrow' or 'kootenay'."
+      )
     }
   } else {
     system <- tolower(system)
-    if (!system %in% c("arrow", "kootenay")) err("'system' must be one of 'arrow', 'kootenay'.")
+    if (!system %in% c("arrow", "kootenay")) {
+      err("'system' must be one of 'arrow', 'kootenay'.")
+    }
     system <- ifelse(system == "arrow", "AR", "KL")
   }
 
@@ -49,7 +57,11 @@ nrp_read_mysid_file <- function(path, db_path = getOption(
 
   sites <- nrp_download_sites(db_path = db_path)
 
-  if (!all(unique(data$Station) %in% sites$SiteID)) warning("Sites present in input data that are not found in 'Sites' table in database.")
+  if (!all(unique(data$Station) %in% sites$SiteID)) {
+    warning(
+      "Sites present in input data that are not found in 'Sites' table in database."
+    )
+  }
 
   data
 }
@@ -63,24 +75,35 @@ nrp_read_mysid_file <- function(path, db_path = getOption(
 #' @return A tibble.
 #' @export
 #'
-nrp_read_mysid <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
-                           recursive = FALSE, system = NULL, regexp = "[.]xlsx$",
-                           fail = TRUE) {
+nrp_read_mysid <- function(
+  path = ".",
+  db_path = getOption("nrp.db_path", file.choose()),
+  recursive = FALSE,
+  system = NULL,
+  regexp = "[.]xlsx$",
+  fail = TRUE
+) {
   check_dir_exists(path)
   chk::chk_null_or(system, chk = chk::chk_character)
   chk::chk_chr(regexp)
   chk::chk_flag(recursive)
   chk::chk_flag(fail)
 
-  paths <- dir_ls(path,
-    type = "file", recurse = recursive, regexp = regexp,
+  paths <- dir_ls(
+    path,
+    type = "file",
+    recurse = recursive,
+    regexp = regexp,
     fail = fail
   )
   if (!length(paths)) {
     return(named_list())
   }
 
-  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_mysid_file(., db_path = db_path, system = system))))
+  datas <- suppressWarnings(do.call(
+    "rbind",
+    map(paths, ~ nrp_read_mysid_file(., db_path = db_path, system = system))
+  ))
   rownames(datas) <- NULL
 
   datas
@@ -93,9 +116,14 @@ nrp_read_mysid <- function(path = ".", db_path = getOption("nrp.db_path", file.c
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choose()),
-                             commit = TRUE, strict = TRUE, silent = TRUE,
-                             replace = FALSE) {
+nrp_upload_mysid <- function(
+  data,
+  db_path = getOption("nrp.db_path", file.choose()),
+  commit = TRUE,
+  strict = TRUE,
+  silent = TRUE,
+  replace = FALSE
+) {
   chk::chk_flag(replace)
   chk::chk_flag(commit)
   chk::chk_flag(strict)
@@ -109,44 +137,100 @@ nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choos
 
   check_mysid_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  data %<>% mutate(
-    Date = dttr2::dtt_date(Date),
-    Depth = units::as_units(Depth, "m"),
-    DepthCat = factor(DepthCat, levels = c("Shallow", "Deep"))
+  data %<>%
+    mutate(
+      Date = dttr2::dtt_date(Date),
+      Depth = units::as_units(Depth, "m"),
+      DepthCat = factor(DepthCat, levels = c("Shallow", "Deep"))
+    )
+
+  mysid_sample <- select(
+    data,
+    c(
+      Date,
+      SiteID = Station,
+      Replicate,
+      FileName,
+      MonthCat,
+      Time,
+      Depth,
+      DepthCat,
+      SideLake,
+      SplMade = `#splitsMade`,
+      SplCount = `#splitsCounted`,
+      FundingSource,
+      FieldCollection,
+      Analyst,
+      Comment
+    )
   )
 
-  mysid_sample <- select(data, c(Date,
-    SiteID = Station, Replicate, FileName,
-    MonthCat, Time, Depth, DepthCat,
-    SideLake, SplMade = `#splitsMade`,
-    SplCount = `#splitsCounted`, FundingSource,
-    FieldCollection, Analyst, Comment
-  ))
-
   readwritesqlite::rws_write(
-    x = mysid_sample, commit = commit,
-    strict = strict, silent = silent,
-    x_name = "MysidSample", conn = conn, replace = replace
-  )
-
-  mysid_data <- select(data, c(Date,
-    SiteID = Station, Replicate, DenTotal,
-    Djuv, DimmM, DmatM, DbreedM,
-    DimmF, DmatF, DbroodF, DspentF,
-    DdistBrF, BiomTotal, Bjuv, BimmM,
-    BmatM, BbreedM, BimmF, BmatF,
-    BbroodF, BspentF, BdistBrF, VolDenTotal,
-    VolDjuv, VolDimmM, VolDmatM, VolDbreedM,
-    VolDimmF, VolDmatF, VolDbroodF, VolDspentF,
-    VolDdisBrF, `Eggs/BroodF`, `Eggs/DistBrF`,
-    `Eggs/Total#Mysids`, PropFemGravid
-  )) %>%
-    tidyr::pivot_longer(cols = -c(Date, SiteID, Replicate), names_to = "Parameter", values_to = "Value")
-
-  readwritesqlite::rws_write(
-    x = mysid_data, commit = commit, strict = strict,
+    x = mysid_sample,
+    commit = commit,
+    strict = strict,
     silent = silent,
-    x_name = "Mysid", conn = conn, replace = replace
+    x_name = "MysidSample",
+    conn = conn,
+    replace = replace
+  )
+
+  mysid_data <- select(
+    data,
+    c(
+      Date,
+      SiteID = Station,
+      Replicate,
+      DenTotal,
+      Djuv,
+      DimmM,
+      DmatM,
+      DbreedM,
+      DimmF,
+      DmatF,
+      DbroodF,
+      DspentF,
+      DdistBrF,
+      BiomTotal,
+      Bjuv,
+      BimmM,
+      BmatM,
+      BbreedM,
+      BimmF,
+      BmatF,
+      BbroodF,
+      BspentF,
+      BdistBrF,
+      VolDenTotal,
+      VolDjuv,
+      VolDimmM,
+      VolDmatM,
+      VolDbreedM,
+      VolDimmF,
+      VolDmatF,
+      VolDbroodF,
+      VolDspentF,
+      VolDdisBrF,
+      `Eggs/BroodF`,
+      `Eggs/DistBrF`,
+      `Eggs/Total#Mysids`,
+      PropFemGravid
+    )
+  ) %>%
+    tidyr::pivot_longer(
+      cols = -c(Date, SiteID, Replicate),
+      names_to = "Parameter",
+      values_to = "Value"
+    )
+
+  readwritesqlite::rws_write(
+    x = mysid_data,
+    commit = commit,
+    strict = strict,
+    silent = silent,
+    x_name = "Mysid",
+    conn = conn,
+    replace = replace
   )
 }
 
@@ -155,7 +239,9 @@ nrp_upload_mysid <- function(data, db_path = getOption("nrp.db_path", file.choos
 #' @return Mysid sample table
 #' @export
 #'
-nrp_download_mysid_sample <- function(db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_mysid_sample <- function(
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   conn <- db_path
 
   if (!inherits(conn, "SQLiteConnection")) {
@@ -177,9 +263,13 @@ nrp_download_mysid_sample <- function(db_path = getOption("nrp.db_path", file.ch
 #' @return CTD data table
 #' @export
 #'
-nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
-                               sites = NULL, parameters = "all",
-                               db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_mysid <- function(
+  start_date = NULL,
+  end_date = NULL,
+  sites = NULL,
+  parameters = "all",
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   chk::chk_null_or(sites, chk = chk::chk_character)
   chk::chk_character(parameters)
   chk::chk_null_or(start_date, chk = check_chr_date)
@@ -207,7 +297,10 @@ nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
   }
 
   dates <- fill_date_query(
-    table = "Mysid", col = "Date", end = end_date, start = start_date,
+    table = "Mysid",
+    col = "Date",
+    end = end_date,
+    start = start_date,
     connection = conn
   )
   start_date <- dates["start_date"][[1]]
@@ -223,20 +316,38 @@ nrp_download_mysid <- function(start_date = NULL, end_date = NULL,
   sitesSql <- cc(sites, ellipsis = 1000)
   start_dateSql <- paste0("'", start_date, "'")
   end_dateSql <- paste0("'", end_date, "'")
-  colsSql <- cc(c("Date", "SiteID", "Replicate", "Parameter", "Value"),
-    ellipsis = 1000, brac = "`"
+  colsSql <- cc(
+    c("Date", "SiteID", "Replicate", "Parameter", "Value"),
+    ellipsis = 1000,
+    brac = "`"
   )
 
   query <- paste0(
-    "SELECT", colsSql, "FROM Mysid WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
-    end_dateSql, ") AND (`SiteID` IN (", sitesSql, ")) AND (`Parameter` IN (", paramsSql, ")))"
+    "SELECT",
+    colsSql,
+    "FROM Mysid WHERE ((`Date` >= ",
+    start_dateSql,
+    ") AND (`Date` <= ",
+    end_dateSql,
+    ") AND (`SiteID` IN (",
+    sitesSql,
+    ")) AND (`Parameter` IN (",
+    paramsSql,
+    ")))"
   )
 
-  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+  result <- readwritesqlite::rws_query(
+    query = query,
+    conn = conn,
+    meta = TRUE
+  ) %>%
     dplyr::mutate(Date = dttr2::dtt_date(Date))
 
-  if (nrow(result) == 0) warning("no data available for query provided.")
+  if (nrow(result) == 0) {
+    warning("no data available for query provided.")
+  }
 
-  result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
+  result %<>%
+    tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
   result
 }

@@ -6,10 +6,14 @@
 #' @return A tibble
 #' @export
 #'
-nrp_read_zooplankton_file <- function(path, db_path = getOption(
-                                        "nrp.db_path",
-                                        file.choose()
-                                      ), system = NULL) {
+nrp_read_zooplankton_file <- function(
+  path,
+  db_path = getOption(
+    "nrp.db_path",
+    file.choose()
+  ),
+  system = NULL
+) {
   check_file_exists(path)
   chk::chk_null_or(system, chk = chk::chk_chr)
   if (is.null(system)) {
@@ -18,11 +22,15 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption(
     } else if (str_detect(tolower(basename(path)), "^kl")) {
       system <- "KL"
     } else {
-      err("System cannot be detected from file name. Please set system argument to 'arrow' or 'kootenay'.")
+      err(
+        "System cannot be detected from file name. Please set system argument to 'arrow' or 'kootenay'."
+      )
     }
   } else {
     system <- tolower(system)
-    if (!system %in% c("arrow", "kootenay")) err("'system' must be one of 'arrow', 'kootenay'.")
+    if (!system %in% c("arrow", "kootenay")) {
+      err("'system' must be one of 'arrow', 'kootenay'.")
+    }
     system <- ifelse(system == "arrow", "AR", "KL")
   }
 
@@ -48,7 +56,11 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption(
 
   sites <- nrp_download_sites(db_path = db_path)
 
-  if (!all(unique(data$Station) %in% sites$SiteID)) warning("Sites present in input data that are not found in 'Sites' table in database.")
+  if (!all(unique(data$Station) %in% sites$SiteID)) {
+    warning(
+      "Sites present in input data that are not found in 'Sites' table in database."
+    )
+  }
 
   data
 }
@@ -62,24 +74,38 @@ nrp_read_zooplankton_file <- function(path, db_path = getOption(
 #' @return A tibble.
 #' @export
 #'
-nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", file.choose()),
-                                 recursive = FALSE, system = NULL, regexp = "[.]xlsx$",
-                                 fail = TRUE) {
+nrp_read_zooplankton <- function(
+  path = ".",
+  db_path = getOption("nrp.db_path", file.choose()),
+  recursive = FALSE,
+  system = NULL,
+  regexp = "[.]xlsx$",
+  fail = TRUE
+) {
   check_dir_exists(path)
   chk::chk_null_or(system, chk = chk::chk_character)
   chk::chk_chr(regexp)
   chk::chk_flag(recursive)
   chk::chk_flag(fail)
 
-  paths <- dir_ls(path,
-    type = "file", recurse = recursive, regexp = regexp,
+  paths <- dir_ls(
+    path,
+    type = "file",
+    recurse = recursive,
+    regexp = regexp,
     fail = fail
   )
   if (!length(paths)) {
     return(named_list())
   }
 
-  datas <- suppressWarnings(do.call("rbind", map(paths, ~ nrp_read_zooplankton_file(., db_path = db_path, system = system))))
+  datas <- suppressWarnings(do.call(
+    "rbind",
+    map(
+      paths,
+      ~ nrp_read_zooplankton_file(., db_path = db_path, system = system)
+    )
+  ))
   rownames(datas) <- NULL
 
   datas
@@ -92,9 +118,14 @@ nrp_read_zooplankton <- function(path = ".", db_path = getOption("nrp.db_path", 
 #' @inheritParams readwritesqlite::rws_write
 #' @export
 #'
-nrp_upload_zooplankton <- function(data, db_path = getOption("nrp.db_path", file.choose()),
-                                   commit = TRUE, strict = TRUE, silent = TRUE,
-                                   replace = FALSE) {
+nrp_upload_zooplankton <- function(
+  data,
+  db_path = getOption("nrp.db_path", file.choose()),
+  commit = TRUE,
+  strict = TRUE,
+  silent = TRUE,
+  replace = FALSE
+) {
   chk::chk_flag(replace)
   chk::chk_flag(commit)
   chk::chk_flag(strict)
@@ -108,63 +139,204 @@ nrp_upload_zooplankton <- function(data, db_path = getOption("nrp.db_path", file
 
   check_zoo_raw_data(data, exclusive = TRUE, order = TRUE)
 
-  zoo_sample <- select(data, c(Date,
-    SiteID = Station, Replicate,
-    FileName, MonthCat, EndRev = ENDREV,
-    StartRev = STARTREV, SplMade = SPLmade,
-    SplCount = SPLcount, FundingSource, FieldCollection,
-    Analyst
-  ))
-
-  readwritesqlite::rws_write(
-    x = zoo_sample, commit = commit,
-    strict = strict, silent = silent,
-    x_name = "ZooplanktonSample", conn = conn, replace = replace
+  zoo_sample <- select(
+    data,
+    c(
+      Date,
+      SiteID = Station,
+      Replicate,
+      FileName,
+      MonthCat,
+      EndRev = ENDREV,
+      StartRev = STARTREV,
+      SplMade = SPLmade,
+      SplCount = SPLcount,
+      FundingSource,
+      FieldCollection,
+      Analyst
+    )
   )
 
-  zoo_data <- select(data, c(Date,
-    SiteID = Station, Replicate, FileName,
-    DenTotal, DCopep, DClad, `DClad other than Daph`,
-    DDash, DDkenai, DEpi, DCycl, DNaup,
-    DDaph, DDiaph, DBosm, DScap, DLepto,
-    DCerio, DChyd, DOtherCopep, DOtherClad,
-    DDashM, DDashF, DDash5, DDash4, DDash3,
-    DDash2, DDash1, DDashC, DDkenaiM, DDkenaiF,
-    DDkenaiC, DEpiM, DEpiF, DEpiC, DCyclM,
-    DCyclF, DCycl5, DCycl4, DCycl3, DCycl2,
-    DCycl1, DCyclC, BiomTotal, BCopep, BClad,
-    `BClad other than Daph`, BDash, BDkenai, BEpi,
-    BCycl, BNaup, BDaph, BDiaph, BBosm,
-    BScap, BLepto, BCerio, BChyd, BOtherCopep,
-    BOtherClad, BDashM, BDashF, BDash5, BDash4,
-    BDash3, BDash2, BDash1, BDashC, BDkenaiM,
-    BDkenaiF, BDkenaiC, BEpiM, BEpiF, BEpiC,
-    BCyclM, BCyclF, BCycl5, BCycl4, BCycl3,
-    BCycl2, BCycl1, BCyclC, F1Dash, F1Dkenai,
-    F1Epi, F1Cycl, F1Daph, F1Diaph, F1Bosm,
-    F1Scap, F1Lepto, F1Cerio, F1Chyd, F2Dash,
-    F2Dkenai, F2Epi, F2Cycl, F2Daph, F2Diaph,
-    F2Bosm, F2Scap, F2Lepto, F2Cerio, F2Chyd,
-    F3Dash, F3Dkenai, F3Epi, F3Cycl, F3Daph,
-    F3Diaph, F3Bosm, F3Scap, F3Lepto, F3Cerio,
-    F3Chyd, F4Dash, F4Dkenai, F4Epi, F4Cycl,
-    F4Daph, F4Diaph, F4Bosm, F4Scap, F4Lepto,
-    F4Cerio, F4Chyd, F5Dash, F5Dkenai, F5Epi,
-    F5Cycl, F5Daph, F5Diaph, F5Bosm, F5Scap,
-    F5Lepto, F5Cerio, F5Chyd, F6Dash, F6Dkenai,
-    F6Epi, F6Cycl, F6Daph, F6Diaph, F6Bosm,
-    F6Scap, F6Lepto, F6Cerio, F6Chyd
-  )) %>%
+  readwritesqlite::rws_write(
+    x = zoo_sample,
+    commit = commit,
+    strict = strict,
+    silent = silent,
+    x_name = "ZooplanktonSample",
+    conn = conn,
+    replace = replace
+  )
+
+  zoo_data <- select(
+    data,
+    c(
+      Date,
+      SiteID = Station,
+      Replicate,
+      FileName,
+      DenTotal,
+      DCopep,
+      DClad,
+      `DClad other than Daph`,
+      DDash,
+      DDkenai,
+      DEpi,
+      DCycl,
+      DNaup,
+      DDaph,
+      DDiaph,
+      DBosm,
+      DScap,
+      DLepto,
+      DCerio,
+      DChyd,
+      DOtherCopep,
+      DOtherClad,
+      DDashM,
+      DDashF,
+      DDash5,
+      DDash4,
+      DDash3,
+      DDash2,
+      DDash1,
+      DDashC,
+      DDkenaiM,
+      DDkenaiF,
+      DDkenaiC,
+      DEpiM,
+      DEpiF,
+      DEpiC,
+      DCyclM,
+      DCyclF,
+      DCycl5,
+      DCycl4,
+      DCycl3,
+      DCycl2,
+      DCycl1,
+      DCyclC,
+      BiomTotal,
+      BCopep,
+      BClad,
+      `BClad other than Daph`,
+      BDash,
+      BDkenai,
+      BEpi,
+      BCycl,
+      BNaup,
+      BDaph,
+      BDiaph,
+      BBosm,
+      BScap,
+      BLepto,
+      BCerio,
+      BChyd,
+      BOtherCopep,
+      BOtherClad,
+      BDashM,
+      BDashF,
+      BDash5,
+      BDash4,
+      BDash3,
+      BDash2,
+      BDash1,
+      BDashC,
+      BDkenaiM,
+      BDkenaiF,
+      BDkenaiC,
+      BEpiM,
+      BEpiF,
+      BEpiC,
+      BCyclM,
+      BCyclF,
+      BCycl5,
+      BCycl4,
+      BCycl3,
+      BCycl2,
+      BCycl1,
+      BCyclC,
+      F1Dash,
+      F1Dkenai,
+      F1Epi,
+      F1Cycl,
+      F1Daph,
+      F1Diaph,
+      F1Bosm,
+      F1Scap,
+      F1Lepto,
+      F1Cerio,
+      F1Chyd,
+      F2Dash,
+      F2Dkenai,
+      F2Epi,
+      F2Cycl,
+      F2Daph,
+      F2Diaph,
+      F2Bosm,
+      F2Scap,
+      F2Lepto,
+      F2Cerio,
+      F2Chyd,
+      F3Dash,
+      F3Dkenai,
+      F3Epi,
+      F3Cycl,
+      F3Daph,
+      F3Diaph,
+      F3Bosm,
+      F3Scap,
+      F3Lepto,
+      F3Cerio,
+      F3Chyd,
+      F4Dash,
+      F4Dkenai,
+      F4Epi,
+      F4Cycl,
+      F4Daph,
+      F4Diaph,
+      F4Bosm,
+      F4Scap,
+      F4Lepto,
+      F4Cerio,
+      F4Chyd,
+      F5Dash,
+      F5Dkenai,
+      F5Epi,
+      F5Cycl,
+      F5Daph,
+      F5Diaph,
+      F5Bosm,
+      F5Scap,
+      F5Lepto,
+      F5Cerio,
+      F5Chyd,
+      F6Dash,
+      F6Dkenai,
+      F6Epi,
+      F6Cycl,
+      F6Daph,
+      F6Diaph,
+      F6Bosm,
+      F6Scap,
+      F6Lepto,
+      F6Cerio,
+      F6Chyd
+    )
+  ) %>%
     tidyr::pivot_longer(
       cols = -c(Date, SiteID, Replicate, FileName),
-      names_to = "Parameter", values_to = "Value"
+      names_to = "Parameter",
+      values_to = "Value"
     ) %>%
     mutate(RawCount = NA_integer_)
 
   readwritesqlite::rws_write(
-    x = zoo_data, commit = commit, strict = strict,
+    x = zoo_data,
+    commit = commit,
+    strict = strict,
     silent = silent,
-    x_name = "Zooplankton", conn = conn, replace = replace
+    x_name = "Zooplankton",
+    conn = conn,
+    replace = replace
   )
 }
 
@@ -173,7 +345,9 @@ nrp_upload_zooplankton <- function(data, db_path = getOption("nrp.db_path", file
 #' @return Zooplankton sample table
 #' @export
 #'
-nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_zoo_sample <- function(
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   conn <- db_path
 
   if (!inherits(conn, "SQLiteConnection")) {
@@ -196,9 +370,14 @@ nrp_download_zoo_sample <- function(db_path = getOption("nrp.db_path", file.choo
 #' @return CTD data table
 #' @export
 #'
-nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
-                                     sites = NULL, parameters = "all", counts = FALSE,
-                                     db_path = getOption("nrp.db_path", file.choose())) {
+nrp_download_zooplankton <- function(
+  start_date = NULL,
+  end_date = NULL,
+  sites = NULL,
+  parameters = "all",
+  counts = FALSE,
+  db_path = getOption("nrp.db_path", file.choose())
+) {
   chk::chk_null_or(sites, chk = chk::chk_character)
   chk::chk_character(parameters)
   chk::chk_flag(counts)
@@ -227,7 +406,10 @@ nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
   }
 
   dates <- fill_date_query(
-    table = "Zooplankton", col = "Date", end = end_date, start = start_date,
+    table = "Zooplankton",
+    col = "Date",
+    end = end_date,
+    start = start_date,
     connection = conn
   )
   start_date <- dates["start_date"][[1]]
@@ -245,23 +427,42 @@ nrp_download_zooplankton <- function(start_date = NULL, end_date = NULL,
   end_dateSql <- paste0("'", end_date, "'")
 
   cols <- c("Date", "SiteID", "Replicate", "FileName", "Parameter", "Value")
-  if (counts) cols[cols == "Value"] <- "RawCount"
+  if (counts) {
+    cols[cols == "Value"] <- "RawCount"
+  }
   colsSql <- cc(cols, ellipsis = 1000, brac = "`")
 
   query <- paste0(
-    "SELECT", colsSql, "FROM Zooplankton WHERE ((`Date` >= ", start_dateSql, ") AND (`Date` <= ",
-    end_dateSql, ") AND (`SiteID` IN (", sitesSql, ")) AND (`Parameter` IN (", paramsSql, ")))"
+    "SELECT",
+    colsSql,
+    "FROM Zooplankton WHERE ((`Date` >= ",
+    start_dateSql,
+    ") AND (`Date` <= ",
+    end_dateSql,
+    ") AND (`SiteID` IN (",
+    sitesSql,
+    ")) AND (`Parameter` IN (",
+    paramsSql,
+    ")))"
   )
 
-  result <- readwritesqlite::rws_query(query = query, conn = conn, meta = TRUE) %>%
+  result <- readwritesqlite::rws_query(
+    query = query,
+    conn = conn,
+    meta = TRUE
+  ) %>%
     dplyr::mutate(Date = dttr2::dtt_date(Date))
 
-  if (nrow(result) == 0) warning("no data available for query provided.")
+  if (nrow(result) == 0) {
+    warning("no data available for query provided.")
+  }
 
   if (counts) {
-    result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "RawCount")
+    result %<>%
+      tidyr::pivot_wider(names_from = "Parameter", values_from = "RawCount")
   } else {
-    result %<>% tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
+    result %<>%
+      tidyr::pivot_wider(names_from = "Parameter", values_from = "Value")
   }
 
   result
