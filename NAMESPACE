@@ -36,13 +36,17 @@ import(fs)
 import(purrr)
 import(stringr)
 import(tibble)
-importFrom(chk,check_data)
-importFrom(chk,check_names)
-importFrom(chk,chk_data)
-importFrom(chk,chk_flag)
-importFrom(chk,chk_s3_class)
-importFrom(chk,chk_string)
-importFrom(magrittr,"%<>%")
-importFrom(magrittr,"%>%")
+importFrom(chk,
+  check_data,
+  check_names,
+  chk_data,
+  chk_flag,
+  chk_s3_class,
+  chk_string
+)
+importFrom(magrittr,
+  "%<>%",
+  "%>%"
+)
 importFrom(oce,read.ctd.sbe)
 importFrom(yesno,yesno)
