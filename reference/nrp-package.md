@@ -6,10 +6,13 @@ uploading and downloading with an SQLite database.
 
 ## Author
 
-**Maintainer**: Evan Amies-Galonski <evan@poissonconsulting.ca>
+**Maintainer**: Evan Amies-Galonski <evanamiesgalonski@gmail.com>
 ([ORCID](https://orcid.org/0000-0003-1096-2089))
 
 Authors:
+
+- Evan Amies-Galonski <evanamiesgalonski@gmail.com>
+  ([ORCID](https://orcid.org/0000-0003-1096-2089))
 
 - Joe Thorley <joe@poissonconsulting.ca>
   ([ORCID](https://orcid.org/0000-0002-7683-4592))

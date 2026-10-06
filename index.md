@@ -27,7 +27,8 @@ SiteID, date range, etc.
 To install the latest version from
 [GitHub](https://github.com/poissonconsulting/nrp)
 
-``` R
+``` r
+
 # install.packages("remotes")
 remotes::install_github("poissonconsulting/nrp")
 ```
@@ -42,7 +43,8 @@ database, just provide the file path to the database for the argument
 automatically. Alternatively you can connect to a database in R and then
 supply that connection object for the argument `db_path`.
 
-``` R
+``` r
+
 library(nrp)
 
 # create empty database
@@ -75,7 +77,8 @@ db_ctd_data <- nrp_download_ctd(
 There are additional functions in the nrp package that allow for easy
 downloading of other tables in the database.
 
-``` R
+``` r
+
 # Lakes and BasinArm tables
 lakes <- nrp_download_lakes(db_path = conn)
 basinArm <- nrp_download_ctd_basin_arm(db_path = conn)

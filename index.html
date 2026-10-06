@@ -62,65 +62,68 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>To install the latest version from <a href="https://github.com/poissonconsulting/nrp" class="external-link">GitHub</a></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># install.packages("remotes")</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"poissonconsulting/nrp"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"poissonconsulting/nrp"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="demonstration">Demonstration<a class="anchor" aria-label="anchor" href="#demonstration"></a>
 </h2>
 <p>For simplicity, this demonstration uses the function <code>nrp_create_db</code> to create an empty, temporary database to read and write to, and uses some test data that travels with the package. When connecting to a proper database, just provide the file path to the database for the argument <code>db_path</code> in all function calls and the connection will be made automatically. Alternatively you can connect to a database in R and then supply that connection object for the argument <code>db_path</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(nrp)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># create empty database</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># path = ":memory:" creates a temporary, in memory database</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>conn <span class="ot">&lt;-</span> <span class="fu">nrp_create_db</span>(<span class="at">path =</span> <span class="st">":memory:"</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># provide a path to a .cnv file</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>path <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="at">package =</span> <span class="st">"nrp"</span>, <span class="at">mustWork =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>)</span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co"># read in file</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>ctd_data <span class="ot">&lt;-</span> <span class="fu">nrp_read_ctd_file</span>(path, <span class="at">db_path =</span> conn)</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 32 negative depths removed from data</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co"># upload data to the database</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="fu">nrp_upload_ctd</span>(<span class="at">data =</span> ctd_data, <span class="at">db_path =</span> conn)</span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 131 duplicate depths removed from data</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>db_ctd_data <span class="ot">&lt;-</span> <span class="fu">nrp_download_ctd</span>(</span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="at">start_date =</span> <span class="st">"2018-08-27"</span>,</span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="at">end_date =</span> <span class="st">"2018-08-27"</span>,</span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="at">sites =</span> <span class="st">"KL1"</span>,</span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="at">parameters =</span> <span class="st">"all"</span>,</span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  <span class="at">db_path =</span> conn</span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">nrp</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># create empty database</span></span>
+<span><span class="co"># path = ":memory:" creates a temporary, in memory database</span></span>
+<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_create_db.html">nrp_create_db</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">":memory:"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># provide a path to a .cnv file</span></span>
+<span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"ctd/2018/KL1_27Aug2018008downcast.cnv"</span>,</span>
+<span>  package <span class="op">=</span> <span class="st">"nrp"</span>, mustWork <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># read in file</span></span>
+<span><span class="va">ctd_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_read_ctd_file.html">nrp_read_ctd_file</a></span><span class="op">(</span><span class="va">path</span>, db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 32 negative depths removed from data</span></span>
+<span></span>
+<span><span class="co"># upload data to the database</span></span>
+<span><span class="fu"><a href="reference/nrp_upload_ctd.html">nrp_upload_ctd</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">ctd_data</span>, db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 131 duplicate depths removed from data</span></span>
+<span></span>
+<span><span class="co"># download data from database, filtering by Date and SiteID and parameter</span></span>
+<span><span class="va">db_ctd_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_ctd.html">nrp_download_ctd</a></span><span class="op">(</span></span>
+<span>  start_date <span class="op">=</span> <span class="st">"2018-08-27"</span>,</span>
+<span>  end_date <span class="op">=</span> <span class="st">"2018-08-27"</span>,</span>
+<span>  sites <span class="op">=</span> <span class="st">"KL1"</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="st">"all"</span>,</span>
+<span>  db_path <span class="op">=</span> <span class="va">conn</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>There are additional functions in the nrp package that allow for easy downloading of other tables in the database.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Lakes and BasinArm tables</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>lakes <span class="ot">&lt;-</span> <span class="fu">nrp_download_lakes</span>(<span class="at">db_path =</span> conn)</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>basinArm <span class="ot">&lt;-</span> <span class="fu">nrp_download_ctd_basin_arm</span>(<span class="at">db_path =</span> conn)</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># site table</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>sites <span class="ot">&lt;-</span> <span class="fu">nrp_download_sites</span>(<span class="at">db_path =</span> conn)</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co"># ctd visit table</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>ctd_visit <span class="ot">&lt;-</span> <span class="fu">nrp_download_ctd_visit</span>(<span class="at">db_path =</span> conn)</span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co"># for the database you want to connect to, you don't have to provide</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co"># the db_path argument any more within that R session</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="fu">options</span>(<span class="at">nrp.db_path =</span> conn) <span class="co"># "conn" can also be a file path to a database</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co"># now we can do things like:</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>lakes <span class="ot">&lt;-</span> <span class="fu">nrp_download_lakes</span>()</span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co"># we conclude the demo by closing the database connection</span></span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co"># If you are providing a file path to the database, you do not need to do this</span></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>readwritesqlite<span class="sc">::</span><span class="fu">rws_disconnect</span>(conn)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Lakes and BasinArm tables</span></span>
+<span><span class="va">lakes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span><span class="va">basinArm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_ctd_basin_arm.html">nrp_download_ctd_basin_arm</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># site table</span></span>
+<span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_sites.html">nrp_download_sites</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ctd visit table</span></span>
+<span><span class="va">ctd_visit</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_ctd_visit.html">nrp_download_ctd_visit</a></span><span class="op">(</span>db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Tip: the nrp functions can also use global options to automatically know</span></span>
+<span><span class="co"># what database to connect to. Once you've set the global option "nrp.db_path"</span></span>
+<span><span class="co"># for the database you want to connect to, you don't have to provide</span></span>
+<span><span class="co"># the db_path argument any more within that R session</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>nrp.db_path <span class="op">=</span> <span class="va">conn</span><span class="op">)</span> <span class="co"># "conn" can also be a file path to a database</span></span>
+<span></span>
+<span><span class="co"># now we can do things like:</span></span>
+<span><span class="va">lakes</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/nrp_download_lakes.html">nrp_download_lakes</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># we conclude the demo by closing the database connection</span></span>
+<span><span class="co"># If you are providing a file path to the database, you do not need to do this</span></span>
+<span><span class="fu">readwritesqlite</span><span class="fu">::</span><span class="fu"><a href="https://poissonconsulting.github.io/readwritesqlite/reference/rws_disconnect.html" class="external-link">rws_disconnect</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-help-or-reporting-an-issue">Getting Help or Reporting an Issue<a class="anchor" aria-label="anchor" href="#getting-help-or-reporting-an-issue"></a>
