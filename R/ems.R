@@ -34,8 +34,11 @@ nrp_extract_ems <- function(
   data %<>%
     filter(EMS_ID %in% sites$EmsSiteNumber) %>%
     mutate(
-      COLLECTION_START = lubridate::ymd_hms(COLLECTION_START, tz = "Etc/GMT+8"),
-      COLLECTION_END = lubridate::ymd_hms(COLLECTION_END, tz = "Etc/GMT+8")
+      COLLECTION_START = dttr2::dtt_date_time(
+        COLLECTION_START,
+        tz = "Etc/GMT+8"
+      ),
+      COLLECTION_END = dttr2::dtt_date_time(COLLECTION_END, tz = "Etc/GMT+8")
     ) %>%
     select(
       EMS_ID,

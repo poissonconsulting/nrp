@@ -1,4 +1,6 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
 [![Lifecycle:
@@ -37,8 +39,10 @@ database with optional filtering by SiteID, date range, etc.
 To install the latest version from
 [GitHub](https://github.com/poissonconsulting/nrp)
 
-    # install.packages("remotes")
-    remotes::install_github("poissonconsulting/nrp")
+``` r
+# install.packages("remotes")
+remotes::install_github("poissonconsulting/nrp")
+```
 
 ## Demonstration
 
@@ -50,61 +54,65 @@ database, just provide the file path to the database for the argument
 automatically. Alternatively you can connect to a database in R and then
 supply that connection object for the argument `db_path`.
 
-    library(nrp)
+``` r
+library(nrp)
 
-    # create empty database
-    # path = ":memory:" creates a temporary, in memory database
-    conn <- nrp_create_db(path = ":memory:")
+# create empty database
+# path = ":memory:" creates a temporary, in memory database
+conn <- nrp_create_db(path = ":memory:")
 
-    # provide a path to a .cnv file
-    path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
-      package = "nrp", mustWork = TRUE
-    )
+# provide a path to a .cnv file
+path <- system.file("extdata", "ctd/2018/KL1_27Aug2018008downcast.cnv",
+  package = "nrp", mustWork = TRUE
+)
 
-    # read in file
-    ctd_data <- nrp_read_ctd_file(path, db_path = conn)
-    #> 32 negative depths removed from data
+# read in file
+ctd_data <- nrp_read_ctd_file(path, db_path = conn)
+#> 32 negative depths removed from data
 
-    # upload data to the database
-    nrp_upload_ctd(data = ctd_data, db_path = conn)
-    #> 131 duplicate depths removed from data
+# upload data to the database
+nrp_upload_ctd(data = ctd_data, db_path = conn)
+#> 131 duplicate depths removed from data
 
-    # download data from database, filtering by Date and SiteID and parameter
-    db_ctd_data <- nrp_download_ctd(
-      start_date = "2018-08-27",
-      end_date = "2018-08-27",
-      sites = "KL1",
-      parameters = "all",
-      db_path = conn
-    )
+# download data from database, filtering by Date and SiteID and parameter
+db_ctd_data <- nrp_download_ctd(
+  start_date = "2018-08-27",
+  end_date = "2018-08-27",
+  sites = "KL1",
+  parameters = "all",
+  db_path = conn
+)
+```
 
 There are additional functions in the nrp package that allow for easy
 downloading of other tables in the database.
 
-    # Lakes and BasinArm tables
-    lakes <- nrp_download_lakes(db_path = conn)
-    basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
+``` r
+# Lakes and BasinArm tables
+lakes <- nrp_download_lakes(db_path = conn)
+basinArm <- nrp_download_ctd_basin_arm(db_path = conn)
 
-    # site table
-    sites <- nrp_download_sites(db_path = conn)
+# site table
+sites <- nrp_download_sites(db_path = conn)
 
-    # ctd visit table
-    ctd_visit <- nrp_download_ctd_visit(db_path = conn)
+# ctd visit table
+ctd_visit <- nrp_download_ctd_visit(db_path = conn)
 
-    # Tip: the nrp functions can also use global options to automatically know
-    # what database to connect to. Once you've set the global option "nrp.db_path"
-    # for the database you want to connect to, you don't have to provide
-    # the db_path argument any more within that R session
+# Tip: the nrp functions can also use global options to automatically know
+# what database to connect to. Once you've set the global option "nrp.db_path"
+# for the database you want to connect to, you don't have to provide
+# the db_path argument any more within that R session
 
-    options(nrp.db_path = conn) # "conn" can also be a file path to a database
+options(nrp.db_path = conn) # "conn" can also be a file path to a database
 
-    # now we can do things like:
-    lakes <- nrp_download_lakes()
+# now we can do things like:
+lakes <- nrp_download_lakes()
 
 
-    # we conclude the demo by closing the database connection
-    # If you are providing a file path to the database, you do not need to do this
-    readwritesqlite::rws_disconnect(conn)
+# we conclude the demo by closing the database connection
+# If you are providing a file path to the database, you do not need to do this
+readwritesqlite::rws_disconnect(conn)
+```
 
 ## Getting Help or Reporting an Issue
 
