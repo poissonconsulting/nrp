@@ -1,5 +1,30 @@
 # Changelog
 
+## nrp 0.2.1.9000 (2026-10-15)
+
+### Chore
+
+- Format with air (#31).
+
+### Uncategorized
+
+- Merge pull request \#33 from poissonconsulting/replace-lubridate.
+
+  - Replaced lubridate with dttr2 equivalent
+
+- Merge pull request \#28 from
+  poissonconsulting/update-evan-contact-email.
+
+  Update Evan Amies-Galonski email to personal address
+
+- Merge pull request \#27 from poissonconsulting/ctd-upcast.
+
+  Ctd upcast
+
+- Merge pull request \#26 from poissonconsulting/ctd-upcast.
+
+  accomodate cast direction in ctd data
+
 ## nrp 0.2.1 (2026-03-24)
 
 - Fix edge case in delineation of up/down casts with multiple max
